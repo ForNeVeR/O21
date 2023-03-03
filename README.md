@@ -40,6 +40,7 @@ Legal Disclaimers
 Documentation
 -------------
 
+- [Contributor Guide][docs.contributing]
 - [License (MIT)][docs.license]
 - [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
 
@@ -51,6 +52,7 @@ Acknowledgments
 
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier#status-zero-
 [docs.code-of-conduct]: CODE_OF_CONDUCT.md
+[docs.contributing]: CONTRIBUTING.md
 [docs.license]: LICENSE.md
 [fornever]: https://github.com/ForNeVeR/
 [game-progressive]: https://github.com/GameProgressive
