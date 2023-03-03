@@ -13,7 +13,11 @@ Visit [the issue tracker][issues] if you want to know more.
 Usage
 -----
 
-Currently O21 is only suitable for development mode; it is impossible to run the game.
+Currently O21 is only suitable for development mode. To start the game, run the following shell command:
+
+```console
+$ dotnet run O21.Game
+```
 
 Game History
 ------------
