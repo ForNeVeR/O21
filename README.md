@@ -1,7 +1,7 @@
 O21 [![Status Zero][status-zero]][andivionian-status-classifier]
 ===
 
-O21 is a modern free and open-source remake of [U95][u95], a game by [NIKITA][nikita] company, released in 1995.
+O21 is a modern free and open-source remake of [U95][u95.game], a game by [NIKITA][nikita] company, released in 1995.
 
 Implementation Status
 ---------------------
@@ -14,6 +14,17 @@ Usage
 -----
 
 Currently O21 is only suitable for development mode; it is impossible to run the game.
+
+Game History
+------------
+
+U95 (also called as _U-95_ on the title screen) is a game well known in 1990's Russian-speaking gaming community, since it was one of the first games published there.
+
+It was created in 1995 by one of the first Russian game development companies, NIKITA (currently renamed to Nikita Online), for Windows 3.x.
+
+### O21
+
+Since the original game is probably named after a [German submarine U-95][u95.sub], that was sunk by Dutch [O 21][o21.sub], the authors decided to name the remake project O21, as a (wishfully) superior project (at least in some aspects).
 
 Legal Disclaimers
 -----------------
@@ -45,6 +56,8 @@ Acknowledgments
 [game-progressive]: https://github.com/GameProgressive
 [issues]: https://github.com/ForNeVeR/O21/issues
 [nikita]: https://en.wikipedia.org/wiki/Nikita_Online
+[o21.sub]: https://en.wikipedia.org/wiki/HNLMS_O_21
 [open-sage]: https://github.com/OpenSAGE/OpenSAGE
 [status-zero]: https://img.shields.io/badge/status-zero-lightgrey.svg
-[u95]: https://www.old-games.ru/game/4676.html
+[u95.game]: https://www.old-games.ru/game/4676.html
+[u95.sub]: https://en.wikipedia.org/wiki/German_submarine_U-95_(1940)
