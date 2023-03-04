@@ -31,6 +31,17 @@ SHA256 hash of the `U_95.rar` file is `2F85B004B8C9BE21BE7327BD677370433DBD04B65
 
 See [the documentation on the original resources][docs.resources].
 
+Extract the Original Resources
+------------------------------
+
+To run image export from a NE file (DLL or EXE), run the game with the following arguments:
+
+```console
+$ dotnet run O21.Game -- export <path-to-ne-file> <path-to-output-dir>
+```
+
+This will create a bunch of `.bmp` files in the output directory containing the game sprites. 
+
 [archive.u95]: https://archive.org/details/u-95_20230304
 [docs.resources]: docs/resources.md
 [dotnet]: https://dot.net/
