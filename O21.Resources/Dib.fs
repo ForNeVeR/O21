@@ -19,9 +19,9 @@ type Dib(dib: byte[]) =
         else 1 <<< int colorDepth
 
     let palette = Array.init paletteColorNumber (fun i ->
-        let r = dib[headerSize + i * 4]
+        let b = dib[headerSize + i * 4]
         let g = dib[headerSize + i * 4 + 1]
-        let b = dib[headerSize + i * 4 + 2]
+        let r = dib[headerSize + i * 4 + 2]
         struct(r, g, b)
     )
 
