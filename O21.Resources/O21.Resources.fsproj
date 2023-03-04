@@ -6,7 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Sprites.fs" />
+        <Compile Include="Dib.fs" />
+        <Compile Include="Graphics.fs" />
     </ItemGroup>
 
     <ItemGroup>

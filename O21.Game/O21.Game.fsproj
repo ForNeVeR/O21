@@ -6,6 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="U95\Sprites.fs" />
+        <Compile Include="U95\U95Data.fs" />
         <Compile Include="O21Game.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
