@@ -8,7 +8,7 @@ type O21Game() as this =
     let graphics = new GraphicsDeviceManager(this)
 
     override this.Initialize() =
-        this.Window.Title <- "O2"
+        this.Window.Title <- "O21"
 
         graphics.PreferredBackBufferWidth <- 640
         graphics.PreferredBackBufferHeight <- 480
