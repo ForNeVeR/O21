@@ -27,8 +27,11 @@ Download the Original
 
 [Download it from the Old-Games.RU][old-games.u95].
 
-SHA256 hash of the `U95.rar` file is `2F85B004B8C9BE21BE7327BD677370433DBD04B65F3B909561FE17EA6B43534A`. 
+SHA256 hash of the `U95.rar` file is `2F85B004B8C9BE21BE7327BD677370433DBD04B65F3B909561FE17EA6B43534A`.
 
+See [the documentation on the original resources][docs.resources].
+
+[docs.resources]: docs/resources.md
 [dotnet]: https://dot.net/
 [old-games.u95]: https://www.old-games.ru/game/download/4676.html
-[playminigames.u95]: https://playminigames.net/game/u95 
+[playminigames.u95]: https://playminigames.net/game/u95

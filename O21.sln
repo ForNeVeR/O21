@@ -22,6 +22,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "O21.Game", "O21.Game\O21.Game.fsproj", "{26A002F1-A77B-4339-99D7-866BDF4BC1E6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{ED5D37B9-3F2A-4C8C-9625-B6FA1152AF02}"
+	ProjectSection(SolutionItems) = preProject
+		docs\resources.md = docs\resources.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

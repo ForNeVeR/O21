@@ -45,6 +45,7 @@ Documentation
 -------------
 
 - [Contributor Guide][docs.contributing]
+  - [Original Game Resources][docs.resources]
 - [License (MIT)][docs.license]
 - [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
 
@@ -58,6 +59,7 @@ Acknowledgments
 [docs.code-of-conduct]: CODE_OF_CONDUCT.md
 [docs.contributing]: CONTRIBUTING.md
 [docs.license]: LICENSE.md
+[docs.resources]: docs/resources.md
 [fornever]: https://github.com/ForNeVeR/
 [game-progressive]: https://github.com/GameProgressive
 [issues]: https://github.com/ForNeVeR/O21/issues
