@@ -25,13 +25,13 @@ If the game sound is too loud and annoys you, you can disable it via the main me
 Download the Original
 ---------------------
 
-[Download it from the Old-Games.RU][old-games.u95].
+[Download it from the Internet Archive][archive.u95].
 
-SHA256 hash of the `U95.rar` file is `2F85B004B8C9BE21BE7327BD677370433DBD04B65F3B909561FE17EA6B43534A`.
+SHA256 hash of the `U_95.rar` file is `2F85B004B8C9BE21BE7327BD677370433DBD04B65F3B909561FE17EA6B43534A`.
 
 See [the documentation on the original resources][docs.resources].
 
+[archive.u95]: https://archive.org/details/u-95_20230304
 [docs.resources]: docs/resources.md
 [dotnet]: https://dot.net/
-[old-games.u95]: https://www.old-games.ru/game/download/4676.html
 [playminigames.u95]: https://playminigames.net/game/u95

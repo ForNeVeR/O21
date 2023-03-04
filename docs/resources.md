@@ -1,7 +1,7 @@
 Original Game Resources
 =======================
 
-Here we'll discuss the resources of [the game version available from Old-Games.RU][old-games.u95] (`U95.rar` file, SHA256 hash: `2F85B004B8C9BE21BE7327BD677370433DBD04B65F3B909561FE17EA6B43534A`). It is unknown yet whether there are any other versions available in the web.
+Here we'll discuss the resources of [the game version available from the Internet Achive][archive.u95] (`U_95.rar` file, SHA256 hash: `2F85B004B8C9BE21BE7327BD677370433DBD04B65F3B909561FE17EA6B43534A`). It is unknown yet whether there are any other versions available in the web.
 
 Archive Content List
 --------------------
@@ -155,6 +155,7 @@ There's also a resource `15/1` in each file that seems to contain some kind of m
 
 See [#21][issue.21] for the current progress on sprite decoding.
 
+[archive.u95]: https://archive.org/details/u-95_20230304
 [exe-scope]: http://www.filefacts.com/exescope-info 
 [image-glass]: https://imageglass.org/
 [issue.12]: https://github.com/ForNeVeR/O21/issues/12
@@ -163,4 +164,3 @@ See [#21][issue.21] for the current progress on sprite decoding.
 [issue.20]: https://github.com/ForNeVeR/O21/issues/20
 [issue.21]: https://github.com/ForNeVeR/O21/issues/21
 [issue.24]: https://github.com/ForNeVeR/O21/issues/24
-[old-games.u95]: https://www.old-games.ru/game/download/4676.html
