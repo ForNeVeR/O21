@@ -1,8 +1,10 @@
 namespace O21.Game
 
 open System
+
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
+
 open O21.Game.U95
 
 type O21Game(dataDirectory: string) as this =
