@@ -6,12 +6,18 @@ public class NeFile
     private readonly Stream _input;
     private readonly ushort _segmentedHeaderOffset;
     private readonly ushort _resourceTableOffset;
+    private readonly ushort _resourceAlignmentShiftCount;
 
-    public NeFile(Stream input, ushort segmentedHeaderOffset, ushort resourceTableOffset)
+    public NeFile(
+        Stream input,
+        ushort segmentedHeaderOffset,
+        ushort resourceTableOffset,
+        ushort resourceAlignmentShiftCount)
     {
         _input = input;
         _segmentedHeaderOffset = segmentedHeaderOffset;
         _resourceTableOffset = resourceTableOffset;
+        _resourceAlignmentShiftCount = resourceAlignmentShiftCount;
     }
 
     public static NeFile ReadFrom(Stream input)
@@ -30,15 +36,16 @@ public class NeFile
         input.Seek(segmentedHeaderOffset + 0x24, SeekOrigin.Begin);
         var resourceTableOffset = input.ReadUInt16Le();
 
-        // Read the number of resource entries at header + 0x34:
-        input.Seek(segmentedHeaderOffset + 0x34, SeekOrigin.Begin);
-        var resourceEntryNumber = input.ReadUInt16Le();
+        // The resource entry number is supposed to be placed at header + 0x34, though it's always zero in
+        // the files I examined. Let's ignore it: the resource table has its own end marker (typeId == 0).
+        //
+        // Notably, eXeScope calls the same field "Number of Reserved Segment".
 
         // Read resource alignment shift count at resource table offset:
         input.Seek(segmentedHeaderOffset + resourceTableOffset, SeekOrigin.Begin);
         var alignmentShiftCount = input.ReadUInt16Le();
 
-        return new NeFile(input, segmentedHeaderOffset, resourceTableOffset);
+        return new NeFile(input, segmentedHeaderOffset, resourceTableOffset, alignmentShiftCount);
     }
 
     public IEnumerable<NeResourceType> ReadResourceTable()
@@ -63,6 +70,18 @@ public class NeFile
 
             yield return new NeResourceType(typeId, resources);
         }
+    }
+
+    public byte[] ReadResourceContent(NeResource resource)
+    {
+        var alignment = 1 << _resourceAlignmentShiftCount;
+        var offset = resource.ContentOffsetInAlignments * alignment;
+        var length = resource.ContentLength * alignment;
+
+        _input.Seek(offset, SeekOrigin.Begin);
+        var buffer = new byte[length];
+        _input.ReadExactly(buffer);
+        return buffer;
     }
 
     private NeResource ReadResource()
