@@ -18,7 +18,7 @@ type O21Game(dataDirectory: string) as this =
         graphics.PreferredBackBufferHeight <- 480
         graphics.ApplyChanges()
 
-        // TODO: Preloader, combine with downloader
+        // TODO[#38]: Preloader, combine with downloader
         gameData <- Some((U95Data.Load this.GraphicsDevice dataDirectory).Result)
 
     override this.Update _ = ()
