@@ -138,18 +138,18 @@ Game Resources
 - `*.DAT` — game level files in ASCII. See [#24][issue.24] for the current progress on their documenting.
 - `*.WAV` — various sound effects. See [#12][issue.12] for the current progress on identifying each file.
 - `*.SCR` — BMP (can be opened by [ImageGlass][image-glass] at least) files with level backgrounds. Seem to be in the BMP format. See [#17][issue.17] on the current progress on figuring out the details. 
-- `U95_BRIC.DLL` — a 16-bit DLL file with brick graphics in its embedded resources.
+- `U95_BRIC.DLL` — a 16-bit DLL (aka "[Win16 NE][win16-ne]") file with brick graphics in its embedded resources.
 - `U95_PIC.DLL` — a 16-bit DLL file with enemy graphics in its embedded resources
-- `U95.EXE` — the main game executable file. Also a 16-bit PE file containing some game graphics (UI elements, player sprite, bullet sprites, mines and certain enemies, bonus items).
+- `U95.EXE` — the main game executable file. Also a 16-bit NE file containing some game graphics (UI elements, player sprite, bullet sprites, mines and certain enemies, bonus items).
 - `U95.HLP` — game help file. We were unable to open it so far. See [#19][issue.19] for the current progress on presenting it in the game.
 - `U95.MID` — a MIDI file with the in-game music. See [#20][issue.20] for the current progress on playing it.
 
 Sprite Format
 -------------
 
-16-bit PE files (`.DLL` and `.EXE`) that contain sprites can be opened by [eXeScope][exe-scope].
+16-bit NE files (`.DLL` and `.EXE`) that contain sprites can be opened by [eXeScope][exe-scope].
 
-Every sprite contained in the PE files to consist of two bitmaps: one for the color data and another one for the transparency mask.
+Every sprite contained in the NE files to consist of two bitmaps: one for the color data and another one for the transparency mask.
 
 There's also a resource `15/1` in each file that seems to contain some kind of meta-information about the files (the file names corresponding to resources, at least).
 
@@ -164,3 +164,4 @@ See [#21][issue.21] for the current progress on sprite decoding.
 [issue.20]: https://github.com/ForNeVeR/O21/issues/20
 [issue.21]: https://github.com/ForNeVeR/O21/issues/21
 [issue.24]: https://github.com/ForNeVeR/O21/issues/24
+[win16-ne]: https://jeffpar.github.io/kbarchive/kb/065/Q65122/
