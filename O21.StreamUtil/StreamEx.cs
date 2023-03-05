@@ -17,4 +17,11 @@ internal static class StreamEx
         stream.ReadExactly(buffer);
         return BinaryPrimitives.ReadInt32LittleEndian(buffer);
     }
+
+    public static byte ReadByteExact(this Stream stream)
+    {
+        var result = stream.ReadByte();
+        if (result == -1) throw new IOException("End of stream encountered");
+        return (byte)result;
+    }
 }
