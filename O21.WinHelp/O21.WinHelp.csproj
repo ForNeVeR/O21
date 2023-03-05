@@ -6,10 +6,6 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <Description>New Executable (Win16 executable files, NE) file format reader.</Description>
-    </PropertyGroup>
-
     <ItemGroup>
       <ProjectReference Include="..\O21.StreamUtil\O21.StreamUtil.csproj" />
     </ItemGroup>

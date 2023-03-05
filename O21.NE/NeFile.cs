@@ -1,4 +1,6 @@
-﻿namespace O21.NE;
+﻿using O21.StreamUtil;
+
+namespace O21.NE;
 
 /// <remarks>https://jeffpar.github.io/kbarchive/kb/065/Q65122/</remarks>
 public class NeFile

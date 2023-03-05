@@ -1,6 +1,8 @@
 ﻿module O21.Game.Program
 
+open System.IO
 open O21.Resources
+open O21.WinHelp
 
 [<EntryPoint>]
 let main(args: string[]): int =
@@ -8,6 +10,10 @@ let main(args: string[]): int =
     | [| "export"; inputFile; outDir |] ->
         Graphics.Load inputFile
         |> Graphics.Export outDir
+    | [| "help"; inputFile |] ->
+        use input = new FileStream(inputFile, FileMode.Open, FileAccess.Read)
+        WinHelpFile.Load input
+        |> printfn "%A"
     | [| dataDir |] ->
         use game = new O21Game(dataDir)
         game.Run()

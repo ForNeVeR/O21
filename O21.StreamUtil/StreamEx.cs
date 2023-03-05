@@ -1,6 +1,6 @@
 using System.Buffers.Binary;
 
-namespace O21.NE;
+namespace O21.StreamUtil;
 
 internal static class StreamEx
 {
@@ -9,5 +9,12 @@ internal static class StreamEx
         Span<byte> buffer = stackalloc byte[2];
         stream.ReadExactly(buffer);
         return BinaryPrimitives.ReadUInt16LittleEndian(buffer);
+    }
+
+    public static int ReadInt32Le(this Stream stream)
+    {
+        Span<byte> buffer = stackalloc byte[4];
+        stream.ReadExactly(buffer);
+        return BinaryPrimitives.ReadInt32LittleEndian(buffer);
     }
 }
