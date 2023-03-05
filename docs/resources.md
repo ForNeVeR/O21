@@ -155,6 +155,21 @@ There's also a resource `15/1` in each file that seems to contain some kind of m
 
 See [#21][issue.21] for the current progress on sprite decoding.
 
+Game Sounds
+-----------
+
+- `U95_0.WAV`: game started
+- `U95_1.WAV`: game over
+- `U95_2.WAV`: after game over, the player has made a new record
+- `U95_3.WAV`: life taken
+- `U95_4.WAV`: lifebuoy taken
+- `U95_5.WAV`: treasure taken
+- `U95_6.WAV`: a treasure or a lifebuoy destroyed by a bullet
+- `U95_7.WAV`: shot
+- `U95_8.WAV`: stationary enemy (an octopus or a mine) destroyed
+- `U95_9.WAV`: swimming enemy destroyed
+- `U95_10.WAV`: player lost a life
+
 [archive.u95]: https://archive.org/details/u-95_20230304
 [exe-scope]: http://www.filefacts.com/exescope-info 
 [image-glass]: https://imageglass.org/
