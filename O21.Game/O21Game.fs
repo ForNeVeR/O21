@@ -1,43 +1,45 @@
 namespace O21.Game
 
-open System
-
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 
 open O21.Game.U95
 open O21.Game.U95.Reader
+open O21.Game.U95.Parser
 
-type O21Game(dataDirectory: string) as this =
-    inherit Game()
+module O21Game =
+    type World = {
+        CurrentLevel: Level
+    }
 
-    let graphics = new GraphicsDeviceManager(this)
-    let mutable gameData = None
-    let mutable level = None
+    let init (dataDirectory: string) = fun () -> {
+        // TODO: Async commands
+        CurrentLevel = (Level.Load dataDirectory 1 2).Result
+    }
 
-    override this.Initialize() =
-        this.Window.Title <- "O21"
+    let update (input: Input) (time: Time) (world: World) = 
+        world
 
-        graphics.PreferredBackBufferWidth <- 640
-        graphics.PreferredBackBufferHeight <- 480
-        graphics.ApplyChanges()
+    let draw (batch: SpriteBatch) (gameData: U95Data) (world: World) =
+        batch.GraphicsDevice.Clear(Color.White)
 
-        // TODO[#38]: Preloader, combine with downloader
-        gameData <- Some((U95Data.Load this.GraphicsDevice dataDirectory).Result)
-        level <- Some((Level.Load dataDirectory 1 2).Result)
+        batch.Draw(gameData.Sprites.Background[1], Rectangle(0, 0, 600, 300), Color.White)
 
-    override this.Update _ = ()
+        let map = world.CurrentLevel.LevelMap
+        for i = 0 to map.Length-1 do
+            for j = 0 to map[i].Length-1 do
+                match map[i][j] with
+                | Brick b ->
+                    batch.Draw(gameData.Sprites.Bricks[b], Rectangle(12*j, 12*i, 12, 12), Color.White)
+                | _ ->
+                    ()
 
-    override this.Draw _ =
-        let device = this.GraphicsDevice
-        device.Clear(Color.White)
-
-        use batch = new SpriteBatch(this.GraphicsDevice)
-        batch.Begin()
-        batch.Draw(gameData.Value.Sprites.Background[0], Rectangle(0, 0, 600, 300), Color.White)
-        batch.End()
-
-    override _.Dispose disposing =
-        if disposing then
-            graphics.Dispose()
-            gameData |> Option.iter (fun x -> (x :> IDisposable).Dispose())
+    let game (dataDirectory: string) = {
+        LoadGameData = fun gd ->
+            // TODO[#38]: Preloader, combine with downloader
+            (U95Data.Load gd dataDirectory).Result
+        Init = init dataDirectory
+        HandleInput = Input.handle
+        Update = update
+        Draw = draw
+    }
