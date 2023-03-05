@@ -24,6 +24,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\O21.Resources\O21.Resources.fsproj" />
+      <ProjectReference Include="..\O21.WinHelp\O21.WinHelp.csproj" />
     </ItemGroup>
 
 </Project>
