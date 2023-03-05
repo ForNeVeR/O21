@@ -136,7 +136,7 @@ Game Resources
 --------------
 
 - `*.DAT` — game level files in ASCII. See [#24][issue.24] for the current progress on their documenting.
-- `*.WAV` — various sound effects. See [#12][issue.12] for the current progress on identifying each file.
+- `*.WAV` — various sound effects. See below for the function of each file.
 - `*.SCR` — BMP (can be opened by [ImageGlass][image-glass] at least) files with level backgrounds. Seem to be in the BMP format. See [#17][issue.17] on the current progress on figuring out the details. 
 - `U95_BRIC.DLL` — a 16-bit DLL (aka "[Win16 NE][win16-ne]") file with brick graphics in its embedded resources.
 - `U95_PIC.DLL` — a 16-bit DLL file with enemy graphics in its embedded resources
