@@ -10,8 +10,9 @@ let main(args: string[]): int =
         |> Graphics.Export outDir
     | [| "help"; inputFile |] ->
         use input = new FileStream(inputFile, FileMode.Open, FileAccess.Read)
-        WinHelpFile.Load input
-        |> printfn "%A"
+        let file = WinHelpFile.Load input
+        for entry in file.HfsFileNames() do
+            printfn $"%s{entry}"
     | [| dataDir |] ->
         let config = {
             Title = "O21"
