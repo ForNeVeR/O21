@@ -11,14 +11,14 @@ internal enum HfsFileType
 
 internal struct HfsEntry
 {
-    public int FileSizeWithHeader;
-    public int FileSize;
+    public int ReservedSpace;
+    public int UsedSpace;
     public HfsFileType FileType;
 
     public static HfsEntry Load(Stream input) => new()
     {
-        FileSizeWithHeader = input.ReadInt32Le(),
-        FileSize = input.ReadInt32Le(),
+        ReservedSpace = input.ReadInt32Le(),
+        UsedSpace = input.ReadInt32Le(),
         FileType = (HfsFileType)input.ReadByteExact()
     };
 }

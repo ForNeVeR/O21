@@ -51,6 +51,9 @@ public struct WinHelpFile
         var hfs = HfsEntry.Load(_data);
         if (hfs.FileType != HfsFileType.Hfs) throw new Exception($"Unexpected root file entry: {hfs.FileType}.");
 
+        var bTreeHeader = BTreeHeader.Load(_data);
+        if (bTreeHeader.Magic != 0x293B) throw new Exception($"Unexpected BTreeHeader signature: {bTreeHeader.Magic}.");
+
         throw new Exception("TODO: Finish this method.");
     }
 }
