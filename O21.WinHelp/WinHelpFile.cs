@@ -54,6 +54,16 @@ public struct WinHelpFile
         var bTreeHeader = BTreeHeader.Load(_data);
         if (bTreeHeader.Magic != 0x293B) throw new Exception($"Unexpected BTreeHeader signature: {bTreeHeader.Magic}.");
 
+        if (bTreeHeader.NLevels != 1) throw new Exception($"NLevels = {bTreeHeader.NLevels} is not expected 1.");
+        if (bTreeHeader.RootPage != 0) throw new Exception($"RootPage = {bTreeHeader.RootPage} is not expected 0.");
+
+        var bTreeIndexHeader = BTreeIndexHeader.Load(_data);
+
+        for (var i = 0; i < bTreeHeader.TotalPages; ++i)
+        {
+            // var currentFile = BTreeIndex.Load(_data);
+        }
+
         throw new Exception("TODO: Finish this method.");
     }
 }
