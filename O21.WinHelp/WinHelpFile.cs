@@ -45,7 +45,7 @@ public struct WinHelpFile
         return new WinHelpFile(input, hfsOffset, firstFreeBlock, entireFileSize);
     }
 
-    public IEnumerable<string> HfsFileNames()
+    public IEnumerable<DirectoryIndexEntry> GetFiles()
     {
         _data.Seek(_hfsOffset, SeekOrigin.Begin);
         var hfs = HfsEntry.Load(_data);
@@ -58,12 +58,18 @@ public struct WinHelpFile
         if (bTreeHeader.RootPage != 0) throw new Exception($"RootPage = {bTreeHeader.RootPage} is not expected 0.");
 
         var bTreeIndexHeader = BTreeIndexHeader.Load(_data);
+        return bTreeIndexHeader.Entries;
+    }
 
-        for (var i = 0; i < bTreeHeader.TotalPages; ++i)
-        {
-            // var currentFile = BTreeIndex.Load(_data);
-        }
+    public byte[] ReadFile(DirectoryIndexEntry entry)
+    {
+        _data.Seek(entry.FileOffset, SeekOrigin.Begin);
+        var file = HfsEntry.Load(_data);
+        if (file.FileType != HfsFileType.Normal) throw new Exception($"Abnormal HFS entry type: {file.FileType}.");
 
-        throw new Exception("TODO: Finish this method.");
+        var buffer = new byte[file.UsedSpace];
+        _data.ReadExactly(buffer);
+
+        return buffer;
     }
 }

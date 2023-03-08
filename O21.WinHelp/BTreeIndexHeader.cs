@@ -1,4 +1,3 @@
-using System.Data;
 using System.Text;
 using O21.StreamUtil;
 
@@ -47,7 +46,8 @@ public struct DirectoryIndexEntry
 
         return new DirectoryIndexEntry
         {
-            FileName = Encoding.UTF8.GetString(buffer), // TODO: Figure out the encoding
+            // -1 for terminating zero
+            FileName = Encoding.UTF8.GetString(buffer, 0, buffer.Length - 1), // TODO: Figure out the encoding
             FileOffset = data.ReadInt32Le()
         };
     }
