@@ -8,11 +8,16 @@ let main(args: string[]): int =
     | [| "export"; inputFile; outDir |] ->
         Graphics.Load inputFile
         |> Graphics.Export outDir
-    | [| "help"; inputFile |] ->
+    | [| "help"; inputFile; outDir |] ->
         use input = new FileStream(inputFile, FileMode.Open, FileAccess.Read)
         let file = WinHelpFile.Load input
-        for entry in file.HfsFileNames() do
-            printfn $"%s{entry}"
+        for entry in file.GetFiles() do
+            printfn $"%s{entry.FileName}"
+            let fileName = entry.FileName.Replace("|", "_")
+            let outputName = Path.Combine(outDir, fileName)
+            let bytes = file.ReadFile(entry)
+            File.WriteAllBytes(outputName, bytes)
+
     | [| dataDir |] ->
         let config = {
             Title = "O21"
