@@ -137,7 +137,7 @@ Game Resources
 
 - `*.DAT` — game level files in ASCII. See [#24][issue.24] for the current progress on their documenting.
 - `*.WAV` — various sound effects. See below for the function of each file.
-- `*.SCR` — BMP (can be opened by [ImageGlass][image-glass] at least) files with level backgrounds. Seem to be in the BMP format. See [#17][issue.17] on the current progress on figuring out the details. 
+- `*.SCR` — BMP (can be opened by [ImageGlass][image-glass] at least) files with level backgrounds. Seem to be in the BMP format. See [#17][issue.17] on the current progress on figuring out the details.
 - `U95_BRIC.DLL` — a 16-bit DLL (aka "[Win16 NE][win16-ne]") file with brick graphics in its embedded resources.
 - `U95_PIC.DLL` — a 16-bit DLL file with enemy graphics in its embedded resources
 - `U95.EXE` — the main game executable file. Also a 16-bit NE file containing some game graphics (UI elements, player sprite, bullet sprites, mines and certain enemies, bonus items).
@@ -170,8 +170,28 @@ Game Sounds
 - `U95_9.WAV`: swimming enemy destroyed
 - `U95_10.WAV`: player lost a life
 
+
+.DAT Files
+-----------
+
+`.DAT` files contains game levels in ASCII. In fact, we have 3 different category of characters:
+
+- `1-9`: exact number of brick sprite in `U95_BRIC.DLL`. In [eXeScope][exe-scope] numbers `2-10` of bitmap.
+- `a`: random choice between some of bonus items:
+    - bottle
+    - candy
+    - medal
+    - treasure chest
+    - floppy
+    - canned fish
+    - wrench
+    - light bulb
+    - seashell
+    - compass
+- `b`: random choice between bomb and four kinds of octopuses.
+
 [archive.u95]: https://archive.org/details/u-95_20230304
-[exe-scope]: http://www.filefacts.com/exescope-info 
+[exe-scope]: http://www.filefacts.com/exescope-info
 [image-glass]: https://imageglass.org/
 [issue.12]: https://github.com/ForNeVeR/O21/issues/12
 [issue.17]: https://github.com/ForNeVeR/O21/issues/17
