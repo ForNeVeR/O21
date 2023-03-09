@@ -135,7 +135,7 @@ Archive Content List
 Game Resources
 --------------
 
-- `*.DAT` — game level files in ASCII. See [#24][issue.24] for the current progress on their documenting.
+- `*.DAT` — game level files in ASCII, see below.
 - `*.WAV` — various sound effects. See below for the function of each file.
 - `*.SCR` — BMP (can be opened by [ImageGlass][image-glass] at least) files with level backgrounds. Seem to be in the BMP format. See [#17][issue.17] on the current progress on figuring out the details.
 - `U95_BRIC.DLL` — a 16-bit DLL (aka "[Win16 NE][win16-ne]") file with brick graphics in its embedded resources.
@@ -143,6 +143,25 @@ Game Resources
 - `U95.EXE` — the main game executable file. Also a 16-bit NE file containing some game graphics (UI elements, player sprite, bullet sprites, mines and certain enemies, bonus items).
 - `U95.HLP` — game help file. We were unable to open it so far. See [#19][issue.19] for the current progress on presenting it in the game.
 - `U95.MID` — a MIDI file with the in-game music. See [#20][issue.20] for the current progress on playing it.
+
+.DAT Files
+----------
+
+The `.DAT` files contain the game levels in ASCII. There are three category of characters there:
+
+- `1`–`9`: number of brick sprite from `U95_BRIC.DLL`. Resources have _names_ `Bitmap/2`–`Bitmap/10`, and their indices in bitmap section correspond exactly to their number in the `.DAT` file.
+- `a`: random choice between certain bonus items:
+    - bottle
+    - candy
+    - medal
+    - treasure chest
+    - floppy
+    - canned fish
+    - wrench
+    - light bulb
+    - seashell
+    - compass
+- `b`: random choice between bomb and four kinds of octopuses.
 
 Sprite Format
 -------------
@@ -169,26 +188,6 @@ Game Sounds
 - `U95_8.WAV`: stationary enemy (an octopus or a mine) destroyed
 - `U95_9.WAV`: swimming enemy destroyed
 - `U95_10.WAV`: player lost a life
-
-
-.DAT Files
------------
-
-`.DAT` files contains game levels in ASCII. In fact, we have 3 different category of characters:
-
-- `1-9`: exact number of brick sprite in `U95_BRIC.DLL`. In [eXeScope][exe-scope] numbers `2-10` of bitmap.
-- `a`: random choice between some of bonus items:
-    - bottle
-    - candy
-    - medal
-    - treasure chest
-    - floppy
-    - canned fish
-    - wrench
-    - light bulb
-    - seashell
-    - compass
-- `b`: random choice between bomb and four kinds of octopuses.
 
 [archive.u95]: https://archive.org/details/u-95_20230304
 [exe-scope]: http://www.filefacts.com/exescope-info
