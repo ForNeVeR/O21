@@ -9,8 +9,9 @@ type Level = {
     LevelMap: List<List<Option<Texture2D>>>
 }
     with
-        static member Load(directory:string) (bricks:ICollection<Texture2D>) (level:int) (part:int):Task<Level> = task{
-            let level = Parser.LoadLevel directory bricks level part
+        static member Load(directory:string) (textures:ICollection<Texture2D>) (level:int) (part:int):Task<Level> = task{
+            let parser = new Parser(directory, textures);
+            let level = parser.LoadLevel level part
             return{
                 LevelMap = level;
             }

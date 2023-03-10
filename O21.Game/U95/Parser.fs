@@ -4,16 +4,16 @@ open System.Collections.Generic
 open System.IO
 open Microsoft.Xna.Framework.Graphics
 
-module Parser =
-     let private ReadDatFile (directory:string) (level:int) (part:int) : string[] = 
+type Parser(directory, textures:ICollection<Texture2D>) =
+     member private this.ReadDatFile(level:int) (part:int) : string[] = 
         try 
             let lines = File.ReadAllLines(Path.Combine(directory, $"U95_{level}_{part}.DAT")) 
             lines
         with
             | Exception -> [|"Parser can`t find file"|]
         
-     let private ParseLine (line:string) (bricks:ICollection<Texture2D>) =
-         let listOfBricks = bricks |> List
+     member private this.ParseLine (line:string) =
+         let listOfBricks = textures |> List
          let levelMap = List<Option<Texture2D>>()
          for character in line do
              match character with
@@ -22,12 +22,13 @@ module Parser =
                 // need to add more cases when other textures will be available
          levelMap
                 
-     let private ParseLevel (data:string[]) (bricks:ICollection<Texture2D>): List<List<Option<Texture2D>>> = 
+     member private this.ParseLevel (data:string[]): List<List<Option<Texture2D>>> = 
          let level = List<List<Option<Texture2D>>>()
          for line in data do
-             level.Add (ParseLine line bricks)
+             level.Add (this.ParseLine line)
          level
 
-     let LoadLevel (directory:string) (bricks:ICollection<Texture2D>) (level:int) (part:int) =
-        let lines = ReadDatFile directory level part
-        ParseLevel lines bricks 
+     member this.LoadLevel (level:int) (part:int) =
+        let lines = this.ReadDatFile level part
+        this.ParseLevel lines 
+
