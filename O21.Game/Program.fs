@@ -18,6 +18,11 @@ let main(args: string[]): int =
             let bytes = file.ReadFile(entry)
             File.WriteAllBytes(outputName, bytes)
 
+            if entry.FileName = "|SYSTEM" then
+                use stream = new MemoryStream(bytes)
+                let header = SystemHeader.Load stream
+                printfn " - SystemHeader ok."
+
     | [| dataDir |] ->
         let config = {
             Title = "O21"
