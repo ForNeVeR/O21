@@ -28,6 +28,10 @@ public struct SystemHeader
             throw new Exception(
                 $"Magic: expected to be 0x6C, actual {header.Magic.ToString("x", CultureInfo.InvariantCulture)}");
 
+        if (header.Version != 3)
+            throw new Exception(
+                $"Version: expected to be 3, actual {header.Version.ToString(CultureInfo.InvariantCulture)}");
+
         if (header.Always0 != 0)
             throw new Exception(
                 $"Always0: expected to be 0, actual {header.Always0.ToString(CultureInfo.InvariantCulture)}");
