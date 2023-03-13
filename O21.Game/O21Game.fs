@@ -34,10 +34,7 @@ type O21Game(dataDirectory: string) as this =
 
         use batch = new SpriteBatch(this.GraphicsDevice)
         batch.Begin()
-        let mutable i = 0
-        for brick in gameData.Value.Sprites.Bricks.Values do
-            batch.Draw(brick, Rectangle(12*i, 12*i, 12, 12), Color.White)
-            i <- i + 1
+        batch.Draw(gameData.Value.Sprites.Background[0], Rectangle(0, 0, 600, 300), Color.White)
         batch.End()
 
     override _.Dispose disposing =

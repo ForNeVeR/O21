@@ -11,11 +11,14 @@ open O21.Resources
 
 type Sprites = {
     Bricks: Map<int, Texture2D>
+    Background: Texture2D[]
 }
     with
         interface IDisposable with
             member this.Dispose() =
                 for t in this.Bricks.Values do
+                    t.Dispose()
+                for t in this.Background do
                     t.Dispose()
 
 module Sprites =
@@ -52,10 +55,18 @@ module Sprites =
             let transparency = brickGraphics[direction + 10]
             direction, createSprite device colors transparency
         ) |> Map.ofSeq
-
+    
+    let private loadBackgrounds device (backgroundGraphics: Dib[]): Texture2D[] =
+        Array.init backgroundGraphics.Length (fun i ->
+            createSprite device backgroundGraphics[i] backgroundGraphics[i]
+        )
+         
     let LoadFrom(device: GraphicsDevice) (directory: string): Task<Sprites> = task {
         let brickResources = Graphics.Load(Path.Combine(directory, "U95_BRIC.DLL"))
+        let backgrounds = Background.LoadBackgrounds(directory)
+        
         return {
             Bricks = loadBricks device brickResources
+            Background = loadBackgrounds device backgrounds
         }
     }

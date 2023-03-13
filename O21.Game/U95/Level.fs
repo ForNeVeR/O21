@@ -8,9 +8,10 @@ type Level = {
 }
     with 
         static member Load(directory:string) (level:int) (part:int): Task<Level> = task{
-            let parser = Parser(directory);
+            let parser = Parser(directory)
             let level = parser.LoadLevel level part
             return{
                 LevelMap = level;
             }
         }
+

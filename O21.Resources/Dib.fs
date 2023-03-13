@@ -30,7 +30,7 @@ type Dib(dib: byte[]) =
     member val Height = height
     member val Palette = palette
     member val PaletteColorNumber = paletteColorNumber
-
+                                             
     member _.GetPixel(x: int, y: int): RGB =
         let y = height - y - 1 // turn the image upside-down
         if colorDepth = 4us then
@@ -43,5 +43,14 @@ type Dib(dib: byte[]) =
                 if x % 2 = 0
                 then byteValue >>> 4
                 else byteValue &&& 0b1111uy
+            palette[int paletteIndex]
+        else
+        if colorDepth = 8us then
+            let mutable stride = width 
+            if stride % 4 <> 0 then stride <- stride + (4 - stride % 4) 
+            let rowOffset = y * stride
+            let byteIndex = rowOffset + x 
+            let byteValue = dib[headerSize + paletteColorNumber * 4 + byteIndex]
+            let paletteIndex = byteValue >>> 8
             palette[int paletteIndex]
         else failwith $"Unsupported color depth: {colorDepth}"

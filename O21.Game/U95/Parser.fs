@@ -7,6 +7,7 @@ type MapOfLevel =
     | Bomb // random: octopus or bomb
     | Bonus // random bonus
     | None
+    
 type Parser(directory) =
      member private this.readDatFile(level:int) (part:int): string[] = 
         let lines = File.ReadAllLines(Path.Combine(directory, $"U95_{level}_{part}.DAT")) 
