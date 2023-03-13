@@ -44,8 +44,7 @@ type Dib(dib: byte[]) =
                 then byteValue >>> 4
                 else byteValue &&& 0b1111uy
             palette[int paletteIndex]
-        else
-        if colorDepth = 8us then
+        elif colorDepth = 8us then
             let mutable stride = width 
             if stride % 4 <> 0 then stride <- stride + (4 - stride % 4) 
             let rowOffset = y * stride
