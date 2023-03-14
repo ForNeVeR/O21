@@ -137,7 +137,7 @@ Game Resources
 
 - `*.DAT` — game level files in ASCII, see below.
 - `*.WAV` — various sound effects. See below for the function of each file.
-- `*.SCR` — BMP (can be opened by [ImageGlass][image-glass] at least) files with level backgrounds. Seem to be in the BMP format. See [#17][issue.17] on the current progress on figuring out the details.
+- `*.SCR` — BMP files with level backgrounds, see below for their purposes.
 - `U95_BRIC.DLL` — a 16-bit DLL (aka "[Win16 NE][win16-ne]") file with brick graphics in its embedded resources.
 - `U95_PIC.DLL` — a 16-bit DLL file with enemy graphics in its embedded resources
 - `U95.EXE` — the main game executable file. Also a 16-bit NE file containing some game graphics (UI elements, player sprite, bullet sprites, mines and certain enemies, bonus items).
@@ -162,6 +162,16 @@ The `.DAT` files contain the game levels in ASCII. There are three category of c
     - seashell
     - compass
 - `b`: random choice between bomb and four kinds of octopuses.
+
+.SCR Files
+----------
+
+Every `.SCR` file contains a BMP. The files are named according to a pattern `U95_<letter>.SCR`, where `<letter>` is one of:
+
+- `T`: game menu screen
+- `1`–`9`: level numbers
+- `W`: background for upper levels
+- `G`: background for lower levels
 
 Sprite Format
 -------------
@@ -191,7 +201,6 @@ Game Sounds
 
 [archive.u95]: https://archive.org/details/u-95_20230304
 [exe-scope]: http://www.filefacts.com/exescope-info
-[image-glass]: https://imageglass.org/
 [issue.12]: https://github.com/ForNeVeR/O21/issues/12
 [issue.17]: https://github.com/ForNeVeR/O21/issues/17
 [issue.19]: https://github.com/ForNeVeR/O21/issues/19
