@@ -1,10 +1,7 @@
 namespace O21.Game
 
 open Microsoft.Xna.Framework
-open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics;
-
-open O21.Game.U95
 
 type Time = { 
     Total: float32
@@ -59,7 +56,7 @@ type GameState<'World, 'GameData, 'Input>(config: Config, game: Game<_, _, _>) =
         base.Initialize()
 
     override this.LoadContent() =
-        gameData <- game.LoadGameData (this.GraphicsDevice)
+        gameData <- game.LoadGameData this.GraphicsDevice
         base.LoadContent()
 
     override _.Update(gameTime) =
@@ -75,11 +72,13 @@ type GameState<'World, 'GameData, 'Input>(config: Config, game: Game<_, _, _>) =
     override this.Draw(gameTime) =
         let gd = this.GraphicsDevice
         
+        // Render with the original resolution to the render target:
         gd.SetRenderTarget(renderTarget)
         spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp)
         game.Draw spriteBatch gameData world
         spriteBatch.End()
 
+        // Render the render target to the screen (optionally changing the scale of everything):
         gd.SetRenderTarget(null)
         spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp)
         spriteBatch.Draw(renderTarget, onScreenRect, Color.White)
