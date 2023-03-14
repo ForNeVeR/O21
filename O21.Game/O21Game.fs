@@ -13,7 +13,7 @@ module O21Game =
     }
 
     let init (dataDirectory: string) = fun () -> {
-        // TODO: Async commands
+        // TODO[#47]: Async commands
         CurrentLevel = (Level.Load dataDirectory 1 2).Result
     }
 
