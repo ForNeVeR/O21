@@ -41,7 +41,7 @@ public struct DirectoryIndexEntry
         var end = data.Position;
 
         var buffer = new byte[end - start];
-        data.Seek(start, SeekOrigin.Begin);
+        data.Position = start;
         data.ReadExactly(buffer);
 
         return new DirectoryIndexEntry

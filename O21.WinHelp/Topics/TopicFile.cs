@@ -18,15 +18,18 @@ public struct TopicFile
         return new(input, header);
     }
 
-    public IEnumerable<ParagraphHeader> ReadParagraphs()
+    public List<Paragraph> ReadParagraphs()
     {
+        var paragraphs = new List<Paragraph>();
         var ptr = _header.TopicData;
         while (ptr != -1)
         {
-            _data.Seek(ptr, SeekOrigin.Begin);
-            var paragraph = ParagraphHeader.Load(_data);
-            yield return paragraph;
+            _data.Position = ptr;
+            var paragraph = Paragraph.Load(_data);
+            paragraphs.Add(paragraph);
             ptr = paragraph.NextPara;
         }
+
+        return paragraphs;
     }
 }

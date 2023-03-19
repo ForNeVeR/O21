@@ -45,9 +45,9 @@ public struct WinHelpFile
         return new WinHelpFile(input, hfsOffset, firstFreeBlock, entireFileSize);
     }
 
-    public IEnumerable<DirectoryIndexEntry> GetFiles()
+    public DirectoryIndexEntry[] GetFiles()
     {
-        _data.Seek(_hfsOffset, SeekOrigin.Begin);
+        _data.Position = _hfsOffset;
         var hfs = HfsEntry.Load(_data);
         if (hfs.FileType != HfsFileType.Hfs) throw new Exception($"Unexpected root file entry: {hfs.FileType}.");
 
@@ -63,7 +63,7 @@ public struct WinHelpFile
 
     public byte[] ReadFile(DirectoryIndexEntry entry)
     {
-        _data.Seek(entry.FileOffset, SeekOrigin.Begin);
+        _data.Position = entry.FileOffset;
         var file = HfsEntry.Load(_data);
         if (file.FileType != HfsFileType.Normal) throw new Exception($"Abnormal HFS entry type: {file.FileType}.");
 

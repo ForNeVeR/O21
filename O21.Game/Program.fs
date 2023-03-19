@@ -28,9 +28,20 @@ let main(args: string[]): int =
                 use stream = new MemoryStream(bytes)
                 let topic = TopicFile.Load stream
                 printfn " - Topic ok."
-                
+
+                let mutable i = 0
                 for p in topic.ReadParagraphs() do
-                    printfn $" - Paragraph type {p.RecordType} ok."
+                    printfn $" - Paragraph {p} ({p.DataLen1}, {p.DataLen2}) ok."
+
+                    let out1 = outputName + $"{i}.1"
+                    printfn $" - - Paragraph data: {out1}"
+                    File.WriteAllBytes(out1, p.ReadData1())
+
+                    let out2 = outputName + $"{i}.2"
+                    printfn $" - - Paragraph data: {out2}"
+                    File.WriteAllBytes(out2, p.ReadData2())
+
+                    i <- i + 1
 
     | [| dataDir |] ->
         let config = {
