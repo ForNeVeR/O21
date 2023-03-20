@@ -4,7 +4,6 @@ open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 
 open O21.Game.U95
-open O21.Game.U95.Reader
 open O21.Game.U95.Parser
 
 module O21Game =
