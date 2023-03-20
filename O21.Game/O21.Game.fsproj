@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="U95\Fish.fs" />
         <Compile Include="U95\Background.fs" />
         <Compile Include="U95\Sprites.fs" />
         <Compile Include="U95\U95Data.fs" />

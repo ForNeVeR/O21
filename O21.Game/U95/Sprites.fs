@@ -7,11 +7,13 @@ open System.Threading.Tasks
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 
+open O21.Game.U95.Fish
 open O21.Resources
 
 type Sprites = {
     Bricks: Map<int, Texture2D>
     Background: Texture2D[]
+    Fishes: Fish[]
 }
     with
         interface IDisposable with
@@ -60,13 +62,36 @@ module Sprites =
         Array.init backgroundGraphics.Length (fun i ->
             createSprite device backgroundGraphics[i] backgroundGraphics[i]
         )
-         
+        
+    // TODO: calculate indexes
+    let private createFish (index: int) device (fishGraphics: Dib[]): Fish =
+        {
+            LeftDirection = Array.init 8 (fun i ->
+                         createSprite device fishGraphics[index * 9 + i] fishGraphics[index * 9 + i] 
+            )
+            
+            RightDirection = Array.init 8 (fun i ->
+                createSprite device fishGraphics[i+45] fishGraphics[i] 
+            )
+            
+            OnDying = createSprite device fishGraphics[0] fishGraphics[0] 
+        }
+    
+    let private loadFishes device (fishGraphics: Dib[]): Fish[] =
+        Array.init (fishGraphics.Length / 9) ( fun i ->
+            createFish i device fishGraphics
+        )
+
     let LoadFrom(device: GraphicsDevice) (directory: string): Task<Sprites> = task {
         let brickResources = Graphics.Load(Path.Combine(directory, "U95_BRIC.DLL"))
+        
+        let fishes = Graphics.Load(Path.Combine(directory, "U95_PIC.DLL"))
+        
         let backgrounds = Background.LoadBackgrounds(directory)
         
         return {
             Bricks = loadBricks device brickResources
             Background = loadBackgrounds device backgrounds
+            Fishes = loadFishes device fishes
         }
     }
