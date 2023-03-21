@@ -4,9 +4,11 @@ open System
 open Microsoft.Xna.Framework.Graphics
 
 type Fish = {
+    Width: int
+    Height: int
     LeftDirection: Texture2D[]
     RightDirection: Texture2D[]
-    OnDying: Texture2D
+    OnDying: Texture2D[]
 }
     with
         interface IDisposable with
@@ -15,4 +17,5 @@ type Fish = {
                     t.Dispose()
                 for t in this.LeftDirection do
                     t.Dispose()
-                this.OnDying.Dispose()
+                for t in this.OnDying do
+                    t.Dispose()

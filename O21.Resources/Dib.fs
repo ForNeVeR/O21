@@ -35,7 +35,7 @@ type Dib(dib: byte[]) =
         let y = height - y - 1 // turn the image upside-down
         if colorDepth = 1us then
             let mutable stride = width / 8
-            if stride % 4 <> 0 then stride <- stride + (4 - stride % 4)
+            if stride % 8 <> 0 then stride <- stride + (4 - stride % 4)
             let rowOffset = y * stride
             let byteIndex = rowOffset + x / 8
             let byteValue = dib[headerSize + paletteColorNumber * 4 + byteIndex]

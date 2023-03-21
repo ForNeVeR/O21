@@ -63,22 +63,28 @@ module Sprites =
             createSprite device backgroundGraphics[i] backgroundGraphics[i]
         )
         
-    // TODO: calculate indexes
     let private createFish (index: int) device (fishGraphics: Dib[]): Fish =
+        let shift = index * 9
         {
+            Width = fishGraphics[index * 9].Width
+            Height = fishGraphics[index * 9].Height
+            
             LeftDirection = Array.init 8 (fun i ->
-                         createSprite device fishGraphics[index * 9 + i] fishGraphics[index * 9 + i] 
+                createSprite device fishGraphics[shift + i + 45] fishGraphics[shift + i]
             )
             
             RightDirection = Array.init 8 (fun i ->
-                createSprite device fishGraphics[i+45] fishGraphics[i] 
+                createSprite device fishGraphics[shift + i + 135] fishGraphics[shift + i + 90] 
             )
             
-            OnDying = createSprite device fishGraphics[0] fishGraphics[0] 
+            OnDying = [|
+                  createSprite device fishGraphics[shift + 53] fishGraphics[shift + 8];
+                  createSprite device fishGraphics[shift + 143] fishGraphics[shift + 98]
+                  |]
         }
     
     let private loadFishes device (fishGraphics: Dib[]): Fish[] =
-        Array.init (fishGraphics.Length / 9) ( fun i ->
+        Array.init (fishGraphics.Length / 36) ( fun i ->
             createFish i device fishGraphics
         )
 
