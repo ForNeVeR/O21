@@ -1,4 +1,5 @@
-﻿using O21.StreamUtil;
+﻿using System.Text;
+using O21.StreamUtil;
 
 namespace O21.WinHelp.Topics;
 
@@ -52,5 +53,54 @@ public struct Paragraph
         var buffer = new byte[DataLen2];
         Data.ReadExactly(buffer);
         return buffer;
+    }
+
+    public ParagraphItems ReadItems(Encoding encoding)
+    {
+        var data1 = ReadData1();
+        using var data1Stream = new MemoryStream(data1);
+        var header = FormatHeader.Read(data1Stream);
+        var formattingData = data1[^header.FormatSize..];
+
+        var textData = ReadData2();
+        var result = new List<IParagraphItem>();
+
+        int blockBegin = 0, blockEnd = 0;
+        while (blockEnd++ < textData.Length)
+        {
+            if (textData[blockEnd] == 0)
+            {
+                YieldCurrentTextBlock();
+                YieldFormatInfo();
+                blockBegin = blockEnd + 1;
+            }
+        }
+
+        if (blockBegin != blockEnd)
+        {
+            YieldCurrentTextBlock();
+        }
+
+        throw new Exception("TODO");
+
+        // return result;
+
+        void YieldCurrentTextBlock()
+        {
+            var text = encoding.GetString(textData, blockBegin, blockEnd);
+            var textBlock = new ParagraphText(text);
+            result.Add(textBlock);
+        }
+
+        void YieldFormatInfo()
+        {
+            var formatInfo = ReadFormatInfo();
+            result.Add(formatInfo);
+        }
+
+        IParagraphItem ReadFormatInfo()
+        {
+            throw new Exception("TODO");
+        }
     }
 }
