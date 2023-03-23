@@ -1,3 +1,5 @@
+using O21.StreamUtil;
+
 namespace O21.WinHelp.Topics;
 
 [Flags]
@@ -29,10 +31,31 @@ public enum ParagraphBorder
     BoxedBorder = 0x01
 }
 
-public record struct ParagraphSettings(
-    ParagraphSetup Setup,
-    ParagraphBorder? Border
-);
+public struct ParagraphSettings
+{
+    public ParagraphSetup Setup;
+    public ParagraphBorder? Border;
+
+    public static ParagraphSettings Load(Stream data)
+    {
+        ParagraphSettings settings;
+        settings.Setup = (ParagraphSetup)data.ReadInt32Le();
+        if ((settings.Setup & ParagraphSetup.ParagraphBorder) != 0)
+        {
+            var header = data.ReadByteExact();
+            if (header != 0x01) throw new Exception($"Paragraph border header: {header:x}, expected: 0x01.");
+            settings.Border = (ParagraphBorder)data.ReadByteExact();
+            var footer = data.ReadByteExact();
+            if (footer != 0x51) throw new Exception($"Paragraph border footer: {footer:x}, expected: 0x51.");
+        }
+        else
+        {
+            settings.Border = null;
+        }
+
+        return settings;
+    }
+}
 
 public interface IParagraphItem {}
 
@@ -44,7 +67,7 @@ public record struct NewParagraph : IParagraphItem;
 public record struct Tab : IParagraphItem;
 public record struct Bitmap : IParagraphItem; // TODO: Figure out how it works
 
-public record struct ParagraphItems(
+public record ParagraphItems(
     ParagraphSettings Settings,
-    IParagraphItem[] Items
+    IReadOnlyList<IParagraphItem> Items
 );

@@ -61,6 +61,8 @@ public struct Paragraph
         using var data1Stream = new MemoryStream(data1);
         var header = FormatHeader.Read(data1Stream);
         var formattingData = data1[^header.FormatSize..];
+        using var formattingDataStream = new MemoryStream(formattingData);
+        var settings = ParagraphSettings.Load(formattingDataStream);
 
         var textData = ReadData2();
         var result = new List<IParagraphItem>();
@@ -83,7 +85,10 @@ public struct Paragraph
 
         throw new Exception("TODO");
 
-        // return result;
+        return new ParagraphItems(
+            settings,
+            result
+        );
 
         void YieldCurrentTextBlock()
         {
