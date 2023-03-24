@@ -1,3 +1,6 @@
+open System.IO
+open System.Text
+
 open O21.Game
 open O21.Resources
 open O21.WinHelp
@@ -10,6 +13,8 @@ let main(args: string[]): int =
         Graphics.Load inputFile
         |> Graphics.Export outDir
     | [| "help"; inputFile; outDir |] ->
+        Encoding.RegisterProvider CodePagesEncodingProvider.Instance
+
         use input = new FileStream(inputFile, FileMode.Open, FileAccess.Read)
         let file = WinHelpFile.Load input
         for entry in file.GetFiles() do
@@ -40,6 +45,11 @@ let main(args: string[]): int =
                     let out2 = outputName + $"{i}.2"
                     printfn $" - - Paragraph data: {out2}"
                     File.WriteAllBytes(out2, p.ReadData2())
+
+                    let items = p.ReadItems(Encoding.GetEncoding 1251)
+                    printfn $"- - Items: {items.Settings}"
+                    for item in items.Items do
+                        printfn $"- - - {item}"
 
                     i <- i + 1
 
