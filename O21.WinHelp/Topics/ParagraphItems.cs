@@ -62,7 +62,7 @@ public interface IParagraphItem {}
 public record struct ParagraphText(string Text) : IParagraphItem;
 
 public record struct FontChange(ushort FontDescriptor) : IParagraphItem;
-public record struct Newline : IParagraphItem;
+public record struct NewLine : IParagraphItem;
 public record struct NewParagraph : IParagraphItem;
 public record struct Tab : IParagraphItem;
 public record struct Bitmap : IParagraphItem; // TODO: Figure out how it works

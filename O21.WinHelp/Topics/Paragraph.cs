@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using O21.StreamUtil;
 
 namespace O21.WinHelp.Topics;
@@ -64,6 +65,11 @@ public struct Paragraph
         using var formattingDataStream = new MemoryStream(formattingData);
         var settings = ParagraphSettings.Load(formattingDataStream);
 
+        var formattingDataBoundary = formattingDataStream.ReadByteExact();
+        if (formattingDataBoundary != 0)
+            throw new Exception(
+                $"Invalid formatting data boundary: found {formattingDataBoundary.ToString("x", CultureInfo.InvariantCulture)}, expected 0");
+
         var textData = ReadData2();
         var result = new List<IParagraphItem>();
 
@@ -83,7 +89,10 @@ public struct Paragraph
             YieldCurrentTextBlock();
         }
 
-        throw new Exception("TODO");
+        var lastFormattingCommand = formattingDataStream.ReadByteExact();
+        if (lastFormattingCommand != 0xFF)
+            throw new Exception(
+                $"Malformed formatting data: last item is {lastFormattingCommand.ToString("x", CultureInfo.InvariantCulture)}, not FF.");
 
         return new ParagraphItems(
             settings,
@@ -105,7 +114,18 @@ public struct Paragraph
 
         IParagraphItem ReadFormatInfo()
         {
-            throw new Exception("TODO");
+            var command = formattingDataStream.ReadByteExact();
+            return command switch
+            {
+                0x80 => new FontChange(formattingDataStream.ReadUInt16Le()),
+                0x81 => new NewLine(),
+                0x82 => new NewParagraph(),
+                0x83 => new Tab(),
+                0x86 => throw new Exception("TODO: Bitmap current"),
+                // TODO: Other known item types
+                _ => throw new Exception(
+                    $"Unknown formatting command code: {command.ToString("x", CultureInfo.InvariantCulture)}.")
+            };
         }
     }
 }

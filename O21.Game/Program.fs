@@ -46,10 +46,11 @@ let main(args: string[]): int =
                     printfn $" - - Paragraph data: {out2}"
                     File.WriteAllBytes(out2, p.ReadData2())
 
-                    let items = p.ReadItems(Encoding.GetEncoding 1251)
-                    printfn $"- - Items: {items.Settings}"
-                    for item in items.Items do
-                        printfn $"- - - {item}"
+                    if p.RecordType = ParagraphRecordType.TextRecord then
+                        let items = p.ReadItems(Encoding.GetEncoding 1251)
+                        printfn $"- - Items: {items.Settings}"
+                        for item in items.Items do
+                            printfn $"- - - {item}"
 
                     i <- i + 1
 
