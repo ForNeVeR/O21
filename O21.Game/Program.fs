@@ -1,3 +1,4 @@
+open System
 open System.IO
 open System.Text
 
@@ -14,6 +15,7 @@ let main(args: string[]): int =
         |> Graphics.Export outDir
     | [| "help"; inputFile; outDir |] ->
         Encoding.RegisterProvider CodePagesEncodingProvider.Instance
+        Console.OutputEncoding <- Encoding.UTF8
 
         use input = new FileStream(inputFile, FileMode.Open, FileAccess.Read)
         let file = WinHelpFile.Load input

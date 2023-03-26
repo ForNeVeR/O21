@@ -61,20 +61,20 @@ public struct Paragraph
         var data1 = ReadData1();
         using var data1Stream = new MemoryStream(data1);
         var header = FormatHeader.Read(data1Stream);
-        var formattingData = data1[^header.FormatSize..];
-        using var formattingDataStream = new MemoryStream(formattingData);
-        var settings = ParagraphSettings.Load(formattingDataStream);
 
-        var formattingDataBoundary = formattingDataStream.ReadByteExact();
-        if (formattingDataBoundary != 0)
-            throw new Exception(
-                $"Invalid formatting data boundary: found {formattingDataBoundary.ToString("x", CultureInfo.InvariantCulture)}, expected 0");
+        // var formatHeaderBoundary = data1Stream.ReadByteExact();
+        // if (formatHeaderBoundary != 0)
+            // throw new Exception(
+                // $"Invalid format header boundary: found {formatHeaderBoundary.ToString("x", CultureInfo.InvariantCulture)}, expected 0");
+
+        var settings = ParagraphSettings.Load(data1Stream);
+        data1Stream.Position += 2; // just skip 2 bytes, that's it
 
         var textData = ReadData2();
         var result = new List<IParagraphItem>();
 
         int blockBegin = 0, blockEnd = 0;
-        while (blockEnd++ < textData.Length)
+        do
         {
             if (textData[blockEnd] == 0)
             {
@@ -82,17 +82,12 @@ public struct Paragraph
                 YieldFormatInfo();
                 blockBegin = blockEnd + 1;
             }
-        }
+        } while (++blockEnd < textData.Length);
 
         if (blockBegin != blockEnd)
         {
             YieldCurrentTextBlock();
         }
-
-        var lastFormattingCommand = formattingDataStream.ReadByteExact();
-        if (lastFormattingCommand != 0xFF)
-            throw new Exception(
-                $"Malformed formatting data: last item is {lastFormattingCommand.ToString("x", CultureInfo.InvariantCulture)}, not FF.");
 
         return new ParagraphItems(
             settings,
@@ -101,7 +96,8 @@ public struct Paragraph
 
         void YieldCurrentTextBlock()
         {
-            var text = encoding.GetString(textData, blockBegin, blockEnd);
+            if (blockBegin == blockEnd) return;
+            var text = encoding.GetString(textData, blockBegin, blockEnd - blockBegin);
             var textBlock = new ParagraphText(text);
             result.Add(textBlock);
         }
@@ -109,20 +105,23 @@ public struct Paragraph
         void YieldFormatInfo()
         {
             var formatInfo = ReadFormatInfo();
-            result.Add(formatInfo);
+            if (formatInfo != null)
+            {
+                result.Add(formatInfo);
+            }
         }
 
-        IParagraphItem ReadFormatInfo()
+        IParagraphItem? ReadFormatInfo()
         {
-            var command = formattingDataStream.ReadByteExact();
+            var command = data1Stream.ReadByteExact();
             return command switch
             {
-                0x80 => new FontChange(formattingDataStream.ReadUInt16Le()),
+                0x80 => new FontChange(data1Stream.ReadUInt16Le()),
                 0x81 => new NewLine(),
                 0x82 => new NewParagraph(),
                 0x83 => new Tab(),
-                0x86 => throw new Exception("TODO: Bitmap current"),
-                // TODO: Other known item types
+                0x86 => Bitmap.Read(data1Stream, BitmapAlignment.Current),
+                0xff => null,
                 _ => throw new Exception(
                     $"Unknown formatting command code: {command.ToString("x", CultureInfo.InvariantCulture)}.")
             };

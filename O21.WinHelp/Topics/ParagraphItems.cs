@@ -31,6 +31,13 @@ public enum ParagraphBorder
     BoxedBorder = 0x01
 }
 
+public enum BitmapAlignment
+{
+    Current,
+    Left,
+    Right
+}
+
 public struct ParagraphSettings
 {
     public ParagraphSetup Setup;
@@ -65,7 +72,25 @@ public record struct FontChange(ushort FontDescriptor) : IParagraphItem;
 public record struct NewLine : IParagraphItem;
 public record struct NewParagraph : IParagraphItem;
 public record struct Tab : IParagraphItem;
-public record struct Bitmap : IParagraphItem; // TODO: Figure out how it works
+
+public record struct Bitmap(BitmapAlignment Alignment, ushort Number) : IParagraphItem
+{
+    public static Bitmap Read(Stream input, BitmapAlignment alignment)
+    {
+        var subtype = input.ReadByteExact();
+        if (subtype != 0x22) throw new Exception("Bitmap types other than 0x22 are not supported.");
+        if (input.ReadByteExact() != 0x08)  throw new Exception("Bitmap should've been followed by a byte 0x08.");
+        if (input.ReadByteExact() != 0x80)  throw new Exception("Bitmap should've been followed by a byte 0x08.");
+        if (input.ReadByteExact() != 0x02)  throw new Exception("Bitmap should've been followed by a byte 0x02.");
+
+        var embedFlag = input.ReadUInt16Le();
+        if (embedFlag == 1) throw new Exception("Embedded bitmaps are not supported, yet.");
+
+        var bitmapNumber = input.ReadUInt16Le();
+
+        return new Bitmap(alignment, bitmapNumber);
+    }
+}
 
 public record ParagraphItems(
     ParagraphSettings Settings,

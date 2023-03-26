@@ -11,12 +11,12 @@ public struct FormatHeader
     public static FormatHeader Read(Stream input)
     {
         FormatHeader header;
-        header.FormatSize = ReadDoubledValue();
+        header.FormatSize = ReadCompressedValue();
         header.Flags = input.ReadByteExact();
-        header.DataSize = ReadDoubledValue();
+        header.DataSize = ReadCompressedValue();
         return header;
 
-        ushort ReadDoubledValue()
+        ushort ReadCompressedValue()
         {
             checked
             {
