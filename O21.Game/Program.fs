@@ -5,6 +5,7 @@ open System.Text
 open O21.Game
 open O21.Resources
 open O21.WinHelp
+open O21.WinHelp.Fonts
 open O21.WinHelp.Topics
 
 [<EntryPoint>]
@@ -26,12 +27,19 @@ let main(args: string[]): int =
             let bytes = file.ReadFile(entry)
             File.WriteAllBytes(outputName, bytes)
 
-            if entry.FileName = "|SYSTEM" then
+            match entry.FileName with
+            | "|SYSTEM" ->
                 use stream = new MemoryStream(bytes)
                 let header = SystemHeader.Load stream
                 printfn " - SystemHeader ok."
-                
-            if entry.FileName = "|TOPIC" then
+            | "|FONT" ->
+                use stream = new MemoryStream(bytes)
+                let fontFile = FontFile.Load stream
+                printfn " - Font ok."
+
+                for descriptor in fontFile.ReadDescriptors() do
+                    printfn $" - - Font descriptor: {descriptor.Attributes}"
+            | "|TOPIC" ->
                 use stream = new MemoryStream(bytes)
                 let topic = TopicFile.Load stream
                 printfn " - Topic ok."
@@ -55,6 +63,7 @@ let main(args: string[]): int =
                             printfn $"- - - {item}"
 
                     i <- i + 1
+            | _ -> ()
 
     | [| dataDir |] ->
         let config = {
