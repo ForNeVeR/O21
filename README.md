@@ -54,14 +54,20 @@ Acknowledgments
 
 - Thanks to [Nikita Online][nikita] for making such a great game!
 - Thanks to the [OpenSAGE][open-sage] project for some ideas on the wording in the **Legal Disclaimers** section.
+- For the documentation on WinHelp, we'd like to thank:
+  - Pete Davis and Mike Wallace, the authors of [Windows Undocumented File Formats][book.windows-undocumented-file-formats],
+  - Manfred Winterhoff, the author of [the documentation][docs.winhelp],
+  - Paul Wise and other contributors of [helpdeco][].
 
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier#status-zero-
+[book.windows-undocumented-file-formats]: https://a.co/d/dq5fCoj
 [docs.code-of-conduct]: CODE_OF_CONDUCT.md
 [docs.contributing]: CONTRIBUTING.md
 [docs.license]: LICENSE.md
 [docs.resources]: docs/resources.md
+[docs.winhelp]: http://www.oocities.org/mwinterhoff/helpfile.htm
 [fornever]: https://github.com/ForNeVeR/
-[game-progressive]: https://github.com/GameProgressive
+[helpdeco]: https://github.com/pmachapman/helpdeco
 [issues]: https://github.com/ForNeVeR/O21/issues
 [nikita]: https://en.wikipedia.org/wiki/Nikita_Online
 [old-games.u95]: https://www.old-games.ru/game/4676.html
