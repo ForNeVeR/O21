@@ -23,7 +23,6 @@ public struct Paragraph
     public int DataLen1;
     public ParagraphRecordType RecordType;
 
-
     public static Paragraph Load(Stream input)
     {
         return new Paragraph
@@ -60,12 +59,7 @@ public struct Paragraph
     {
         var data1 = ReadData1();
         using var data1Stream = new MemoryStream(data1);
-        var header = FormatHeader.Read(data1Stream);
-
-        // var formatHeaderBoundary = data1Stream.ReadByteExact();
-        // if (formatHeaderBoundary != 0)
-            // throw new Exception(
-                // $"Invalid format header boundary: found {formatHeaderBoundary.ToString("x", CultureInfo.InvariantCulture)}, expected 0");
+        _ = FormatHeader.Read(data1Stream);
 
         var settings = ParagraphSettings.Load(data1Stream);
         data1Stream.Position += 2; // just skip 2 bytes, that's it
