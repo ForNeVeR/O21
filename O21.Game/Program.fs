@@ -20,7 +20,7 @@ let main(args: string[]): int =
 
         use input = new FileStream(inputFile, FileMode.Open, FileAccess.Read)
         let file = WinHelpFile.Load input
-        for entry in file.GetFiles() do
+        for entry in file.GetFiles(Encoding.UTF8) do
             printfn $"%s{entry.FileName}"
             let fileName = entry.FileName.Replace("|", "_")
             let outputName = Path.Combine(outDir, fileName)

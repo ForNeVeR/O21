@@ -11,7 +11,7 @@ public struct BTreeIndexHeader
     public short NextPage;
     public DirectoryIndexEntry[] Entries;
 
-    public static BTreeIndexHeader Load(Stream data)
+    public static BTreeIndexHeader Load(Stream data, Encoding fileNameEncoding)
     {
         BTreeIndexHeader header;
         header.Unused = data.ReadUInt16Le();
@@ -21,7 +21,7 @@ public struct BTreeIndexHeader
 
         header.Entries = new DirectoryIndexEntry[header.NEntries];
         for (var i = 0; i < header.NEntries; ++i)
-            header.Entries[i] = DirectoryIndexEntry.Load(data);
+            header.Entries[i] = DirectoryIndexEntry.Load(data, fileNameEncoding);
 
         return header;
     }
@@ -32,7 +32,7 @@ public struct DirectoryIndexEntry
     public string FileName;
     public int FileOffset;
 
-    public static DirectoryIndexEntry Load(Stream data)
+    public static DirectoryIndexEntry Load(Stream data, Encoding fileNameEncoding)
     {
         var start = data.Position;
         while (data.ReadByte() != 0)
@@ -47,7 +47,7 @@ public struct DirectoryIndexEntry
         return new DirectoryIndexEntry
         {
             // -1 for terminating zero
-            FileName = Encoding.UTF8.GetString(buffer, 0, buffer.Length - 1), // TODO: Figure out the encoding
+            FileName = fileNameEncoding.GetString(buffer, 0, buffer.Length - 1),
             FileOffset = data.ReadInt32Le()
         };
     }

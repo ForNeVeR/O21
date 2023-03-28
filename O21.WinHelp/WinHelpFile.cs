@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using O21.StreamUtil;
 
 namespace O21.WinHelp;
@@ -45,7 +46,7 @@ public struct WinHelpFile
         return new WinHelpFile(input, hfsOffset, firstFreeBlock, entireFileSize);
     }
 
-    public DirectoryIndexEntry[] GetFiles()
+    public DirectoryIndexEntry[] GetFiles(Encoding fileNameEncoding)
     {
         _data.Position = _hfsOffset;
         var hfs = HfsEntry.Load(_data);
@@ -57,7 +58,7 @@ public struct WinHelpFile
         if (bTreeHeader.NLevels != 1) throw new Exception($"NLevels = {bTreeHeader.NLevels} is not expected 1.");
         if (bTreeHeader.RootPage != 0) throw new Exception($"RootPage = {bTreeHeader.RootPage} is not expected 0.");
 
-        var bTreeIndexHeader = BTreeIndexHeader.Load(_data);
+        var bTreeIndexHeader = BTreeIndexHeader.Load(_data, fileNameEncoding);
         return bTreeIndexHeader.Entries;
     }
 
