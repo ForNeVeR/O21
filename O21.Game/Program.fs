@@ -3,6 +3,7 @@ open System.IO
 open System.Text
 
 open O21.Game
+open O21.MRB
 open O21.Resources
 open O21.WinHelp
 open O21.WinHelp.Fonts
@@ -28,6 +29,15 @@ let main(args: string[]): int =
             File.WriteAllBytes(outputName, bytes)
 
             match entry.FileName with
+            | x when x.StartsWith "|bm" ->
+                use stream = new MemoryStream(bytes)
+                let file = MrbFile.Load stream
+                if file.ImageCount <> 1s then
+                    failwith "Invalid image count."
+
+                let image = file.ReadImage 0
+
+                printfn $" - MRB ok: {image.Type}"
             | "|SYSTEM" ->
                 use stream = new MemoryStream(bytes)
                 let header = SystemHeader.Load stream

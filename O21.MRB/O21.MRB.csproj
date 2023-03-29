@@ -5,11 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-    
+
     <ItemGroup>
-        <InternalsVisibleTo Include="O21.MRB" />
-        <InternalsVisibleTo Include="O21.NE" />
-        <InternalsVisibleTo Include="O21.WinHelp" />
+      <ProjectReference Include="..\O21.StreamUtil\O21.StreamUtil.csproj" />
     </ItemGroup>
 
 </Project>

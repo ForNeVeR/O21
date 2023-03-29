@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\O21.MRB\O21.MRB.csproj" />
       <ProjectReference Include="..\O21.Resources\O21.Resources.fsproj" />
       <ProjectReference Include="..\O21.WinHelp\O21.WinHelp.csproj" />
     </ItemGroup>
