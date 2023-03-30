@@ -10,4 +10,8 @@
       <ProjectReference Include="..\O21.StreamUtil\O21.StreamUtil.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Oxage.Wmf" Version="0.5.0" />
+    </ItemGroup>
+
 </Project>

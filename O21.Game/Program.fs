@@ -37,7 +37,9 @@ let main(args: string[]): int =
 
                 let image = file.ReadImage 0
 
-                printfn $" - MRB ok: {image.Type}"
+                printfn $" - MRB ok: {image.Type} {image.Compression}"
+                let document = file.ReadWmfDocument image
+                printfn $" - Data ok"
             | "|SYSTEM" ->
                 use stream = new MemoryStream(bytes)
                 let header = SystemHeader.Load stream

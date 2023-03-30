@@ -11,24 +11,9 @@ public struct FormatHeader
     public static FormatHeader Read(Stream input)
     {
         FormatHeader header;
-        header.FormatSize = ReadCompressedValue();
+        header.FormatSize = input.ReadCompressedUInt16();
         header.Flags = input.ReadByteExact();
-        header.DataSize = ReadCompressedValue();
+        header.DataSize = input.ReadCompressedUInt16();
         return header;
-
-        ushort ReadCompressedValue()
-        {
-            checked
-            {
-                var value = (ushort)input.ReadByteExact();
-                if ((value & 1) != 0)
-                {
-                    var highByte = input.ReadByteExact();
-                    value |= (ushort)(highByte << 8);
-                }
-
-                return (ushort)(value / 2);
-            }
-        }
     }
 }

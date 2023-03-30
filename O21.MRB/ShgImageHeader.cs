@@ -20,28 +20,15 @@ public struct ShgImageHeader
     public ImageType Type;
     public CompressionType Compression;
     public ushort Dpi;
+    public long DataOffset;
 
     public static ShgImageHeader Read(Stream input)
     {
         ShgImageHeader header;
         header.Type = (ImageType)input.ReadByteExact();
         header.Compression = (CompressionType)input.ReadByteExact();
-        header.Dpi = ReadCompressedValue();
+        header.Dpi = input.ReadCompressedUInt16();
+        header.DataOffset = input.Position;
         return header;
-
-        ushort ReadCompressedValue()
-        {
-            checked
-            {
-                var value = (ushort)input.ReadByteExact();
-                if ((value & 1) != 0)
-                {
-                    var highByte = input.ReadByteExact();
-                    value |= (ushort)(highByte << 8);
-                }
-
-                return (ushort)(value / 2);
-            }
-        }
     }
 }
