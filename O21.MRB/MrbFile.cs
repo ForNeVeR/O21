@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using O21.StreamUtil;
 using Oxage.Wmf;
 
@@ -55,10 +54,13 @@ public class MrbFile
         result.Position = result.Length;
         result.WriteUInt16Le(checksum);
 
-        // TODO: Decompress data from RLE and put it into the file
+        if (imageHeader.Compression != CompressionType.Rle)
+            throw new Exception($"Compression type {imageHeader.Compression} is not supported.");
 
+        DecompressRle(metafileHeader.CompressedDataSize, result);
+
+        result.Position = 0;
         var doc = new WmfDocument();
-        result.Position = 0L;
         doc.Load(result);
         return doc;
 
@@ -82,6 +84,34 @@ public class MrbFile
 
             stream.Position = position;
             return sum;
+        }
+    }
+
+    public void DecompressRle(uint compressedDataSize, Stream output)
+    {
+        var bytesRead = 0;
+        while (bytesRead < compressedDataSize)
+        {
+            var count = _input.ReadByteExact();
+            ++bytesRead;
+            if ((count & 0x80) != 0)
+            {
+                count -= 0x80;
+                while (count-- > 0)
+                {
+                    var data = _input.ReadByteExact();
+                    ++bytesRead;
+                    output.WriteByte(data);
+                }
+            }
+            else
+            {
+                count = (byte)(count & 0x7F);
+                var data = _input.ReadByteExact();
+                ++bytesRead;
+                for (var i = 0; i < count; ++i)
+                    output.WriteByte(data);
+            }
         }
     }
 }
