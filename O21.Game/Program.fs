@@ -2,6 +2,8 @@ open System
 open System.IO
 open System.Text
 
+open Oxage.Wmf.Records
+
 open O21.Game
 open O21.MRB
 open O21.Resources
@@ -21,6 +23,7 @@ let main(args: string[]): int =
 
         use input = new FileStream(inputFile, FileMode.Open, FileAccess.Read)
         let file = WinHelpFile.Load input
+        let dibs = ResizeArray()
         for entry in file.GetFiles(Encoding.UTF8) do
             printfn $"%s{entry.FileName}"
             let fileName = entry.FileName.Replace("|", "_")
@@ -39,7 +42,18 @@ let main(args: string[]): int =
 
                 printfn $" - MRB ok: {image.Type} {image.Compression}"
                 let document = file.ReadWmfDocument image
-                printfn $" - Data ok"
+                let record =
+                    document.Records
+                    |> Seq.filter (fun x -> x :? WmfStretchDIBRecord)
+                    |> Seq.exactlyOne
+                    :?> WmfStretchDIBRecord
+
+                use stream = new MemoryStream()
+                use writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen = true)
+                record.DIB.Write writer
+
+                let dib = Dib <| stream.ToArray()
+                dibs.Add dib
             | "|SYSTEM" ->
                 use stream = new MemoryStream(bytes)
                 let header = SystemHeader.Load stream
@@ -76,6 +90,8 @@ let main(args: string[]): int =
 
                     i <- i + 1
             | _ -> ()
+
+            Graphics.Export outDir dibs
 
     | [| dataDir |] ->
         let config = {

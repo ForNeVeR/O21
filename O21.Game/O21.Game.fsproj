@@ -6,26 +6,26 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="U95\Fish.fs" />
-        <Compile Include="U95\Background.fs" />
-        <Compile Include="U95\Sprites.fs" />
-        <Compile Include="U95\U95Data.fs" />
-        <Compile Include="U95\Parser.fs" />
-        <Compile Include="U95\Level.fs" />
-        <Compile Include="Game.fs" />
-        <Compile Include="Input.fs" />
-        <Compile Include="O21Game.fs" />
-        <Compile Include="Program.fs" />
+        <Compile Include="U95\Fish.fs"/>
+        <Compile Include="U95\Background.fs"/>
+        <Compile Include="U95\Sprites.fs"/>
+        <Compile Include="U95\U95Data.fs"/>
+        <Compile Include="U95\Parser.fs"/>
+        <Compile Include="U95\Level.fs"/>
+        <Compile Include="Game.fs"/>
+        <Compile Include="Input.fs"/>
+        <Compile Include="O21Game.fs"/>
+        <Compile Include="Program.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\O21.MRB\O21.MRB.csproj" />
-      <ProjectReference Include="..\O21.Resources\O21.Resources.fsproj" />
-      <ProjectReference Include="..\O21.WinHelp\O21.WinHelp.csproj" />
+        <ProjectReference Include="..\O21.MRB\O21.MRB.csproj"/>
+        <ProjectReference Include="..\O21.Resources\O21.Resources.fsproj"/>
+        <ProjectReference Include="..\O21.WinHelp\O21.WinHelp.csproj"/>
     </ItemGroup>
 
 </Project>
