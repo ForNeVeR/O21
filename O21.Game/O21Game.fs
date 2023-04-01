@@ -7,17 +7,17 @@ open O21.Game.U95
 
 module O21Game =
     let init (dataDirectory: string) = fun () -> {
-        Scene = MainMenu
+        Scene = MainMenuScene()
         // TODO[#47]: Async commands
         CurrentLevel = (Level.Load dataDirectory 1 2).Result
     }
 
     let update (input: Input) (time: Time) (world: GameWorld) =
-        GameWorld.Update world input time
+        world.Scene.Update world input time
 
     let draw (batch: SpriteBatch) (gameData: U95Data) (world: GameWorld) =
         batch.GraphicsDevice.Clear(Color.White)
-        GameWorld.Render world batch gameData
+        world.Scene.Render batch gameData world
 
     let game (dataDirectory: string) = {
         LoadGameData = fun gd ->

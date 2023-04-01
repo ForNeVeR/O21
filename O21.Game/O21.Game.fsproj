@@ -12,9 +12,13 @@
         <Compile Include="U95\U95Data.fs" />
         <Compile Include="U95\Parser.fs" />
         <Compile Include="U95\Level.fs" />
+        <Compile Include="GameData.fs" />
         <Compile Include="Game.fs" />
         <Compile Include="Input.fs" />
         <Compile Include="GameWorld.fs" />
+        <Compile Include="Scenes\Button.fs" />
+        <Compile Include="Scenes\PlayScene.fs" />
+        <Compile Include="Scenes\MainMenuScene.fs" />
         <Compile Include="O21Game.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>

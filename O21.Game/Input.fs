@@ -1,10 +1,15 @@
 namespace O21.Game
 
+open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 
 type Key = Left | Right | Up | Down | Fire
 
-type Input = { Pressed: Key list }
+type Input = {
+    Pressed: Key list
+    MouseCoords: Point
+    MouseButtonPressed: bool
+}
 
 module Input =
     let keyBindings =
@@ -20,5 +25,9 @@ module Input =
         let keys = 
             [ for KeyValue(k, v) in keyBindings do
                 if keyboard.IsKeyDown(k) then yield v ]
-            
-        { Pressed = keys }
+
+        let mouse = Mouse.GetState()
+
+        { Pressed = keys
+          MouseCoords = mouse.Position
+          MouseButtonPressed = mouse.LeftButton = ButtonState.Pressed }
