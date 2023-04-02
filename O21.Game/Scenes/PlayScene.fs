@@ -7,7 +7,7 @@ open O21.Game
 open O21.Game.U95
 open O21.Game.U95.Parser
 
-type PlayScene =
+type PlayScene() =
     interface IGameScene with
         member this.Update world _ _ =
             world

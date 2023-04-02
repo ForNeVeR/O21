@@ -20,7 +20,7 @@ module Input =
               Keys.Right, Right
               Keys.Space, Fire ]
     
-    let handle(): Input =
+    let handle(scale: int): Input =
         let keyboard = Keyboard.GetState()
         let keys = 
             [ for KeyValue(k, v) in keyBindings do
@@ -29,5 +29,5 @@ module Input =
         let mouse = Mouse.GetState()
 
         { Pressed = keys
-          MouseCoords = mouse.Position
+          MouseCoords = Point(mouse.Position.X / scale, mouse.Position.Y / scale)
           MouseButtonPressed = mouse.LeftButton = ButtonState.Pressed }

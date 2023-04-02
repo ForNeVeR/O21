@@ -8,6 +8,7 @@
     <PropertyGroup>
         <UseMgcbTool>false</UseMgcbTool>
         <MGCBPath>mgcb</MGCBPath>
+        <MgcbDoRebuild>true</MgcbDoRebuild>
     </PropertyGroup>
     <ItemGroup>
         <MgcbItem Include="Resources\Inter.spritefont">
@@ -38,6 +39,7 @@
         <Compile Include="GameWorld.fs" />
         <Compile Include="Scenes\Button.fs" />
         <Compile Include="Scenes\PlayScene.fs" />
+        <Compile Include="Scenes\HelpScene.fs" />
         <Compile Include="Scenes\MainMenuScene.fs" />
         <Compile Include="O21Game.fs" />
         <Compile Include="Program.fs" />

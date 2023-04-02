@@ -22,7 +22,7 @@ type Config = {
 type Game<'World, 'GameData, 'Input> = {
     LoadGameData: GraphicsDevice -> 'GameData
     Init: ContentManager -> 'World
-    HandleInput: unit -> 'Input
+    HandleInput: int -> 'Input
     Update: 'Input -> Time -> 'World -> 'World
     Draw: SpriteBatch -> 'GameData -> 'World -> unit
 }
@@ -37,6 +37,7 @@ type GameState<'World, 'GameData, 'Input>(config: Config, game: Game<_, _, _>) =
     let mutable world = Unchecked.defaultof<'World>
     let mutable gameData = Unchecked.defaultof<'GameData>
     let mutable input = Unchecked.defaultof<'Input>
+    let mutable scale = Unchecked.defaultof<int>
 
     override this.Initialize() =
         this.IsMouseVisible <- true
@@ -47,7 +48,7 @@ type GameState<'World, 'GameData, 'Input>(config: Config, game: Game<_, _, _>) =
         renderTarget <- new RenderTarget2D(gd, config.GameWidth, config.GameHeight)
         let screenWidth = gd.PresentationParameters.BackBufferWidth;
         let screenHeight = gd.PresentationParameters.BackBufferHeight;
-        let scale = min (screenWidth/config.GameWidth) (screenHeight/config.GameHeight)
+        scale <- min (screenWidth/config.GameWidth) (screenHeight/config.GameHeight)
         let width = scale * config.GameWidth
         let height = scale * config.GameHeight
         onScreenRect <- Rectangle(screenWidth/2 - width/2, screenHeight/2 - height/2,
@@ -66,8 +67,8 @@ type GameState<'World, 'GameData, 'Input>(config: Config, game: Game<_, _, _>) =
             Total = gameTime.TotalGameTime.TotalSeconds |> float32
             Delta = gameTime.ElapsedGameTime.TotalSeconds |> float32 
         }
-        
-        input <- game.HandleInput()
+
+        input <- game.HandleInput scale
         world <- game.Update input time world
         base.Update(gameTime)
 

@@ -9,8 +9,8 @@ type MainMenuScene = {
 }
     with
         static member Init(data: GameContent): MainMenuScene = {
-            PlayButton = Button.Create data.UiFont "Play" <| Vector2(0f, 0f)
-            HelpButton = Button.Create data.UiFont "Help" <| Vector2(0f, 50f)
+            PlayButton = Button.Create data.UiFont "Play" <| Vector2(0f, 00f)
+            HelpButton = Button.Create data.UiFont "Help" <| Vector2(0f, 20f)
         }
 
         member private this.Widgets = [| this.PlayButton; this.HelpButton |]
@@ -21,10 +21,15 @@ type MainMenuScene = {
                     widget.Render batch
 
             member this.Update world input _ =
+                let scene =
+                    { this with
+                        PlayButton = this.PlayButton.Update input
+                        HelpButton = this.HelpButton.Update input
+                    }
+                let scene: IGameScene =
+                    if scene.PlayButton.State = ButtonState.Clicked then PlayScene()
+                    elif scene.HelpButton.State = ButtonState.Clicked then HelpScene()
+                    else scene
                 { world with
-                    Scene =
-                        { this with
-                            PlayButton = this.HelpButton.Update input
-                            HelpButton = this.HelpButton.Update input
-                        }
+                    Scene = scene
                 }
