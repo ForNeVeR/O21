@@ -23,7 +23,20 @@
         <Compile Include="Program.fs" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <MgcbDoRebuild>true</MgcbDoRebuild>
+    </PropertyGroup>
     <ItemGroup>
+        <MgcbItem Include="Resources\Inter-Regular.spritefont">
+            <Importer>FontDescriptionImporter</Importer>
+            <Processor>FontDescriptionProcessor</Processor>
+            <Processor_PremultiplyAlpha>True</Processor_PremultiplyAlpha>
+            <Processor_TextureFormat>Compressed</Processor_TextureFormat>
+        </MgcbItem>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MonoGame.Content.MSBuilder.Task" Version="1.0.0" />
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
     </ItemGroup>
 
