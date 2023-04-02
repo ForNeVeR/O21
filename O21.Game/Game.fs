@@ -2,7 +2,7 @@ namespace O21.Game
 
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Content
-open Microsoft.Xna.Framework.Graphics;
+open Microsoft.Xna.Framework.Graphics
 
 type Time = { 
     Total: float32
@@ -39,6 +39,7 @@ type GameState<'World, 'GameData, 'Input>(config: Config, game: Game<_, _, _>) =
     let mutable input = Unchecked.defaultof<'Input>
 
     override this.Initialize() =
+        this.IsMouseVisible <- true
         this.Window.Title <- config.Title
 
         let gd = this.GraphicsDevice

@@ -5,13 +5,25 @@
         <TargetFramework>net7.0</TargetFramework>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <UseMgcbTool>false</UseMgcbTool>
+        <MGCBPath>mgcb</MGCBPath>
+    </PropertyGroup>
     <ItemGroup>
-        <None Include="Resources\Inter.spritefont" />
+        <MgcbItem Include="Resources\Inter.spritefont">
+            <Importer>FontDescriptionImporter</Importer>
+            <Processor>FontDescriptionProcessor</Processor>
+            <Processor_PremultiplyAlpha>false</Processor_PremultiplyAlpha>
+            <Processor_TextureFormat>Compressed</Processor_TextureFormat>
+        </MgcbItem>
         <None Include="Resources\Inter-Regular.otf" />
         <None Include="Resources\LICENSE.txt" />
         <None Include="Resources\README.md" />
-        <MonoGameContentReference Include="Resources\Content.mgcb" />
     </ItemGroup>
+    
+    <Target Name="DotNetToolRestore" BeforeTargets="RunMgcbMSBuilder">
+        <Exec Command="dotnet tool restore" />
+    </Target>
     
     <ItemGroup>
         <Compile Include="U95\Fish.fs" />
@@ -32,7 +44,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+        <PackageReference Include="MonoGame.Content.MSBuilder.Task" Version="1.0.0" />
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
     </ItemGroup>
 
