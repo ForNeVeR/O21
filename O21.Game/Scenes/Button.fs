@@ -5,6 +5,7 @@ open Microsoft.Xna.Framework.Graphics
 
 open O21.Game
 
+[<RequireQualifiedAccess>]
 type ButtonState = Default | Hover | Clicked
 
 type Button = {
@@ -17,6 +18,13 @@ type Button = {
     static member HoverColor = Color.DarkGray
     static member ClickedColor = Color.Black
 
+    static member Create (font: SpriteFont) (text: string) (position: Vector2): Button = {
+        Font = font
+        Text = text
+        Position = position
+        State = ButtonState.Default
+    }
+
     member private this.Rectangle =
         let size = this.Font.MeasureString(this.Text)
         Rectangle(int this.Position.X, int this.Position.Y, int size.X, int size.Y)
@@ -24,9 +32,9 @@ type Button = {
     member this.Render(batch: SpriteBatch): unit =
         let color =
             match this.State with
-            | Default -> Button.DefaultColor
-            | Hover -> Button.HoverColor
-            | Clicked -> Button.ClickedColor
+            | ButtonState.Default -> Button.DefaultColor
+            | ButtonState.Hover -> Button.HoverColor
+            | ButtonState.Clicked -> Button.ClickedColor
         batch.DrawString(
             this.Font,
             this.Text,
@@ -38,9 +46,9 @@ type Button = {
         let state =
             if this.Rectangle.Contains input.MouseCoords then
                 if input.MouseButtonPressed then
-                    Clicked
+                    ButtonState.Clicked
                 else
-                    Hover
+                    ButtonState.Hover
             else
-                Default
+                ButtonState.Default
         { this with State = state }

@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 		.gitignore = .gitignore
 		CONTRIBUTING.md = CONTRIBUTING.md
+		.gitmodules = .gitmodules
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{85EB6EE2-17F9-4087-885A-7372F988DADF}"

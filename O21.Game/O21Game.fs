@@ -1,14 +1,16 @@
 namespace O21.Game
 
 open Microsoft.Xna.Framework
+open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics
 
+open O21.Game.Scenes
 open O21.Game.U95
 
 module O21Game =
-    let init (dataDirectory: string) = fun () -> {
-        Scene = MainMenuScene()
+    let init (dataDirectory: string) (contentManager: ContentManager) ={
         // TODO[#47]: Async commands
+        Scene = MainMenuScene.Init(GameContent.Load contentManager)
         CurrentLevel = (Level.Load dataDirectory 1 2).Result
     }
 

@@ -1,6 +1,7 @@
 namespace O21.Game
 
 open Microsoft.Xna.Framework
+open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics;
 
 type Time = { 
@@ -20,7 +21,7 @@ type Config = {
     
 type Game<'World, 'GameData, 'Input> = {
     LoadGameData: GraphicsDevice -> 'GameData
-    Init: unit -> 'World
+    Init: ContentManager -> 'World
     HandleInput: unit -> 'Input
     Update: 'Input -> Time -> 'World -> 'World
     Draw: SpriteBatch -> 'GameData -> 'World -> unit
@@ -52,7 +53,7 @@ type GameState<'World, 'GameData, 'Input>(config: Config, game: Game<_, _, _>) =
                                   width, height)
         
         spriteBatch <- new SpriteBatch(this.GraphicsDevice)
-        world <- game.Init()
+        world <- game.Init this.Content
         base.Initialize()
 
     override this.LoadContent() =

@@ -6,13 +6,21 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <None Include="Resources\Inter.spritefont" />
+        <None Include="Resources\Inter-Regular.otf" />
+        <None Include="Resources\LICENSE.txt" />
+        <None Include="Resources\README.md" />
+        <MonoGameContentReference Include="Resources\Content.mgcb" />
+    </ItemGroup>
+    
+    <ItemGroup>
         <Compile Include="U95\Fish.fs" />
         <Compile Include="U95\Background.fs" />
         <Compile Include="U95\Sprites.fs" />
         <Compile Include="U95\U95Data.fs" />
         <Compile Include="U95\Parser.fs" />
         <Compile Include="U95\Level.fs" />
-        <Compile Include="GameData.fs" />
+        <Compile Include="GameContent.fs" />
         <Compile Include="Game.fs" />
         <Compile Include="Input.fs" />
         <Compile Include="GameWorld.fs" />
@@ -23,20 +31,8 @@
         <Compile Include="Program.fs" />
     </ItemGroup>
 
-    <PropertyGroup>
-        <MgcbDoRebuild>true</MgcbDoRebuild>
-    </PropertyGroup>
     <ItemGroup>
-        <MgcbItem Include="Resources\Inter-Regular.spritefont">
-            <Importer>FontDescriptionImporter</Importer>
-            <Processor>FontDescriptionProcessor</Processor>
-            <Processor_PremultiplyAlpha>True</Processor_PremultiplyAlpha>
-            <Processor_TextureFormat>Compressed</Processor_TextureFormat>
-        </MgcbItem>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="MonoGame.Content.MSBuilder.Task" Version="1.0.0" />
+        <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
     </ItemGroup>
 

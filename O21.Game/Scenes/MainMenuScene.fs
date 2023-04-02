@@ -1,5 +1,6 @@
 namespace O21.Game.Scenes
 
+open Microsoft.Xna.Framework
 open O21.Game
 
 type MainMenuScene = {
@@ -7,9 +8,9 @@ type MainMenuScene = {
     HelpButton: Button
 }
     with
-        static member Init = {
-            PlayButton = Button("Play")
-            HelpButton = Button("Help")
+        static member Init(data: GameContent): MainMenuScene = {
+            PlayButton = Button.Create data.UiFont "Play" <| Vector2(0f, 0f)
+            HelpButton = Button.Create data.UiFont "Help" <| Vector2(0f, 50f)
         }
 
         member private this.Widgets = [| this.PlayButton; this.HelpButton |]
@@ -19,7 +20,7 @@ type MainMenuScene = {
                 for widget in this.Widgets do
                     widget.Render batch
 
-            member this.Update world _ _ =
+            member this.Update world input _ =
                 { world with
                     Scene =
                         { this with
