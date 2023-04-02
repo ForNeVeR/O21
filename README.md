@@ -47,6 +47,7 @@ Documentation
 - [Contributor Guide][docs.contributing]
   - [Original Game Resources][docs.resources]
 - [License (MIT)][docs.license]
+- [Inter Font License (SIL)][docs.inter-font-license]
 - [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
 
 Acknowledgments
@@ -75,3 +76,4 @@ Acknowledgments
 [status-zero]: https://img.shields.io/badge/status-zero-lightgrey.svg
 [wikipedia.o21]: https://en.wikipedia.org/wiki/HNLMS_O_21
 [wikipedia.u-95]: https://en.wikipedia.org/wiki/German_submarine_U-95_(1940)
+[docs.inter-font-license]: O21.Game/Resources/LICENSE.txt
