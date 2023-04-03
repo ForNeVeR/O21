@@ -14,13 +14,16 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="U95\Fish.fs"/>
         <Compile Include="U95\Background.fs"/>
+        <Compile Include="U95\HUDSprites.fs"/>
+        <Compile Include="U95\Fish.fs"/>
         <Compile Include="U95\Sprites.fs"/>
         <Compile Include="U95\U95Data.fs"/>
         <Compile Include="U95\Parser.fs"/>
         <Compile Include="U95\Level.fs"/>
         <Compile Include="GameContent.fs"/>
+        <Compile Include="HUDRenderer.fs"/>
+        <Compile Include="HUD.fs"/>
         <Compile Include="Game.fs"/>
         <Compile Include="Input.fs"/>
         <Compile Include="GameWorld.fs"/>

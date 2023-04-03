@@ -13,8 +13,10 @@ type PlayScene() =
             world
 
         member _.Render (batch: SpriteBatch) (gameData: U95Data) (world: GameWorld) =
-            batch.Draw(gameData.Sprites.Background[1], Rectangle(0, 0, 600, 300), Color.White)
-
+            batch.Draw(gameData.Sprites.Background[1], Rectangle(0, 0, 600, 300), Color.White)         
+            let hud = HUD()
+            hud.Init(gameData.Sprites.HUD, batch)
+            hud.UpdateScore(100, batch)
             let map = world.CurrentLevel.LevelMap
             for i = 0 to map.Length-1 do
                 for j = 0 to map[i].Length-1 do
@@ -25,5 +27,5 @@ type PlayScene() =
                         ()
             for i = 0 to gameData.Sprites.Fishes.Length-1 do
                 batch.Draw(gameData.Sprites.Fishes[i].LeftDirection[i], Rectangle(60*i, 60*i,
-                                                                        gameData.Sprites.Fishes[i].Height,
-                                                                        gameData.Sprites.Fishes[i].Width), Color.White)
+                                                                        gameData.Sprites.Fishes[i].Width,
+                                                                        gameData.Sprites.Fishes[i].Height), Color.White)
