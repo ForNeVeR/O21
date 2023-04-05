@@ -5,18 +5,26 @@ open System.Text
 open System.Threading.Tasks
 open O21.Game.Documents
 open O21.WinHelp
+open O21.WinHelp.Fonts
 open O21.WinHelp.Topics
 
-let private convertParagraph item: IDocumentFragment =
+let private loadFontDescriptors(content: byte[]) =
+    use stream = new MemoryStream(content)
+    let fontFile = FontFile.Load(stream)
+    fontFile.ReadDescriptors()
+
+let private convertParagraph fonts (item: IParagraphItem): IDocumentFragment =
     match item with
+    | :? FontChange -> failwith "TODO: Process font change and apply to the next block"
     | _ -> failwith $"Unknown help paragraph item: {item}"
 
-let private loadTopic encoding (content: byte[]) =
+let private loadTopic encoding fonts (content: byte[]) =
     use stream = new MemoryStream(content)
     TopicFile.Load(stream).ReadParagraphs()
     |> Seq.filter(fun p -> p.RecordType = ParagraphRecordType.TextRecord)
     |> Seq.collect(fun p -> p.ReadItems(encoding).Items)
-    |> Seq.map convertParagraph
+    |> Seq.map(convertParagraph fonts)
+    |> Seq.toArray
 
 let Load(helpFile: string): Task<IDocumentFragment[]> = task {
     use input = new FileStream(helpFile, FileMode.Open, FileAccess.Read)
@@ -26,10 +34,13 @@ let Load(helpFile: string): Task<IDocumentFragment[]> = task {
         |> Seq.map(fun d -> d.FileName, d)
         |> Map.ofSeq
 
-    let fileNameEncoding = Encoding.GetEncoding 1251 // TODO: Extract from config
+    let fonts =
+        helpFile.ReadFile files["|FONT"]
+        |> loadFontDescriptors
 
+    let contentEncoding = Encoding.GetEncoding 1251 // TODO: Extract from config
     return
         helpFile.ReadFile files["|TOPIC"]
-        |> loadTopic fileNameEncoding
+        |> loadTopic contentEncoding fonts
         |> Seq.toArray
 }

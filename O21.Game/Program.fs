@@ -13,12 +13,13 @@ open O21.WinHelp.Topics
 
 [<EntryPoint>]
 let main(args: string[]): int =
+    Encoding.RegisterProvider CodePagesEncodingProvider.Instance
+
     match args with
     | [| "export"; inputFile; outDir |] ->
         Graphics.Load inputFile
         |> Graphics.Export outDir
     | [| "help"; inputFile; outDir |] ->
-        Encoding.RegisterProvider CodePagesEncodingProvider.Instance
         Console.OutputEncoding <- Encoding.UTF8
 
         use input = new FileStream(inputFile, FileMode.Open, FileAccess.Read)

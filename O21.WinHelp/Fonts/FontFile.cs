@@ -16,7 +16,7 @@ public class FontFile
         return new FontFile(stream, header);
     }
 
-    public unsafe FontDescriptor[] ReadDescriptors()
+    public FontDescriptor[] ReadDescriptors()
     {
         _data.Position = _header.DescriptorsOffset;
         var result = new FontDescriptor[_header.NumDescriptors];
