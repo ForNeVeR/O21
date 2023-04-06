@@ -9,7 +9,7 @@ open O21.Game.Documents
 
 type U95Data = {
     Sprites: Sprites
-    Help: IDocumentFragment[]
+    Help: DocumentFragment[]
 }
     with
         static member Load (device: GraphicsDevice) (directory: string): Task<U95Data> = task {
