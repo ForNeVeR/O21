@@ -33,6 +33,8 @@ let private convertParagraphs (fonts: FontDescriptor[]) (items: IParagraphItem s
         | :? ParagraphText as pc ->
             yield DocumentFragment.Text(style currentFont, pc.Text)
             currentFont <- None
+        | :? NewParagraph ->
+            yield DocumentFragment.NewParagraph
         | _ -> failwith $"Unknown paragraph item: {item}"
 }
 

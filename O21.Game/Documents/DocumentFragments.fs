@@ -6,4 +6,5 @@ type Style =
 
 [<RequireQualifiedAccess>]
 type DocumentFragment =
-    Text of Style * string
+    | Text of Style * string
+    | NewParagraph
