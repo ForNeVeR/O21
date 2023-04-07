@@ -5,9 +5,12 @@ open System.Text
 open System.Threading.Tasks
 
 open O21.Game.Documents
+open O21.MRB
+open O21.Resources
 open O21.WinHelp
 open O21.WinHelp.Fonts
 open O21.WinHelp.Topics
+open Oxage.Wmf.Records
 
 let private loadFontDescriptors(content: byte[]) =
     use stream = new MemoryStream(content)
@@ -22,7 +25,7 @@ let private style = function
         | FontAttributes.Normal -> Style.Normal
         | _ -> failwith $"Unknown font attributes: {font.Attributes}"
 
-let private convertParagraphs (fonts: FontDescriptor[]) (items: IParagraphItem seq) = seq {
+let private convertParagraphs (fonts: FontDescriptor[]) (bitmaps: int -> Dib) (items: IParagraphItem seq) = seq {
     let mutable currentFont = None
     for item in items do
         match item with
@@ -35,15 +38,39 @@ let private convertParagraphs (fonts: FontDescriptor[]) (items: IParagraphItem s
             currentFont <- None
         | :? NewParagraph ->
             yield DocumentFragment.NewParagraph
+        | :? Bitmap as b ->
+            yield DocumentFragment.Image(bitmaps <| int b.Number)
         | _ -> failwith $"Unknown paragraph item: {item}"
 }
 
-let private loadTopic encoding fonts (content: byte[]) =
+let extractDibImageFromMrb(file: byte[]): Dib =
+    use stream = new MemoryStream(file)
+    let file = MrbFile.Load stream
+    if file.ImageCount <> 1s then
+        failwith "Invalid image count."
+
+    let image = file.ReadImage 0
+
+    printfn $" - MRB ok: {image.Type} {image.Compression}"
+    let document = file.ReadWmfDocument image
+    let record =
+        document.Records
+        |> Seq.filter (fun x -> x :? WmfStretchDIBRecord)
+        |> Seq.exactlyOne
+        :?> WmfStretchDIBRecord
+
+    use stream = new MemoryStream()
+    use writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen = true)
+    record.DIB.Write writer
+
+    Dib <| stream.ToArray()
+
+let private loadTopic encoding fonts bitmaps (content: byte[]) =
     use stream = new MemoryStream(content)
     TopicFile.Load(stream).ReadParagraphs()
     |> Seq.filter(fun p -> p.RecordType = ParagraphRecordType.TextRecord)
     |> Seq.collect(fun p -> p.ReadItems(encoding).Items)
-    |> convertParagraphs fonts
+    |> convertParagraphs fonts bitmaps
     |> Seq.toArray
 
 let Load(helpFile: string): Task<DocumentFragment[]> = task {
@@ -58,9 +85,14 @@ let Load(helpFile: string): Task<DocumentFragment[]> = task {
         helpFile.ReadFile files["|FONT"]
         |> loadFontDescriptors
 
+    let bitmaps index =
+        let name = $"|bm{string index}"
+        let file = files[name]
+        extractDibImageFromMrb <| helpFile.ReadFile file
+
     let contentEncoding = Encoding.GetEncoding 1251 // TODO: Extract from config
     return
         helpFile.ReadFile files["|TOPIC"]
-        |> loadTopic contentEncoding fonts
+        |> loadTopic contentEncoding fonts bitmaps
         |> Seq.toArray
 }
