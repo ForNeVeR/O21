@@ -89,7 +89,7 @@ let Load (gd: GraphicsDevice) (helpFile: string): Task<DocumentFragment[]> = tas
         let dib = extractDibImageFromMrb <| helpFile.ReadFile file
         Sprites.CreateSprite gd dib
 
-    let contentEncoding = Encoding.GetEncoding 1251 // TODO: Extract from config
+    let contentEncoding = Encoding.GetEncoding 1251 // TODO[#57]: Extract from config
     return
         helpFile.ReadFile files["|TOPIC"]
         |> loadTopic contentEncoding fonts bitmaps
