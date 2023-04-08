@@ -52,6 +52,23 @@ module Sprites =
         texture.SetData colors
         texture
 
+    let CreateSprite device (colors: Dib) =
+        let width = colors.Width
+        let height = colors.Height
+        let texture = new Texture2D(device, width, height)
+        let colors = Array.init (width * height) (fun i ->
+            let x = i % width
+            let y = i / width
+            let struct(r, g, b) = colors.GetPixel(x, y)
+            Color(
+                r = int r,
+                g = int g,
+                b = int b
+            )
+        )
+        texture.SetData colors
+        texture
+
     let private loadBricks device (brickGraphics: Dib[]) =
         seq { 1..9 }
         |> Seq.map(fun direction ->

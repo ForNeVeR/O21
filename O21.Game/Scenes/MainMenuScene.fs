@@ -4,13 +4,15 @@ open Microsoft.Xna.Framework
 open O21.Game
 
 type MainMenuScene = {
+    Content: GameContent
     PlayButton: Button
     HelpButton: Button
 }
     with
-        static member Init(data: GameContent): MainMenuScene = {
-            PlayButton = Button.Create data.UiFont "Play" <| Vector2(0f, 00f)
-            HelpButton = Button.Create data.UiFont "Help" <| Vector2(0f, 20f)
+        static member Init(content: GameContent): MainMenuScene = {
+            Content = content
+            PlayButton = Button.Create content.UiFont "Play" <| Vector2(0f, 00f)
+            HelpButton = Button.Create content.UiFont "Help" <| Vector2(0f, 20f)
         }
 
         member private this.Widgets = [| this.PlayButton; this.HelpButton |]
@@ -28,7 +30,7 @@ type MainMenuScene = {
                     }
                 let scene: IGameScene =
                     if scene.PlayButton.State = ButtonState.Clicked then PlayScene()
-                    elif scene.HelpButton.State = ButtonState.Clicked then HelpScene()
+                    elif scene.HelpButton.State = ButtonState.Clicked then HelpScene this.Content
                     else scene
                 { world with
                     Scene = scene

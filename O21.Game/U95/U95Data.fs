@@ -14,7 +14,7 @@ type U95Data = {
     with
         static member Load (device: GraphicsDevice) (directory: string): Task<U95Data> = task {
             let! sprites = Sprites.LoadFrom device directory
-            let! help = Help.Load(Path.Combine(directory, "U95.HLP"))
+            let! help = Help.Load device (Path.Combine(directory, "U95.HLP"))
             return {
                 Sprites = sprites
                 Help = help
@@ -24,3 +24,4 @@ type U95Data = {
         interface IDisposable with
             member this.Dispose() =
                 (this.Sprites :> IDisposable).Dispose()
+                this.Help |> Array.iter(fun d -> (d :> IDisposable).Dispose())

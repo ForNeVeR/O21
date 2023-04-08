@@ -4,6 +4,7 @@ open System.IO
 open System.Text
 open System.Threading.Tasks
 
+open Microsoft.Xna.Framework.Graphics
 open O21.Game.Documents
 open O21.MRB
 open O21.Resources
@@ -25,7 +26,7 @@ let private style = function
         | FontAttributes.Normal -> Style.Normal
         | _ -> failwith $"Unknown font attributes: {font.Attributes}"
 
-let private convertParagraphs (fonts: FontDescriptor[]) (bitmaps: int -> Dib) (items: IParagraphItem seq) = seq {
+let private convertParagraphs (fonts: FontDescriptor[]) (bitmaps: int -> Texture2D) (items: IParagraphItem seq) = seq {
     let mutable currentFont = None
     for item in items do
         match item with
@@ -51,7 +52,6 @@ let extractDibImageFromMrb(file: byte[]): Dib =
 
     let image = file.ReadImage 0
 
-    printfn $" - MRB ok: {image.Type} {image.Compression}"
     let document = file.ReadWmfDocument image
     let record =
         document.Records
@@ -73,7 +73,7 @@ let private loadTopic encoding fonts bitmaps (content: byte[]) =
     |> convertParagraphs fonts bitmaps
     |> Seq.toArray
 
-let Load(helpFile: string): Task<DocumentFragment[]> = task {
+let Load (gd: GraphicsDevice) (helpFile: string): Task<DocumentFragment[]> = task {
     use input = new FileStream(helpFile, FileMode.Open, FileAccess.Read)
     let helpFile = WinHelpFile.Load input
     let files =
@@ -88,7 +88,8 @@ let Load(helpFile: string): Task<DocumentFragment[]> = task {
     let bitmaps index =
         let name = $"|bm{string index}"
         let file = files[name]
-        extractDibImageFromMrb <| helpFile.ReadFile file
+        let dib = extractDibImageFromMrb <| helpFile.ReadFile file
+        Sprites.CreateSprite gd dib
 
     let contentEncoding = Encoding.GetEncoding 1251 // TODO: Extract from config
     return

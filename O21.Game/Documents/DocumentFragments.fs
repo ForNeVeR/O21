@@ -1,6 +1,7 @@
 namespace O21.Game.Documents
 
-open O21.Resources
+open System
+open Microsoft.Xna.Framework.Graphics
 
 type Style =
     | Normal = 0
@@ -10,4 +11,9 @@ type Style =
 type DocumentFragment =
     | Text of Style * string
     | NewParagraph
-    | Image of Dib
+    | Image of Texture2D
+    interface IDisposable with
+        member this.Dispose() =
+            match this with
+            | Image tex -> tex.Dispose()
+            | _ -> ()
