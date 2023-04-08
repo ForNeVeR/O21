@@ -15,7 +15,7 @@ type HelpScene(content: GameContent) =
             let mutable currentLineHeight = 0f
             for fragment in data.Help do
                 match fragment with
-                | DocumentFragment.Text(_, text) -> // TODO: Do not ignore bold text
+                | DocumentFragment.Text(_, text) -> // TODO[#56]: Do not ignore bold text
                     let font = content.UiFont
                     let size = font.MeasureString text
                     batch.DrawString(font, text, Vector2(x, y), textColor)
