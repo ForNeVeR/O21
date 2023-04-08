@@ -32,11 +32,9 @@ let private convertParagraphs (fonts: FontDescriptor[]) (bitmaps: int -> Texture
         match item with
         | :? FontChange as fc ->
             let font = fonts[int fc.FontDescriptor]
-            if Option.isSome currentFont then failwith "Attempt to reset font when font is already set."
             currentFont <- Some font
         | :? ParagraphText as pc ->
             yield DocumentFragment.Text(style currentFont, pc.Text)
-            currentFont <- None
         | :? NewParagraph ->
             yield DocumentFragment.NewParagraph
         | :? Bitmap as b ->
