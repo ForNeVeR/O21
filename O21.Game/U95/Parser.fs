@@ -6,7 +6,7 @@ type MapOfLevel =
     | Brick of int
     | Bomb // random: octopus or bomb
     | Bonus // random bonus
-    | None
+    | Empty
     
 type Parser(directory) =
      member private this.readDatFile(level:int) (part:int): string[] = 
@@ -20,7 +20,7 @@ type Parser(directory) =
                     | t when t>='1' && t <= '9' -> Brick(int line[i] - int '0')
                     | 'b' -> Bomb
                     | 'a' -> Bonus
-                    | _ -> None
+                    | _ -> Empty
             brick
          )
          levelMap

@@ -8,9 +8,24 @@ open O21.Game.U95
 open O21.Game.U95.Parser
 
 type PlayScene() =
+
+    let wantShot(input: Input) = input.Pressed |> List.contains Key.Fire
+    let allowedShot (world: GameWorld) (time: Time) =
+        match world.LastShotTime with
+        | None -> true
+        | Some lastShot -> time.Total - lastShot > GameRules.ShotCooldownSec
+
+    let shot (world: GameWorld) (time: Time) =
+        { world with
+            LastShotTime = Some time.Total
+            SoundsToStartPlaying = world.SoundsToStartPlaying |> Set.add SoundType.Shot }
+
     interface IGameScene with
-        member this.Update world _ _ =
-            world
+        member this.Update world input time =
+            if wantShot input && allowedShot world time then
+                shot world time
+            else
+                world
 
         member _.Render (batch: SpriteBatch) (gameData: U95Data) (world: GameWorld) =
             batch.Draw(gameData.Sprites.Background[1], Rectangle(0, 0, 600, 300), Color.White)         

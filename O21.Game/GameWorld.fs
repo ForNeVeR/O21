@@ -9,5 +9,8 @@ type IGameScene =
     abstract member Render: SpriteBatch -> U95Data -> GameWorld -> unit
 and GameWorld = {
     Scene: IGameScene
+    SoundVolume: float32
     CurrentLevel: Level
+    SoundsToStartPlaying: Set<SoundType>
+    LastShotTime: float32 option
 }

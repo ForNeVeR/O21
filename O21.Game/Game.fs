@@ -24,6 +24,7 @@ type Game<'World, 'GameData, 'Input> = {
     Init: ContentManager -> 'World
     HandleInput: int -> 'Input
     Update: 'Input -> Time -> 'World -> 'World
+    PostUpdate: 'GameData -> 'World -> 'World
     Draw: SpriteBatch -> 'GameData -> 'World -> unit
 }
     
@@ -69,7 +70,7 @@ type GameState<'World, 'GameData, 'Input>(config: Config, game: Game<_, _, _>) =
         }
 
         input <- game.HandleInput scale
-        world <- game.Update input time world
+        world <- game.Update input time world |> game.PostUpdate gameData
         base.Update(gameTime)
 
     override this.Draw(gameTime) =
