@@ -16,7 +16,7 @@ Usage
 Currently O21 is only suitable for development mode. To start the game, run the following shell command:
 
 ```console
-$ dotnet run O21.Game -- <downloaded-data-directory>
+$ dotnet run --project O21.Game -- <downloaded-data-directory>
 ```
 
 Game History
