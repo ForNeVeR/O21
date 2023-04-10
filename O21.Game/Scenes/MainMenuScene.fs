@@ -1,6 +1,6 @@
 namespace O21.Game.Scenes
 
-open Microsoft.Xna.Framework
+open System.Numerics
 open O21.Game
 
 type MainMenuScene = {
@@ -18,9 +18,9 @@ type MainMenuScene = {
         member private this.Widgets = [| this.PlayButton; this.HelpButton |]
 
         interface IGameScene with
-            member this.Render batch _ _ =
+            member this.Render _ _ =
                 for widget in this.Widgets do
-                    widget.Render batch
+                    widget.Render()
 
             member this.Update world input _ =
                 let scene =

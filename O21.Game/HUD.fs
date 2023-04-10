@@ -1,6 +1,6 @@
 ﻿namespace O21.Game
 
-open Microsoft.Xna.Framework.Graphics
+open Raylib_CsLo
 
 type HUD() =
     
@@ -10,21 +10,21 @@ type HUD() =
     let mutable lives = 0
     let mutable abilities = Array.init 5 ( fun _ -> false) 
     
-    member _.UpdateScore(newScore:int, batch: SpriteBatch) =
+    member _.UpdateScore(newScore:int) =
         score <- newScore
-        HUDRenderer.renderScoreLine batch score
+        HUDRenderer.renderScoreLine score
     
-    member _.UpdateOxy(newOxy:float32, batch:SpriteBatch) =
+    member _.UpdateOxy(newOxy:float32) =
         oxy <- newOxy
-        HUDRenderer.renderOxyLine batch oxy
+        HUDRenderer.renderOxyLine oxy
         
-    member _.UpdateLives(newLives:int, batch:SpriteBatch) =
+    member _.UpdateLives(newLives:int) =
         lives <- newLives
-        HUDRenderer.renderLevel batch lives
+        HUDRenderer.renderLevel lives
     
-    member _.UpdateLevel(newLevel:int, batch:SpriteBatch) =
+    member _.UpdateLevel(newLevel:int) =
         level <- newLevel
-        HUDRenderer.renderLevel batch level
+        HUDRenderer.renderLevel level
         
-    member _.Init(sprites: Texture2D[], batch: SpriteBatch) =
-       HUDRenderer.renderAll sprites batch
+    member _.Init(sprites: Texture[]) =
+       HUDRenderer.renderAll sprites

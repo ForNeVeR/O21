@@ -1,33 +1,34 @@
 namespace O21.Game
 
-open Microsoft.Xna.Framework
-open Microsoft.Xna.Framework.Input
+open System.Numerics
+open Raylib_CsLo
 
 type Key = Left | Right | Up | Down | Fire
 
 type Input = {
     Pressed: Key list
-    MouseCoords: Point
+    MouseCoords: Vector2
     MouseButtonPressed: bool
 }
 
 module Input =
     let keyBindings =
         Map.ofList
-            [ Keys.Up, Up
-              Keys.Down, Down
-              Keys.Left, Left
-              Keys.Right, Right
-              Keys.Space, Fire ]
+            [ 
+                KeyboardKey.KEY_UP, Up
+                KeyboardKey.KEY_DOWN, Down
+                KeyboardKey.KEY_LEFT, Left
+                KeyboardKey.KEY_RIGHT, Right
+                KeyboardKey.KEY_SPACE, Fire 
+            ]
     
-    let handle(scale: int): Input =
-        let keyboard = Keyboard.GetState()
+    let handle (scale: int): Input =
         let keys = 
             [ for KeyValue(k, v) in keyBindings do
-                if keyboard.IsKeyDown(k) then yield v ]
+                if Raylib.IsKeyDown(k) then yield v ]
 
-        let mouse = Mouse.GetState()
+        let mouse = Raylib.GetMousePosition()
 
         { Pressed = keys
-          MouseCoords = Point(mouse.Position.X / scale, mouse.Position.Y / scale)
-          MouseButtonPressed = mouse.LeftButton = ButtonState.Pressed }
+          MouseCoords = Vector2(mouse.X / float32 scale, mouse.Y / float32 scale)
+          MouseButtonPressed = Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT) }

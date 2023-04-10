@@ -1,7 +1,7 @@
 namespace O21.Game.Scenes
 
-open Microsoft.Xna.Framework
-open Microsoft.Xna.Framework.Graphics
+open System.Numerics
+open Raylib_CsLo
 
 open O21.Game
 
@@ -9,16 +9,16 @@ open O21.Game
 type ButtonState = Default | Hover | Clicked
 
 type Button = {
-    Font: SpriteFont
+    Font: Font
     Text: string
     Position: Vector2
     State: ButtonState
 } with
-    static member DefaultColor = Color.Gray
-    static member HoverColor = Color.DarkGray
-    static member ClickedColor = Color.Black
+    static member DefaultColor = Raylib.GRAY
+    static member HoverColor = Raylib.DARKGRAY
+    static member ClickedColor = Raylib.BLACK
 
-    static member Create (font: SpriteFont) (text: string) (position: Vector2): Button = {
+    static member Create (font: Font) (text: string) (position: Vector2): Button = {
         Font = font
         Text = text
         Position = position
@@ -26,25 +26,28 @@ type Button = {
     }
 
     member private this.Rectangle =
-        let size = this.Font.MeasureString(this.Text)
-        Rectangle(int this.Position.X, int this.Position.Y, int size.X, int size.Y)
+        let size = Raylib.MeasureTextEx(this.Font, this.Text, float32 this.Font.baseSize, 1.0f)
+        Rectangle(this.Position.X, this.Position.Y, size.X, size.Y)
 
-    member this.Render(batch: SpriteBatch): unit =
+    member this.Render(): unit =
         let color =
             match this.State with
             | ButtonState.Default -> Button.DefaultColor
             | ButtonState.Hover -> Button.HoverColor
             | ButtonState.Clicked -> Button.ClickedColor
-        batch.DrawString(
+        Raylib.DrawRectangleLines(int this.Position.X, int this.Position.Y, int this.Rectangle.width, int this.Rectangle.height, Raylib.RED)
+        Raylib.DrawTextEx(
             this.Font,
             this.Text,
             this.Position,
+            float32 this.Font.baseSize,
+            0.0f,
             color
         )
 
     member this.Update(input: Input): Button =
         let state =
-            if this.Rectangle.Contains input.MouseCoords then
+            if Raylib.CheckCollisionPointRec(input.MouseCoords, this.Rectangle) then
                 if input.MouseButtonPressed then
                     ButtonState.Clicked
                 else

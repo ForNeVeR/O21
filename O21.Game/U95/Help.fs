@@ -4,7 +4,7 @@ open System.IO
 open System.Text
 open System.Threading.Tasks
 
-open Microsoft.Xna.Framework.Graphics
+open Raylib_CsLo
 open O21.Game.Documents
 open O21.MRB
 open O21.Resources
@@ -26,7 +26,7 @@ let private style = function
         | FontAttributes.Normal -> Style.Normal
         | _ -> failwith $"Unknown font attributes: {font.Attributes}"
 
-let private convertParagraphs (fonts: FontDescriptor[]) (bitmaps: int -> Texture2D) (items: IParagraphItem seq) = seq {
+let private convertParagraphs (fonts: FontDescriptor[]) (bitmaps: int -> Texture) (items: IParagraphItem seq) = seq {
     let mutable currentFont = None
     for item in items do
         match item with
@@ -71,7 +71,7 @@ let private loadTopic encoding fonts bitmaps (content: byte[]) =
     |> convertParagraphs fonts bitmaps
     |> Seq.toArray
 
-let Load (gd: GraphicsDevice) (helpFile: string): Task<DocumentFragment[]> = task {
+let Load (helpFile: string): Task<DocumentFragment[]> = task {
     use input = new FileStream(helpFile, FileMode.Open, FileAccess.Read)
     let helpFile = WinHelpFile.Load input
     let files =
@@ -87,7 +87,7 @@ let Load (gd: GraphicsDevice) (helpFile: string): Task<DocumentFragment[]> = tas
         let name = $"|bm{string index}"
         let file = files[name]
         let dib = extractDibImageFromMrb <| helpFile.ReadFile file
-        Sprites.CreateSprite gd dib
+        Sprites.CreateSprite dib
 
     let contentEncoding = Encoding.GetEncoding 1251 // TODO[#57]: Extract from config
     return
