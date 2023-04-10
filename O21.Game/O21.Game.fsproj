@@ -6,11 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="Resources\Inter.spritefont" />
-        <None Include="Resources\Inter-Regular.otf" />
+        <Content Include="Resources\Inter-Regular.otf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
         <None Include="Resources\LICENSE.txt" />
         <None Include="Resources\README.md" />
-        <MonoGameContentReference Include="Resources\Content.mgcb" />
     </ItemGroup>
 
     <ItemGroup>
@@ -40,8 +43,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
-        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
+        <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />
     </ItemGroup>
 
     <ItemGroup>

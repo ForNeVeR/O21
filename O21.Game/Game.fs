@@ -1,11 +1,11 @@
 namespace O21.Game
 
-open Microsoft.Xna.Framework
-open Microsoft.Xna.Framework.Content
-open Microsoft.Xna.Framework.Graphics
+open System.Numerics
+open Raylib_CsLo
+open type Raylib_CsLo.Raylib
 
 type Time = { 
-    Total: float32
+    Total: float
     Delta: float32 
 }
     
@@ -20,89 +20,72 @@ type Config = {
 }
     
 type Game<'World, 'GameData, 'Input> = {
-    LoadGameData: GraphicsDevice -> 'GameData
-    Init: ContentManager -> 'World
+    LoadGameData: unit -> 'GameData
+    Init: unit -> 'World
     HandleInput: int -> 'Input
     Update: 'Input -> Time -> 'World -> 'World
     PostUpdate: 'GameData -> 'World -> 'World
-    Draw: SpriteBatch -> 'GameData -> 'World -> unit
+    Draw: 'GameData -> 'World -> unit
 }
     
 type GameState<'World, 'GameData, 'Input>(config: Config, game: Game<_, _, _>) =
-    inherit Game()
-
-    let mutable renderTarget: RenderTarget2D = null
+    let mutable renderTarget: RenderTexture = Unchecked.defaultof<RenderTexture>
+    let mutable gameRect: Rectangle = Unchecked.defaultof<Rectangle>
     let mutable onScreenRect: Rectangle = Unchecked.defaultof<Rectangle>
-    let mutable spriteBatch: SpriteBatch = null
     
     let mutable world = Unchecked.defaultof<'World>
     let mutable gameData = Unchecked.defaultof<'GameData>
     let mutable input = Unchecked.defaultof<'Input>
     let mutable scale = Unchecked.defaultof<int>
 
-    override this.Initialize() =
-        this.IsMouseVisible <- true
-        this.Window.Title <- config.Title
-
-        let gd = this.GraphicsDevice
-        
-        renderTarget <- new RenderTarget2D(gd, config.GameWidth, config.GameHeight)
-        let screenWidth = gd.PresentationParameters.BackBufferWidth;
-        let screenHeight = gd.PresentationParameters.BackBufferHeight;
+    member _.Initialize() =
+        renderTarget <- LoadRenderTexture(config.GameWidth, config.GameHeight)
+        let screenWidth = config.ScreenWidth;
+        let screenHeight = config.ScreenHeight;
         scale <- min (screenWidth/config.GameWidth) (screenHeight/config.GameHeight)
         let width = scale * config.GameWidth
         let height = scale * config.GameHeight
-        onScreenRect <- Rectangle(screenWidth/2 - width/2, screenHeight/2 - height/2,
-                                  width, height)
+        onScreenRect <- Rectangle(float32 (screenWidth/2 - width/2), 
+                                  float32 (screenHeight/2 - height/2),
+                                  float32 width, float32 height)
+        gameRect <- Rectangle(0.0f, 0.0f, float32 config.GameWidth, -float32 config.GameHeight)
         
-        spriteBatch <- new SpriteBatch(this.GraphicsDevice)
-        world <- game.Init this.Content
-        base.Initialize()
+        world <- game.Init()
 
-    override this.LoadContent() =
-        gameData <- game.LoadGameData this.GraphicsDevice
-        base.LoadContent()
+    member _.LoadContent() =
+        gameData <- game.LoadGameData()
 
-    override _.Update(gameTime) =
-        let time = { 
-            Total = gameTime.TotalGameTime.TotalSeconds |> float32
-            Delta = gameTime.ElapsedGameTime.TotalSeconds |> float32 
-        }
-
+    member _.Update(time: Time) =
         input <- game.HandleInput scale
         world <- game.Update input time world |> game.PostUpdate gameData
-        base.Update(gameTime)
 
-    override this.Draw(gameTime) =
-        let gd = this.GraphicsDevice
+    member _.Draw() =
+        BeginTextureMode(renderTarget)
+        game.Draw gameData world
+        EndTextureMode()
         
-        // Render with the original resolution to the render target:
-        gd.SetRenderTarget(renderTarget)
-        spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp)
-        game.Draw spriteBatch gameData world
-        spriteBatch.End()
-
-        // Render the render target to the screen (optionally changing the scale of everything):
-        gd.SetRenderTarget(null)
-        spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp)
-        spriteBatch.Draw(renderTarget, onScreenRect, Color.White)
-        spriteBatch.End()
-        
-        base.Draw(gameTime)
+        BeginDrawing()
+        DrawTexturePro(renderTarget.texture, gameRect, onScreenRect, Vector2.Zero, 0.0f, WHITE)
+        EndDrawing()
 
 module GameState =
-    let create (config: Config) (game: Game<'World, 'GameData, 'Input>) =
-        let loop = new GameState<'World, 'GameData, 'Input>(config, game)
-        loop.IsFixedTimeStep <- config.IsFixedTimeStep
-        
-        let graphics = new GraphicsDeviceManager(loop)
-        graphics.IsFullScreen <- config.IsFullscreen
-        graphics.SynchronizeWithVerticalRetrace <- false
-        graphics.PreferredBackBufferWidth <- config.ScreenWidth
-        graphics.PreferredBackBufferHeight <- config.ScreenHeight
-        graphics.ApplyChanges()
-        
-        loop
-        
-    let run (loop: GameState<'World, 'GameData, 'Input>) =
-        loop.Run(); loop
+    let run (config: Config) (game: Game<'World, 'Content, 'Input>) =
+        InitWindow(config.ScreenWidth, config.ScreenHeight, config.Title)
+        InitAudioDevice()
+        SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT)
+        SetTargetFPS(60)
+
+        let loop = new GameState<'World, 'Content, 'Input>(config, game)
+        loop.Initialize()
+        loop.LoadContent()
+
+        while not (WindowShouldClose()) do
+            let time = { 
+                Total = GetTime()
+                Delta = GetFrameTime() 
+            }
+            loop.Update(time)
+            loop.Draw()
+
+        CloseAudioDevice()
+        CloseWindow()

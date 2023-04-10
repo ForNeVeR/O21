@@ -1,7 +1,7 @@
 namespace O21.Game.Documents
 
 open System
-open Microsoft.Xna.Framework.Graphics
+open Raylib_CsLo
 
 type Style =
     | Normal = 0
@@ -11,9 +11,9 @@ type Style =
 type DocumentFragment =
     | Text of Style * string
     | NewParagraph
-    | Image of Texture2D
+    | Image of Texture
     interface IDisposable with
         member this.Dispose() =
             match this with
-            | Image tex -> tex.Dispose()
+            | Image tex -> Raylib.UnloadTexture(tex)
             | _ -> ()

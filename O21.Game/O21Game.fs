@@ -1,16 +1,14 @@
 namespace O21.Game
 
-open Microsoft.Xna.Framework
-open Microsoft.Xna.Framework.Content
-open Microsoft.Xna.Framework.Graphics
+open Raylib_CsLo
 
 open O21.Game.Scenes
 open O21.Game.U95
 
 module O21Game =
-    let init (dataDirectory: string) (contentManager: ContentManager) = {
+    let init (dataDirectory: string) = {
         SoundVolume = 0.1f
-        Scene = MainMenuScene.Init(GameContent.Load contentManager)
+        Scene = MainMenuScene.Init(GameContent.Load())
         // TODO[#47]: Async commands
         CurrentLevel = (Level.Load dataDirectory 1 2).Result
         SoundsToStartPlaying = Set.empty
@@ -23,18 +21,19 @@ module O21Game =
     let postUpdate (data: U95Data) (world: GameWorld) =
         for sound in world.SoundsToStartPlaying do
             let effect = data.Sounds[sound]
-            effect.Play(world.SoundVolume, 0f, 0f) |> ignore
+            Raylib.SetSoundVolume(effect, world.SoundVolume)
+            Raylib.PlaySound(effect)
         { world with SoundsToStartPlaying = Set.empty }
 
-    let draw (batch: SpriteBatch) (gameData: U95Data) (world: GameWorld) =
-        batch.GraphicsDevice.Clear(Color.White)
-        world.Scene.Render batch gameData world
+    let draw (gameData: U95Data) (world: GameWorld) =
+        Raylib.ClearBackground(Raylib.WHITE)
+        world.Scene.Render gameData world
 
     let game (dataDirectory: string) = {
-        LoadGameData = fun gd ->
+        LoadGameData = fun () ->
             // TODO[#38]: Preloader, combine with downloader
-            (U95Data.Load gd dataDirectory).Result
-        Init = init dataDirectory
+            (U95Data.Load dataDirectory).Result
+        Init = (fun () -> init dataDirectory)
         HandleInput = Input.handle
         Update = update
         PostUpdate = postUpdate
