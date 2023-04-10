@@ -42,6 +42,7 @@
         <Compile Include="Scenes\PlayScene.fs" />
         <Compile Include="Scenes\HelpScene.fs" />
         <Compile Include="Scenes\MainMenuScene.fs" />
+        <Compile Include="Scenes\LoadingScene.fs" />
         <Compile Include="O21Game.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>

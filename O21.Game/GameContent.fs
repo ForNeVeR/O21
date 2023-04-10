@@ -9,6 +9,7 @@ open Raylib_CsLo
 type GameContent = {
     UiFontRegular: Font
     UiFontBold: Font
+    LoadingTexture: Texture
 } with
     static member Load(): GameContent = 
         let workingDir = Path.GetDirectoryName(Environment.ProcessPath)
@@ -22,4 +23,5 @@ type GameContent = {
         {
             UiFontRegular = Raylib.LoadFontEx(pathToResource "Inter-Regular.otf", 12, ptr, fontChars.Length)
             UiFontBold = Raylib.LoadFontEx(pathToResource "Inter-Bold.otf", 12, ptr, fontChars.Length)
+            LoadingTexture = Raylib.LoadTexture "../../../../art/submarine.png" // TODO: Proper path to embedded resources
         }
