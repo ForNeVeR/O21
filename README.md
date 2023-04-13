@@ -1,4 +1,4 @@
-O21 [![Status Zero][status-zero]][andivionian-status-classifier]
+O21 [![Status Enfer][status-enfer]][andivionian-status-classifier]
 ===
 
 O21 is a modern free and open-source remake of [U95][old-games.u95], a game by [NIKITA][nikita] company, released in 1995.
@@ -60,7 +60,7 @@ Acknowledgments
   - Manfred Winterhoff, the author of [the documentation][docs.winhelp],
   - Paul Wise and other contributors of [helpdeco][].
 
-[andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier#status-zero-
+[andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier#status-enfer-
 [book.windows-undocumented-file-formats]: https://a.co/d/dq5fCoj
 [docs.code-of-conduct]: CODE_OF_CONDUCT.md
 [docs.contributing]: CONTRIBUTING.md
@@ -73,7 +73,7 @@ Acknowledgments
 [nikita]: https://en.wikipedia.org/wiki/Nikita_Online
 [old-games.u95]: https://www.old-games.ru/game/4676.html
 [open-sage]: https://github.com/OpenSAGE/OpenSAGE
-[status-zero]: https://img.shields.io/badge/status-zero-lightgrey.svg
+[status-enfer]: https://img.shields.io/badge/status-enfer-orange.svg
 [wikipedia.o21]: https://en.wikipedia.org/wiki/HNLMS_O_21
 [wikipedia.u-95]: https://en.wikipedia.org/wiki/German_submarine_U-95_(1940)
 [docs.inter-font-license]: O21.Game/Resources/LICENSE.txt
