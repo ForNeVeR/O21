@@ -30,7 +30,7 @@ type MainMenuScene = {
                     }
                 let scene: IGameScene =
                     if scene.PlayButton.State = ButtonState.Clicked then PlayScene()
-                    elif scene.HelpButton.State = ButtonState.Clicked then HelpScene this.Content
+                    elif scene.HelpButton.State = ButtonState.Clicked then HelpScene.Init (this.Content, this)
                     else scene
                 { world with
                     Scene = scene
