@@ -7,7 +7,8 @@ open Raylib_CsLo
 #nowarn "9"
 
 type GameContent = {
-    UiFont: Font
+    UiFontRegular: Font
+    UiFontBold: Font
 } with
     static member Load(): GameContent = 
         let workingDir = Path.GetDirectoryName(Environment.ProcessPath)
@@ -19,5 +20,6 @@ type GameContent = {
         |]
         use ptr = fixed fontChars
         {
-            UiFont = Raylib.LoadFontEx(pathToResource "Inter-Regular.otf", 12, ptr, fontChars.Length)
+            UiFontRegular = Raylib.LoadFontEx(pathToResource "Inter-Regular.otf", 12, ptr, fontChars.Length)
+            UiFontBold = Raylib.LoadFontEx(pathToResource "Inter-Bold.otf", 12, ptr, fontChars.Length)
         }

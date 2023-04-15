@@ -9,6 +9,9 @@
         <Content Include="Resources\Inter-Regular.otf">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="Resources\Inter-Bold.otf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>

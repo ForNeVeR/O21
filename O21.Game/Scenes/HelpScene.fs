@@ -14,7 +14,7 @@ type HelpScene =
     with        
         static member Init(content: GameContent, previous: IGameScene): HelpScene = {
             Content = content
-            BackButton = Button.Create content.UiFont "Back" <| Vector2(200f, 00f)
+            BackButton = Button.Create content.UiFontRegular "Back" <| Vector2(200f, 00f)
             Previous = previous 
         }
         member private this.textColor = BLACK
@@ -26,8 +26,12 @@ type HelpScene =
                 let mutable currentLineHeight = 0f
                 for fragment in data.Help do
                     match fragment with
-                        | DocumentFragment.Text(_, text) -> // TODO[#56]: Do not ignore bold text
-                            let font = this.Content.UiFont
+                        | DocumentFragment.Text(style, text) ->
+                            let font =
+                                match style with
+                                    | Style.Bold -> this.Content.UiFontBold
+                                    | _ -> this.Content.UiFontRegular
+
                             let size = MeasureTextEx(font, text, float32 font.baseSize, 0.0f)
                             DrawTextEx(font, text, Vector2(x, y), float32 font.baseSize, 0.0f, this.textColor)    
                             x <- x + size.X

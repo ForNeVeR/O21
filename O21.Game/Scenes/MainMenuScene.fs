@@ -11,8 +11,8 @@ type MainMenuScene = {
     with
         static member Init(content: GameContent): MainMenuScene = {
             Content = content
-            PlayButton = Button.Create content.UiFont "Play" <| Vector2(0f, 00f)
-            HelpButton = Button.Create content.UiFont "Help" <| Vector2(0f, 20f)
+            PlayButton = Button.Create content.UiFontRegular "Play" <| Vector2(0f, 00f)
+            HelpButton = Button.Create content.UiFontRegular "Help" <| Vector2(0f, 20f)
         }
 
         member private this.Widgets = [| this.PlayButton; this.HelpButton |]
