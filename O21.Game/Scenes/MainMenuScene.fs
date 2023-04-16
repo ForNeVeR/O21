@@ -2,14 +2,17 @@ namespace O21.Game.Scenes
 
 open System.Numerics
 open O21.Game
+open O21.Game.U95
 
 type MainMenuScene = {
+    Data: U95Data
     Content: GameContent
     PlayButton: Button
     HelpButton: Button
 }
     with
-        static member Init(content: GameContent): MainMenuScene = {
+        static member Init(content: GameContent, data: U95Data): MainMenuScene = {
+            Data = data
             Content = content
             PlayButton = Button.Create content.UiFontRegular "Play" <| Vector2(0f, 00f)
             HelpButton = Button.Create content.UiFontRegular "Help" <| Vector2(0f, 20f)
@@ -30,7 +33,7 @@ type MainMenuScene = {
                     }
                 let scene: IGameScene =
                     if scene.PlayButton.State = ButtonState.Clicked then PlayScene()
-                    elif scene.HelpButton.State = ButtonState.Clicked then HelpScene.Init (this.Content, this)
+                    elif scene.HelpButton.State = ButtonState.Clicked then HelpScene.Init (this.Content, this.Data, this)
                     else scene
                 { world with
                     Scene = scene

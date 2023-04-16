@@ -21,7 +21,7 @@ type Config = {
     
 type Game<'World, 'GameData, 'Input> = {
     LoadGameData: unit -> 'GameData
-    Init: unit -> 'World
+    Init: 'GameData -> 'World
     HandleInput: int -> 'Input
     Update: 'Input -> Time -> 'World -> 'World
     PostUpdate: 'GameData -> 'World -> 'World
@@ -50,7 +50,7 @@ type GameState<'World, 'GameData, 'Input>(config: Config, game: Game<_, _, _>) =
                                   float32 width, float32 height)
         gameRect <- Rectangle(0.0f, 0.0f, float32 config.GameWidth, -float32 config.GameHeight)
         
-        world <- game.Init()
+        world <- game.Init gameData
 
     member _.LoadContent() =
         gameData <- game.LoadGameData()
@@ -76,8 +76,8 @@ module GameState =
         SetTargetFPS(60)
 
         let loop = new GameState<'World, 'Content, 'Input>(config, game)
-        loop.Initialize()
         loop.LoadContent()
+        loop.Initialize()
 
         while not (WindowShouldClose()) do
             let time = { 

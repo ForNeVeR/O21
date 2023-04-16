@@ -1,32 +1,37 @@
 namespace O21.Game.Scenes
 
 open System.Numerics
+
+open O21.Game
 open O21.Game.Documents
+open O21.Game.U95
+
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
-open O21.Game
 
 type HelpScene =
     {
         Content: GameContent
         Previous: IGameScene
         BackButton: Button
-        mutable OffsetY: float32
+        OffsetY: float32
+        TotalHeight: float32
     }
-    with        
-        static member Init(content: GameContent, previous: IGameScene): HelpScene = {
+    with
+        static member Init(content: GameContent, data: U95Data, previous: IGameScene): HelpScene = {
             Content = content
             BackButton = Button.Create content.UiFontRegular "Back" <| Vector2(200f, 00f)
             Previous = previous
             OffsetY = 0f
+            TotalHeight = HelpScene.GetFragmentsHeight content.UiFont data.Help
         }
         member private this.textColor = BLACK
 
-        static member private GetScrollMomentum() =
+        static member private GetScrollMomentum(input: Input) =
             let mouseScrollSpeed = 5f
             let keyboardScrollSpeed = 2f
 
-            let mouseWheelMove = GetMouseWheelMove()
+            let mouseWheelMove = input.MouseWheelMove
 
             if mouseWheelMove <> 0f then
                 -mouseWheelMove * mouseScrollSpeed
@@ -38,14 +43,13 @@ type HelpScene =
                 else
                     0f
 
-        member private this.GetFragmentsHeight fragments =
+        static member GetFragmentsHeight (font: Font) fragments =
             let mutable fragmentsHeight = 0f
             let mutable currentLineHeight = 0f
 
             for fragment in fragments do
                 match fragment with
                     | DocumentFragment.Text(_, text) ->
-                        let font = this.Content.UiFont
                         let size = MeasureTextEx(font, text, float32 font.baseSize, 0.0f)
                         currentLineHeight <- max currentLineHeight size.Y
                     | DocumentFragment.NewParagraph ->
@@ -59,13 +63,6 @@ type HelpScene =
 
         interface IGameScene with
             member this.Render data _ =
-                let mutable fragmentsHeight = this.GetFragmentsHeight data.Help
-                let renderHeight = GetRenderHeight() / 2 |> float32
-                let maxOffsetY = fragmentsHeight - renderHeight + 4f // add some padding to the bottom
-                let offsetYAfterScroll = this.OffsetY + HelpScene.GetScrollMomentum()
-
-                if offsetYAfterScroll >= 0f && offsetYAfterScroll <= maxOffsetY then this.OffsetY <- offsetYAfterScroll
-
                 let mutable y = -this.OffsetY
                 let mutable x = 0f
                 let mutable currentLineHeight = 0f
@@ -94,9 +91,20 @@ type HelpScene =
                 this.BackButton.Render()                
 
             member this.Update world input _ =
+                let mutable fragmentsHeight = this.TotalHeight
+                let renderHeight = GetRenderHeight() / 2 |> float32
+                let maxOffsetY = fragmentsHeight - renderHeight + 4f // add some padding to the bottom
+                let offsetYAfterScroll = this.OffsetY + HelpScene.GetScrollMomentum input
+
+                let offsetY =
+                    if offsetYAfterScroll >= 0f && offsetYAfterScroll <= maxOffsetY
+                    then offsetYAfterScroll
+                    else this.OffsetY
+
                 let scene = {
                     this with
                         BackButton = this.BackButton.Update input
+                        OffsetY = offsetY
                 }
                 let scene: IGameScene =
                     if scene.BackButton.State = ButtonState.Clicked then this.Previous

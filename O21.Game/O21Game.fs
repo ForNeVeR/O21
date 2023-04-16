@@ -6,9 +6,9 @@ open O21.Game.Scenes
 open O21.Game.U95
 
 module O21Game =
-    let init (dataDirectory: string) = {
+    let private init (dataDirectory: string) gameData = {
         SoundVolume = 0.1f
-        Scene = MainMenuScene.Init(GameContent.Load())
+        Scene = MainMenuScene.Init(GameContent.Load(), gameData)
         // TODO[#47]: Async commands
         CurrentLevel = (Level.Load dataDirectory 1 2).Result
         SoundsToStartPlaying = Set.empty
@@ -33,7 +33,7 @@ module O21Game =
         LoadGameData = fun () ->
             // TODO[#38]: Preloader, combine with downloader
             (U95Data.Load dataDirectory).Result
-        Init = (fun () -> init dataDirectory)
+        Init = init dataDirectory
         HandleInput = Input.handle
         Update = update
         PostUpdate = postUpdate

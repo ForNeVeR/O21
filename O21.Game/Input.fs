@@ -9,6 +9,7 @@ type Input = {
     Pressed: Key list
     MouseCoords: Vector2
     MouseButtonPressed: bool
+    MouseWheelMove: float32
 }
 
 module Input =
@@ -31,4 +32,5 @@ module Input =
 
         { Pressed = keys
           MouseCoords = Vector2(mouse.X / float32 scale, mouse.Y / float32 scale)
-          MouseButtonPressed = Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT) }
+          MouseButtonPressed = Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT)
+          MouseWheelMove = Raylib.GetMouseWheelMove() }
