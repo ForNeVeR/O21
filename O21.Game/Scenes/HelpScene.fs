@@ -23,7 +23,7 @@ type HelpScene =
             BackButton = Button.Create content.UiFontRegular "Back" <| Vector2(200f, 00f)
             Previous = previous
             OffsetY = 0f
-            TotalHeight = HelpScene.GetFragmentsHeight content.UiFont data.Help
+            TotalHeight = HelpScene.GetFragmentsHeight content data.Help
         }
         member private this.textColor = BLACK
 
@@ -43,14 +43,22 @@ type HelpScene =
                 else
                     0f
 
-        static member GetFragmentsHeight (font: Font) fragments =
+        static member private MeasureFragment content style (text: string) =
+            let font =
+                match style with
+                    | Style.Bold -> content.UiFontBold
+                    | _ -> content.UiFontRegular
+
+            font, MeasureTextEx(font, text, float32 font.baseSize, 0.0f)
+
+        static member private GetFragmentsHeight content fragments =
             let mutable fragmentsHeight = 0f
             let mutable currentLineHeight = 0f
 
             for fragment in fragments do
                 match fragment with
-                    | DocumentFragment.Text(_, text) ->
-                        let size = MeasureTextEx(font, text, float32 font.baseSize, 0.0f)
+                    | DocumentFragment.Text(style, text) ->
+                        let _, size = HelpScene.MeasureFragment content style text
                         currentLineHeight <- max currentLineHeight size.Y
                     | DocumentFragment.NewParagraph ->
                         fragmentsHeight <- fragmentsHeight + currentLineHeight
@@ -70,12 +78,7 @@ type HelpScene =
                 for fragment in data.Help do
                     match fragment with
                         | DocumentFragment.Text(style, text) ->
-                            let font =
-                                match style with
-                                    | Style.Bold -> this.Content.UiFontBold
-                                    | _ -> this.Content.UiFontRegular
-
-                            let size = MeasureTextEx(font, text, float32 font.baseSize, 0.0f)
+                            let font, size = HelpScene.MeasureFragment this.Content style text
                             DrawTextEx(font, text, Vector2(x, y), float32 font.baseSize, 0.0f, this.textColor)
                             x <- x + size.X
                             currentLineHeight <- max currentLineHeight size.Y
