@@ -12,6 +12,7 @@ type DocumentFragment =
     | Text of Style * string
     | NewParagraph
     | Image of Texture
+
     interface IDisposable with
         member this.Dispose() =
             match this with

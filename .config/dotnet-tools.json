@@ -2,10 +2,10 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "dotnet-mgcb": {
-      "version": "3.8.1.303",
+    "fantomas": {
+      "version": "6.0.0",
       "commands": [
-        "mgcb"
+        "fantomas"
       ]
     }
   }

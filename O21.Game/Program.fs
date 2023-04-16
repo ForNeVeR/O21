@@ -10,19 +10,18 @@ open O21.WinHelp.Fonts
 open O21.WinHelp.Topics
 
 [<EntryPoint>]
-let main(args: string[]): int =
+let main (args: string[]) : int =
     Encoding.RegisterProvider CodePagesEncodingProvider.Instance
 
     match args with
-    | [| "export"; inputFile; outDir |] ->
-        Graphics.Load inputFile
-        |> Graphics.Export outDir
+    | [| "export"; inputFile; outDir |] -> Graphics.Load inputFile |> Graphics.Export outDir
     | [| "help"; inputFile; outDir |] ->
         Console.OutputEncoding <- Encoding.UTF8
 
         use input = new FileStream(inputFile, FileMode.Open, FileAccess.Read)
         let file = WinHelpFile.Load input
         let dibs = ResizeArray()
+
         for entry in file.GetFiles(Encoding.UTF8) do
             printfn $"%s{entry.FileName}"
             let fileName = entry.FileName.Replace("|", "_")
@@ -51,6 +50,7 @@ let main(args: string[]): int =
                 printfn " - Topic ok."
 
                 let mutable i = 0
+
                 for p in topic.ReadParagraphs() do
                     printfn $" - Paragraph {p} ({p.DataLen1}, {p.DataLen2}) ok."
 
@@ -65,6 +65,7 @@ let main(args: string[]): int =
                     if p.RecordType = ParagraphRecordType.TextRecord then
                         let items = p.ReadItems(Encoding.GetEncoding 1251)
                         printfn $"- - Items: {items.Settings}"
+
                         for item in items.Items do
                             printfn $"- - - {item}"
 

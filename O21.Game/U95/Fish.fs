@@ -10,13 +10,15 @@ type Fish = {
     LeftDirection: Texture[]
     RightDirection: Texture[]
     OnDying: Texture[]
-}
-    with
-        interface IDisposable with
-            member this.Dispose() =
-                for t in this.RightDirection do
-                    UnloadTexture(t)
-                for t in this.LeftDirection do
-                    UnloadTexture(t)
-                for t in this.OnDying do
-                    UnloadTexture(t)
+} with
+
+    interface IDisposable with
+        member this.Dispose() =
+            for t in this.RightDirection do
+                UnloadTexture(t)
+
+            for t in this.LeftDirection do
+                UnloadTexture(t)
+
+            for t in this.OnDying do
+                UnloadTexture(t)

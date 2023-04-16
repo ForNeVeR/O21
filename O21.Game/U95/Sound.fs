@@ -23,24 +23,25 @@ type SoundType =
     | LifeLost = 10
 
 module Sound =
-    let loadWavFromFile(fileName: string): Sound =
+    let loadWavFromFile (fileName: string) : Sound =
         let mutable dataSize = 0u
         let fileData = Raylib.LoadFileData(fileName, &dataSize)
+
         if NativePtr.isNullPtr fileData then
             invalidArg (nameof fileName) $"Failed to open file: {fileName}"
+
         let wave = Raylib.LoadWaveFromMemory(".wav", fileData, int dataSize)
         let sound = Raylib.LoadSoundFromWave(wave)
         Raylib.UnloadFileData(fileData)
         Raylib.UnloadWave(wave)
         sound
 
-    let Load(directory: string): Task<Map<SoundType, Sound>> = task {
+    let Load (directory: string) : Task<Map<SoundType, Sound>> = task {
         return
             Enum.GetValues<SoundType>()
-            |> Seq.map(fun soundType ->
+            |> Seq.map (fun soundType ->
                 let fileName = $"U95_{string <| int soundType}.WAV"
                 let filePath = Path.Combine(directory, fileName)
-                soundType, loadWavFromFile(filePath)
-            )
+                soundType, loadWavFromFile (filePath))
             |> Map.ofSeq
     }

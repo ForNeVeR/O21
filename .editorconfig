@@ -6,3 +6,7 @@ indent_size = 4
 indent_style = space
 end_of_line = lf
 insert_final_newline = true
+
+[*.{fs,fsx}]
+fsharp_multiline_bracket_style = stroustrup
+fsharp_newline_before_multiline_computation_expression = false

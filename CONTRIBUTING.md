@@ -15,6 +15,15 @@ Execute the following shell command:
 $ dotnet build
 ```
 
+Code formatter
+--------------
+
+We use [Fantomas][fantomas] to format F# code automatically. To install tool locally use command:
+
+```console
+$ dotnet tools restore
+```
+
 Play the Original
 -----------------
 
@@ -46,3 +55,4 @@ This will create a bunch of `.bmp` files in the output directory containing the 
 [docs.resources]: docs/resources.md
 [dotnet]: https://dot.net/
 [playminigames.u95]: https://playminigames.net/game/u95
+[fantomas]: https://fsprojects.github.io/fantomas/
