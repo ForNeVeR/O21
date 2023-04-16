@@ -5,36 +5,30 @@ open O21.Game
 open O21.Game.U95
 
 type MainMenuScene = {
-    Data: U95Data
-    Content: GameContent
+    Content: Content
     PlayButton: Button
     HelpButton: Button
-}
-    with
-        static member Init(content: GameContent, data: U95Data): MainMenuScene = {
-            Data = data
-            Content = content
-            PlayButton = Button.Create content.UiFontRegular "Play" <| Vector2(10f, 10f)
-            HelpButton = Button.Create content.UiFontRegular "Help" <| Vector2(10f, 30f)
-        }
+} with
 
-        member private this.Widgets = [| this.PlayButton; this.HelpButton |]
+    static member Init(content: Content): MainMenuScene = {
+        Content = content
+        PlayButton = Button.Create(content.UiFontRegular, "Play", Vector2(0f, 00f))
+        HelpButton = Button.Create(content.UiFontRegular, "Help", Vector2(0f, 32f))
+    }
 
-        interface IGameScene with
-            member this.Render _ _ =
-                for widget in this.Widgets do
-                    widget.Render()
+    interface IScene with
+        member this.Update(input, _, state) =
+            let scene = { 
+                this with
+                    PlayButton = this.PlayButton.Update input
+                    HelpButton = this.HelpButton.Update input
+            }
+            let scene: IScene =
+                if scene.PlayButton.State = ButtonState.Clicked then PlayScene.Init(state.U95Data.Levels[0])
+                elif scene.HelpButton.State = ButtonState.Clicked then HelpScene.Init(this.Content, this, state.U95Data.Help)
+                else scene
+            { state with Scene = scene }
 
-            member this.Update world input _ =
-                let scene =
-                    { this with
-                        PlayButton = this.PlayButton.Update input
-                        HelpButton = this.HelpButton.Update input
-                    }
-                let scene: IGameScene =
-                    if scene.PlayButton.State = ButtonState.Clicked then PlayScene()
-                    elif scene.HelpButton.State = ButtonState.Clicked then HelpScene.Init (this.Content, this.Data, this)
-                    else scene
-                { world with
-                    Scene = scene
-                }
+        member this.Draw(_) =
+            this.PlayButton.Draw()
+            this.HelpButton.Draw()

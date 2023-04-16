@@ -15,11 +15,11 @@ type Button = {
     Position: Vector2
     State: ButtonState
 } with
-    static member DefaultColor = Raylib.BLACK
-    static member HoverColor = Raylib.DARKGRAY
-    static member ClickedColor = Raylib.BLACK
+    static member DefaultColor = BLACK
+    static member HoverColor = DARKGRAY
+    static member ClickedColor = BLACK
 
-    static member Create (font: Font) (text: string) (position: Vector2): Button = {
+    static member Create(font: Font, text: string, position: Vector2): Button = {
         Font = font
         Text = text
         Position = position
@@ -27,11 +27,11 @@ type Button = {
     }
 
     member private this.Rectangle =
-        let size = Raylib.MeasureTextEx(this.Font, this.Text, float32 this.Font.baseSize, 1.0f)
+        let size = MeasureTextEx(this.Font, this.Text, float32 this.Font.baseSize, 1.0f)
+
         Rectangle(this.Position.X, this.Position.Y, size.X, size.Y)
 
-    member this.Render(): unit =
-        
+    member this.Draw(): unit =
         let x = int this.Position.X
         let y = int this.Position.Y
         let width = int this.Rectangle.width
@@ -52,7 +52,8 @@ type Button = {
             | ButtonState.Default -> Button.DefaultColor
             | ButtonState.Hover -> Button.HoverColor
             | ButtonState.Clicked -> Button.ClickedColor
-        Raylib.DrawTextEx(
+
+        DrawTextEx(
             this.Font,
             this.Text,
             this.Position,
@@ -63,11 +64,12 @@ type Button = {
 
     member this.Update(input: Input): Button =
         let state =
-            if Raylib.CheckCollisionPointRec(input.MouseCoords, this.Rectangle) then
+            if CheckCollisionPointRec(input.MouseCoords, this.Rectangle) then
                 if input.MouseButtonPressed then
                     ButtonState.Clicked
                 else
                     ButtonState.Hover
             else
                 ButtonState.Default
+
         { this with State = state }

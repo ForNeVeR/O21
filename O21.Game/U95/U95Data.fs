@@ -12,16 +12,19 @@ type U95Data = {
     Sprites: Sprites
     Sounds: Map<SoundType, Sound>
     Help: DocumentFragment[]
+    Levels: Level[]
 }
     with
         static member Load (directory: string): Task<U95Data> = task {
             let! sprites = Sprites.LoadFrom directory
             let! help = Help.Load (Path.Combine(directory, "U95.HLP"))
             let! sounds = Sound.Load directory
+            let! level = Level.Load directory 1 2
             return {
                 Sprites = sprites
                 Help = help
                 Sounds = sounds
+                Levels = [| level |]
             }
         }
 

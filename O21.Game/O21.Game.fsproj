@@ -21,6 +21,7 @@
 
     <ItemGroup>
         <Compile Include="Documents\DocumentFragments.fs" />
+
         <Compile Include="U95\Background.fs" />
         <Compile Include="U95\HUDSprites.fs" />
         <Compile Include="U95\BonusSprites.fs" />
@@ -28,21 +29,23 @@
         <Compile Include="U95\Sprites.fs" />
         <Compile Include="U95\Help.fs" />
         <Compile Include="U95\Sound.fs" />
-        <Compile Include="U95\U95Data.fs" />
         <Compile Include="U95\Parser.fs" />
         <Compile Include="U95\Level.fs" />
+        <Compile Include="U95\U95Data.fs" />
         <Compile Include="U95\GameRules.fs" />
-        <Compile Include="GameContent.fs" />
+
         <Compile Include="HUDRenderer.fs" />
         <Compile Include="HUD.fs" />
-        <Compile Include="Game.fs" />
+        <Compile Include="Content.fs" />
         <Compile Include="Input.fs" />
-        <Compile Include="GameWorld.fs" />
+        <Compile Include="State.fs" />
+
         <Compile Include="Scenes\Button.fs" />
         <Compile Include="Scenes\PlayScene.fs" />
         <Compile Include="Scenes\HelpScene.fs" />
         <Compile Include="Scenes\MainMenuScene.fs" />
-        <Compile Include="O21Game.fs" />
+        
+        <Compile Include="Game.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
