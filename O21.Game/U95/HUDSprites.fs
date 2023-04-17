@@ -1,11 +1,25 @@
 ﻿namespace O21.Game
 
-open O21.Resources
+open System
+open Raylib_CsLo
+open type Raylib_CsLo.Raylib
 
-module HUDSprites =
-    
-    let private hud = [| 5; 25; 26; 27; 28; 29; 184; 185; 186; 192; 193; 194; 195; 196; 197; 198; 199; 200; 201; 224; 159;|]
-    let Load(sprites: Dib[]): Dib[] =
-       Array.init hud.Length (fun i ->
-           sprites[hud[i]]
-    )
+type HUDSprites = 
+    {
+        Abilities: Texture[]
+        HUDElements: Texture[]
+        Digits: Texture[]
+        Controls: Texture[]
+    }   
+    with
+        interface IDisposable with
+            member this.Dispose() =
+                for t in this.Abilities do
+                    UnloadTexture(t)
+                for t in this.HUDElements do
+                    UnloadTexture(t)
+                for t in this.Digits do
+                    UnloadTexture(t)
+                for t in this.Controls do
+                    UnloadTexture(t)
+                

@@ -10,7 +10,12 @@ module HUDRenderer =
             Color(207, 207, 207, 255) // block frame
         |]
     
-        let mutable sprites: Texture[] = Array.empty
+        let mutable sprites: HUDSprites = {
+                                            Abilities = Array.empty
+                                            HUDElements = Array.empty
+                                            Digits = Array.empty
+                                            Controls = Array.empty 
+                                            }
 
         let renderOxyLine (oxy: float32) =
             DrawRectangle(254, 369, 102, 12, BLACK)
@@ -18,21 +23,21 @@ module HUDRenderer =
         let renderScoreLine (score: int) =
             let mutable tmp = score
             for i = 6 downto 0 do
-                DrawTexture(sprites[tmp % 10 + 9], 128 + 13*i, 350, WHITE)
+                DrawTexture(sprites.Digits[tmp % 10], 128 + 13*i, 350, WHITE)
                 tmp <- tmp / 10
             
         let renderBonusLine()  =
-            for i = 0 to 4 do 
-                DrawRectangle(11 + 17*i, 365, 17, 17, BLACK)
+            for i = 1 to 5 do 
+                DrawTexture(sprites.Abilities[i], 11 + 17*(i-1), 365, WHITE)
         
         let renderLevel (level: int) =
             let mutable tmp = level
             for i = 1 downto 0 do
-                DrawTexture(sprites[tmp % 10 + 9], 68 + 13*i, 325, WHITE)
+                DrawTexture(sprites.Digits[tmp % 10], 68 + 13*i, 325, WHITE)
                 tmp <- tmp / 10
         
         let renderLives (lives: int) =
-            DrawTexture(sprites[lives % 10 + 9], 314, 320, WHITE) // what if the number of lives is a two-digit number?
+            DrawTexture(sprites.Digits[lives % 10], 314, 320, WHITE) // what if the number of lives is a two-digit number?
         
         let private drawFrame (x: int) (y: int) (width: int) (height: int) =
             DrawRectangle(x - 2, y - 2, 1, height + 4, palette[1])
@@ -48,7 +53,7 @@ module HUDRenderer =
 
         let private renderFirstBlock (x: int) (y: int) =
             DrawRectangle(x, y + 10, 106, 80, palette[0])
-            DrawTexture(sprites[5], x + 16, y + 27, WHITE)
+            DrawTexture(sprites.HUDElements[2], x + 16, y + 27, WHITE)
             renderLevel 1
        
             drawFrame (x + 68) (y + 25) 26 23
@@ -59,7 +64,7 @@ module HUDRenderer =
         let private renderSecondBlock (x: int) (y: int) =
             DrawRectangle(x, y + 10, 135, 80, palette[0])
             drawBlockFrame x (y + 10) 135 80
-            DrawTexture(sprites[7], x + 41, y + 20, WHITE)
+            DrawTexture(sprites.HUDElements[3], x + 41, y + 20, WHITE)
             drawFrame (x + 21) (y + 50) 91 23
         
             renderScoreLine 0
@@ -67,9 +72,9 @@ module HUDRenderer =
         let private renderThirdBlock (x: int) (y: int) =
             DrawRectangle(x, y + 10, 126, 80, palette[0])   
             drawBlockFrame x (y + 10) 126 80 
-            DrawTexture(sprites[2], x + 32, y + 20, WHITE)
+            DrawTexture(sprites.HUDElements[0], x + 32, y + 20, WHITE)
             drawFrame (x + 32) (y + 20) 52 23
-            DrawTexture(sprites[20], x + 32, y + 48, WHITE)
+            DrawTexture(sprites.HUDElements[4], x + 32, y + 48, WHITE)
         
             renderLives 1
             renderOxyLine 0f
@@ -77,23 +82,23 @@ module HUDRenderer =
         let private renderFourthBlock (x: int) (y: int) =
             DrawRectangle(x, y + 10, 94, 80, palette[0])
             drawBlockFrame x (y + 10) 94 80 
-            DrawTexture(sprites[4], x + 10, y + 38, WHITE)
+            DrawTexture(sprites.Controls[2], x + 10, y + 38, WHITE)
             drawBlockFrame (x + 10) (y + 38) 23 23
-            DrawTexture(sprites[1], x + 33, y + 38, WHITE)
+            DrawTexture(sprites.Controls[1], x + 33, y + 38, WHITE)
             drawBlockFrame (x + 33) (y + 38) 23 23
-            DrawTexture(sprites[6], x + 56, y + 38, WHITE)
+            DrawTexture(sprites.Controls[3], x + 56, y + 38, WHITE)
             drawBlockFrame (x + 56) 338 23 23
-            DrawTexture(sprites[19], x + 33, y + 14, WHITE)
+            DrawTexture(sprites.Controls[4], x + 33, y + 14, WHITE)
             drawBlockFrame (x + 33) 315 23 23
-            DrawTexture(sprites[0], x + 33, y + 61, WHITE)
+            DrawTexture(sprites.Controls[0], x + 33, y + 61, WHITE)
             drawBlockFrame (x + 33) (y + 61) 23 23
     
         let private renderFifthBlock (x: int) (y: int) =
             DrawRectangle(x, y + 10, 134, 80, palette[0])
             drawBlockFrame x (y + 10) 134 80
-            DrawTexture(sprites[3], x + 21, y + 22, WHITE)
+            DrawTexture(sprites.HUDElements[1], x + 21, y + 22, WHITE)
         
-        let renderAll (graphics:Texture[]) =
+        let renderAll (graphics:HUDSprites) =
             let x = 0
             let y = 300
             sprites <- graphics

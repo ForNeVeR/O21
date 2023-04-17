@@ -18,7 +18,8 @@ type Sprites = {
     Bricks: Map<int, Texture>
     Background: Texture[]
     Fishes: Fish[]
-    HUD: Texture[]
+    HUD: HUDSprites
+    Bonuses: BonusSprites
 }
     with
         interface IDisposable with
@@ -78,7 +79,22 @@ module Sprites =
         )
         let texture = LoadTextureFromImage(image)
         texture
-
+       
+    let private loadBonuses (exeGraphics: Dib[]): BonusSprites =
+        let lifebuoyMasks = [|172..183|]
+        let lifebuoyTextures = [|160..171|]
+        let bonusesMasks = [|202; 203; 205; 206; 207; 208; 209; 210; 211; 212|]
+        let bonusesTextures = [|213; 214; 216; 217; 218; 219; 220; 221; 222; 223|]
+        {
+            Lifebuoy = Array.init 12 (fun i ->
+                createSprite exeGraphics[lifebuoyTextures[i]] exeGraphics[lifebuoyMasks[i]]
+            )
+            Static = Array.init 10 (fun i ->
+                createSprite exeGraphics[bonusesTextures[i]] exeGraphics[bonusesMasks[i]]    
+            )
+            LifeBonus = createSprite exeGraphics[204] exeGraphics[215] 
+        }
+             
     let private loadBricks (brickGraphics: Dib[]) =
         seq { 1..9 }
         |> Seq.map(fun direction ->
@@ -89,7 +105,7 @@ module Sprites =
     
     let private loadBackgrounds (backgroundGraphics: Dib[]): Texture[] =
         Array.init backgroundGraphics.Length (fun i ->
-            createSprite backgroundGraphics[i] backgroundGraphics[i]
+            CreateSprite backgroundGraphics[i]
         )
         
     let private createFish (index: int) (fishGraphics: Dib[]): Fish =
@@ -111,16 +127,31 @@ module Sprites =
                   createSprite fishGraphics[shift + 143] fishGraphics[shift + 98]
                   |]
         }
-    
+               
     let private loadFishes (fishGraphics: Dib[]): Fish[] =
         Array.init (fishGraphics.Length / 36) ( fun i ->
             createFish i fishGraphics
         )
         
-    let private loadHUD (hudGraphics: Dib[]) =
-        Array.init (hudGraphics.Length) ( fun i ->
-            createSprite hudGraphics[i] hudGraphics[i]   
-        )
+    let private loadHUD (exeGraphics: Dib[]): HUDSprites =
+       let hud = [| 26; 27; 29; 185; 159;|]
+       let controls = [| 5; 25; 28; 184; 224; |]
+       let abilities = [| 186..191 |]
+       let digits = [| 192..201 |]
+       {
+           Abilities = Array.init abilities.Length (fun i ->
+               CreateSprite exeGraphics[abilities[i]]
+           )
+           HUDElements = Array.init hud.Length (fun i ->
+               CreateSprite exeGraphics[hud[i]]
+           )
+           Digits = Array.init digits.Length (fun i ->
+               CreateSprite exeGraphics[digits[i]]    
+           )
+           Controls = Array.init controls.Length (fun i ->
+               CreateSprite exeGraphics[controls[i]]    
+           )
+       }
 
     let LoadFrom (directory: string): Task<Sprites> = task {
         let brickResources = Graphics.Load(Path.Combine(directory, "U95_BRIC.DLL"))
@@ -129,14 +160,13 @@ module Sprites =
         
         let exeSprites = Graphics.Load(Path.Combine(directory, "U95.EXE"))
         
-        let hudSprites = HUDSprites.Load exeSprites
-        
         let backgrounds = Background.LoadBackgrounds(directory)
         
         return {
             Bricks = loadBricks brickResources
             Background = loadBackgrounds backgrounds
             Fishes = loadFishes fishes
-            HUD = loadHUD hudSprites
+            HUD = loadHUD exeSprites
+            Bonuses = loadBonuses exeSprites
         }
     }

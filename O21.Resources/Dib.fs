@@ -42,7 +42,7 @@ type Dib(dib: byte[]) =
             let paletteIndex = (byteValue >>> (7 - x % 8)) &&& byte 0x01
             palette[int paletteIndex]
         elif colorDepth = 4us then
-            let mutable stride = width / 2
+            let mutable stride =  if width % 2 = 0 then width / 2 else width / 2 + 1
             if stride % 4 <> 0 then stride <- stride + (4 - stride % 4)
             let rowOffset = y * stride
             let byteIndex = rowOffset + x / 2

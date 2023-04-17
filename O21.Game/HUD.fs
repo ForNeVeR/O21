@@ -1,7 +1,5 @@
 ﻿namespace O21.Game
 
-open Raylib_CsLo
-
 type HUD() =
     
     let mutable score = 0
@@ -26,5 +24,5 @@ type HUD() =
         level <- newLevel
         HUDRenderer.renderLevel level
         
-    member _.Init(sprites: Texture[]) =
+    member _.Init(sprites: HUDSprites) =
        HUDRenderer.renderAll sprites
