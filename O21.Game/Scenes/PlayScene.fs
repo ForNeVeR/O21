@@ -1,6 +1,5 @@
 namespace O21.Game.Scenes
 
-open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
 open O21.Game

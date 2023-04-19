@@ -2,6 +2,7 @@ namespace O21.Game.Scenes
 
 open System.Numerics
 open Raylib_CsLo
+open type Raylib_CsLo.Raylib
 
 open O21.Game
 
@@ -14,7 +15,7 @@ type Button = {
     Position: Vector2
     State: ButtonState
 } with
-    static member DefaultColor = Raylib.GRAY
+    static member DefaultColor = Raylib.BLACK
     static member HoverColor = Raylib.DARKGRAY
     static member ClickedColor = Raylib.BLACK
 
@@ -30,12 +31,27 @@ type Button = {
         Rectangle(this.Position.X, this.Position.Y, size.X, size.Y)
 
     member this.Render(): unit =
+        
+        let x = int this.Position.X
+        let y = int this.Position.Y
+        let width = int this.Rectangle.width
+        let height = int this.Rectangle.height
+        
+        DrawRectangle(x, y, width, height, Color(195, 195, 195, 255))
+        DrawRectangle(x-2, y-2, width, 2, WHITE)
+        DrawRectangle(x-2, y, 2, height, WHITE)
+        DrawRectangle(x-1, y+height, width+3, 2, Color(130,130,130, 255))
+        DrawRectangle(x+width, y, 2, height, Color(130, 130, 130, 255))
+        DrawRectangle(x-3, y-3, 2, height+6, BLACK)
+        DrawRectangle(x+width+2, y-3, 2, height+6, BLACK)
+        DrawRectangle(x-2, y-3, width+6, 2, BLACK)
+        DrawRectangle(x-2, y+height+2, width+6, 2, BLACK)
+                
         let color =
             match this.State with
             | ButtonState.Default -> Button.DefaultColor
             | ButtonState.Hover -> Button.HoverColor
             | ButtonState.Clicked -> Button.ClickedColor
-        Raylib.DrawRectangleLines(int this.Position.X, int this.Position.Y, int this.Rectangle.width, int this.Rectangle.height, Raylib.RED)
         Raylib.DrawTextEx(
             this.Font,
             this.Text,

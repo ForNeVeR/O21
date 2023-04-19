@@ -20,7 +20,7 @@ type HelpScene =
     with
         static member Init(content: GameContent, data: U95Data, previous: IGameScene): HelpScene = {
             Content = content
-            BackButton = Button.Create content.UiFontRegular "Back" <| Vector2(200f, 00f)
+            BackButton = Button.Create content.UiFontRegular "Back" <| Vector2(200f, 6f)
             Previous = previous
             OffsetY = 0f
             TotalHeight = HelpScene.GetFragmentsHeight content data.Help
