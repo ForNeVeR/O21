@@ -27,15 +27,14 @@ type Button = {
     }
 
     member private this.Rectangle =
-        let size = MeasureTextEx(this.Font, this.Text, float32 this.Font.baseSize, 1.0f)
-
-        Rectangle(this.Position.X, this.Position.Y, size.X, size.Y)
+        let size = Raylib.MeasureTextEx(this.Font, this.Text, float32 this.Font.baseSize, 1.0f)
+        Rectangle(this.Position.X, this.Position.Y, size.X + 22f, size.Y + 5f)
 
     member this.Draw(): unit =
         let x = int this.Position.X
         let y = int this.Position.Y
-        let width = int this.Rectangle.width
-        let height = int this.Rectangle.height
+        let width = int this.Rectangle.width 
+        let height = int this.Rectangle.height 
         
         DrawRectangle(x, y, width, height, Color(195, 195, 195, 255))
         DrawRectangle(x-2, y-2, width, 2, WHITE)
@@ -56,7 +55,7 @@ type Button = {
         DrawTextEx(
             this.Font,
             this.Text,
-            this.Position,
+            Vector2(float32 (x + 11), float32 (y + 2)),
             float32 this.Font.baseSize,
             0.0f,
             color

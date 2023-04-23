@@ -92,7 +92,7 @@ module Sprites =
             Static = Array.init 10 (fun i ->
                 createSprite exeGraphics[bonusesTextures[i]] exeGraphics[bonusesMasks[i]]    
             )
-            LifeBonus = createSprite exeGraphics[204] exeGraphics[215] 
+            LifeBonus = createSprite exeGraphics[215] exeGraphics[204] 
         }
              
     let private loadBricks (brickGraphics: Dib[]) =
