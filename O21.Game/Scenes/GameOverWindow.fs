@@ -16,7 +16,7 @@ type GameOverWindow =
             {
                 OkButton = Button.Create content.UiFontRegular "Ok" <| Vector2(130f, 130f)
                 Content = content
-                MinimizeButton = MinimizeButton.Create <| Vector2(35f, 35f)
+                MinimizeButton = MinimizeButton.Create <| Vector2(35f, 35f) 
             }
             
         interface IGameScene with
@@ -39,10 +39,7 @@ type GameOverWindow =
                         OkButton = this.OkButton.Update input
                         MinimizeButton = this.MinimizeButton.Update input 
                     }
-                let scene: IGameScene =
-                    if scene.OkButton.State = ButtonState.Clicked then PlayScene()
-                    elif scene.MinimizeButton.State = ButtonState.Clicked then PlayScene()
-                    else scene   
+                let scene: IGameScene = scene   
                 {
                     world with Scene = scene 
                 }
