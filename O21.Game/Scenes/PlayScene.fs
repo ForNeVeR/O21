@@ -8,18 +8,21 @@ open O21.Game
 open O21.Game.U95
 open O21.Game.U95.Parser
 
+
 type PlayScene = {
     CurrentLevel: Level
     LastShotTime: float option
     HUD: HUD
     Content: Content
+    MainMenu: IScene
 } with
 
-    static member Init(level: Level, content: Content): PlayScene = {
+    static member Init(level: Level, content: Content, mainMenu: IScene): PlayScene = {
         CurrentLevel = level
         LastShotTime = None
         HUD = HUD.Init()
-        Content = content 
+        Content = content
+        MainMenu = mainMenu 
     }
 
     interface IScene with
@@ -37,7 +40,7 @@ type PlayScene = {
                     SoundsToStartPlaying = state.SoundsToStartPlaying |> Set.add SoundType.Shot
                 }
             elif this.HUD.Lives < 0 then
-                { state with Scene = GameOverWindow.Init(this.Content) }  
+                { state with Scene = GameOverWindow.Init(this.Content, this, this.MainMenu) }  
             else
                 state
  

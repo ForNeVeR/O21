@@ -25,11 +25,14 @@ type MainMenuScene = {
                         PlayButton = this.PlayButton.Update input
                         HelpButton = this.HelpButton.Update input
                         GameOverButton = this.GameOverButton.Update input 
-                }
+                    }
                 let scene: IScene =
-                    if scene.PlayButton.State = ButtonState.Clicked then PlayScene.Init(state.U95Data.Levels[0])
-                    elif scene.HelpButton.State = ButtonState.Clicked then HelpScene.Init(this.Content, this, state.U95Data.Help)
-                    elif scene.GameOverButton.State = ButtonState.Clicked then GameOverWindow.Init(this.Content)
+                    if scene.PlayButton.State = ButtonState.Clicked then
+                        PlayScene.Init(state.U95Data.Levels[0], this.Content, this)
+                    elif scene.HelpButton.State = ButtonState.Clicked then
+                        HelpScene.Init(this.Content, this, state.U95Data.Help)
+                    elif scene.GameOverButton.State = ButtonState.Clicked then
+                        GameOverWindow.Init(this.Content, PlayScene.Init (this.Content, this), this)
                     else scene
                 { state with Scene = scene }
 
