@@ -1,7 +1,5 @@
 namespace O21.Game.Scenes
 
-open System.Numerics
-open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
 open O21.Game
@@ -46,7 +44,7 @@ type PlayScene = {
  
         member this.Draw(state: State) =           
             DrawTexture(state.U95Data.Sprites.Background[1], 0, 0, WHITE)
-            HUD.Render(state.U95Data.Sprites.HUD)
+            this.HUD.Render(state.U95Data.Sprites.HUD)
             let map = this.CurrentLevel.LevelMap
             for i = 0 to map.Length-1 do
                 for j = 0 to map[i].Length-1 do
