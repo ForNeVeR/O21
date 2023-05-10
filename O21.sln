@@ -6,11 +6,11 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8C826048-177C-41D2-ABB1-89B4DF2D132E}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		CONTRIBUTING.md = CONTRIBUTING.md
 		LICENSE.md = LICENSE.md
 		README.md = README.md
-		.gitignore = .gitignore
-		CONTRIBUTING.md = CONTRIBUTING.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{85EB6EE2-17F9-4087-885A-7372F988DADF}"
@@ -20,33 +20,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\main.yml = .github\workflows\main.yml
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "O21.Game", "O21.Game\O21.Game.fsproj", "{26A002F1-A77B-4339-99D7-866BDF4BC1E6}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "O21.Game", "O21.Game\O21.Game.fsproj", "{26A002F1-A77B-4339-99D7-866BDF4BC1E6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{ED5D37B9-3F2A-4C8C-9625-B6FA1152AF02}"
 	ProjectSection(SolutionItems) = preProject
 		docs\resources.md = docs\resources.md
 	EndProjectSection
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "O21.Resources", "O21.Resources\O21.Resources.fsproj", "{5E576B48-6262-4823-B065-403A066E3005}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "O21.Resources", "O21.Resources\O21.Resources.fsproj", "{5E576B48-6262-4823-B065-403A066E3005}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "O21.NE", "O21.NE\O21.NE.csproj", "{E4BFC594-A19D-4B97-9D3C-11E1315CFE27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "O21.NE", "O21.NE\O21.NE.csproj", "{E4BFC594-A19D-4B97-9D3C-11E1315CFE27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "O21.WinHelp", "O21.WinHelp\O21.WinHelp.csproj", "{7EE86C9A-E2B9-4DC6-8241-1599B7047001}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "O21.WinHelp", "O21.WinHelp\O21.WinHelp.csproj", "{7EE86C9A-E2B9-4DC6-8241-1599B7047001}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "O21.StreamUtil", "O21.StreamUtil\O21.StreamUtil.csproj", "{87A951E1-4146-46A5-AECD-3AEAD9270632}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "O21.StreamUtil", "O21.StreamUtil\O21.StreamUtil.csproj", "{87A951E1-4146-46A5-AECD-3AEAD9270632}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "O21.MRB", "O21.MRB\O21.MRB.csproj", "{C64EE6D7-A7D8-4824-A091-613A31C55FDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "O21.MRB", "O21.MRB\O21.MRB.csproj", "{C64EE6D7-A7D8-4824-A091-613A31C55FDD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{1B0FDDDC-F087-4ABC-9E6D-3862560986B1} = {85EB6EE2-17F9-4087-885A-7372F988DADF}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{26A002F1-A77B-4339-99D7-866BDF4BC1E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -73,5 +67,14 @@ Global
 		{C64EE6D7-A7D8-4824-A091-613A31C55FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C64EE6D7-A7D8-4824-A091-613A31C55FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C64EE6D7-A7D8-4824-A091-613A31C55FDD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1B0FDDDC-F087-4ABC-9E6D-3862560986B1} = {85EB6EE2-17F9-4087-885A-7372F988DADF}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0582F8D2-019C-4624-B044-7BE149EE3534}
 	EndGlobalSection
 EndGlobal

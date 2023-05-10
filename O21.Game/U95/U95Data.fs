@@ -16,8 +16,9 @@ type U95Data = {
 }
     with
         static member Load (directory: string): Task<U95Data> = task {
+            let defaultHelpRetriever = fun unit -> Help.Load (Path.Combine(directory, "U95.HLP"))
             let! sprites = Sprites.LoadFrom directory
-            let! help = Help.Load (Path.Combine(directory, "U95.HLP"))
+            let! help = O21.Localization.Help.HelpDescription defaultHelpRetriever
             let! sounds = Sound.Load directory
             let! level = Level.Load directory 1 2
             return {

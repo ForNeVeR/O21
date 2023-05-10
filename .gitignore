@@ -7,3 +7,4 @@ obj/
 .vscode
 
 .DS_Store
+/.vs

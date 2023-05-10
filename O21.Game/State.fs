@@ -1,6 +1,7 @@
 namespace O21.Game
 
 open O21.Game.U95
+open O21.Localization.Translations
 
 type Time = { 
     Total: float
@@ -20,4 +21,5 @@ and State = {
     Settings: Settings
     U95Data: U95Data
     SoundsToStartPlaying: Set<SoundType>
+    Language: Language
 }

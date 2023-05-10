@@ -1,8 +1,9 @@
-﻿namespace O21.Game.Scenes
+namespace O21.Game.Scenes
 
 open System.Numerics
 open O21.Game
 open type Raylib_CsLo.Raylib
+open O21.Localization.Translations
 
 type GameOverWindow =
     {
@@ -31,8 +32,9 @@ type GameOverWindow =
                 this.MinimizeButton.Render()
                 DrawTexture(state.U95Data.Sprites.Bonuses.LifeBonus, x+23, y+45, WHITE)
                 this.OkButton.Draw()
+                let translation = Translation state.Language
                 DrawTextEx(
-                    this.Content.UiFontRegular, "Игра окончена !!!",
+                    this.Content.UiFontRegular, translation.GameOverNotification,
                     Vector2(float32 x+80f,float32 y+50f),
                     float32 (this.Content.UiFontRegular.baseSize-5),
                     0f,

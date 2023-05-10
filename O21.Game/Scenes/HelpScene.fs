@@ -7,6 +7,7 @@ open O21.Game.Documents
 
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
+open O21.Localization.Translations
 
 type HelpScene = {
     Content: Content
@@ -17,14 +18,16 @@ type HelpScene = {
     HelpDocument: DocumentFragment[]
 } with        
 
-    static member Init(content: Content, previous: IScene, helpDocument: DocumentFragment[]): HelpScene = {
-        Content = content
-        BackButton = Button.Create(content.UiFontRegular, "Back", Vector2(200f, 00f))
-        Previous = previous
-        OffsetY = 0f
-        TotalHeight = HelpScene.GetFragmentsHeight content helpDocument
-        HelpDocument = helpDocument
-    }
+    static member Init(content: Content, previous: IScene, helpDocument: DocumentFragment[], language: Language): HelpScene = 
+        let translation = Translation language
+        {
+            Content = content
+            BackButton = Button.Create(content.UiFontRegular, translation.BackLabel, Vector2(200f, 00f))
+            Previous = previous
+            OffsetY = 0f
+            TotalHeight = HelpScene.GetFragmentsHeight content helpDocument
+            HelpDocument = helpDocument
+        }
 
     static member private GetScrollMomentum(input: Input) =
         let mouseScrollSpeed = 5f

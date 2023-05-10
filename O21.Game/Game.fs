@@ -6,6 +6,7 @@ open type Raylib_CsLo.Raylib
 
 open O21.Game.Scenes
 open O21.Game.U95
+open O21.Localization.Translations
 
 type Game(u95DataDirectory: string) =
     let mutable state = Unchecked.defaultof<State>
@@ -13,11 +14,13 @@ type Game(u95DataDirectory: string) =
 
     do
         content <- Content.Load()
+        let defaultLanguage = Language.English
         state <- {
-            Scene = MainMenuScene.Init(content)
+            Scene = MainMenuScene.Init(content, defaultLanguage)
             Settings = { SoundVolume = 0.1f }
             U95Data = (U95Data.Load u95DataDirectory).Result // TODO[#38]: Preloader, combine with downloader
             SoundsToStartPlaying = Set.empty
+            Language = defaultLanguage
         }
 
     member _.Update() =

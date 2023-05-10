@@ -1,18 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net7.0</TargetFramework>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Content Include="Resources\Inter-Regular.otf">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="Resources\Inter-Bold.otf">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
 
     <ItemGroup>
         <None Include="Resources\LICENSE.txt" />
@@ -21,6 +12,8 @@
 
     <ItemGroup>
         <Compile Include="Documents\DocumentFragments.fs" />
+        <Compile Include="Localization\Help.fs" />
+        <Compile Include="Localization\Translations.fs" />
 
         <Compile Include="U95\Background.fs" />
         <Compile Include="U95\HUDSprites.fs" />
@@ -53,6 +46,22 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Content Include="Localization\Translations\russian.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Localization\Translations\english.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Resources\Inter-Regular.otf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Resources\Inter-Bold.otf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FSharp.Data" Version="6.2.0" />
         <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />
     </ItemGroup>
 
