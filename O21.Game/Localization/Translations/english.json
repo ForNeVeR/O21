@@ -3,5 +3,6 @@
     "OverLabel": "Over",
     "PlayLabel": "Play",
     "BackLabel": "Back",
-    "GameOverNotification": "Game over !!!"
+    "GameOverNotification": "Game over !!!",
+    "LanguageLabel": "Change language"
 }

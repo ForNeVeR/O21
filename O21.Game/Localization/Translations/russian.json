@@ -2,5 +2,7 @@
     "HelpLabel": "Помощь",
     "OverLabel": "Проигрыш",
     "PlayLabel": "Играть",
-    "GameOverNotification": "Игра окончена !!!"
+    "BackLabel": "Назад",
+    "GameOverNotification": "Игра окончена !!!",
+    "LanguageLabel": "Смена языка"
 }

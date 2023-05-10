@@ -15,11 +15,11 @@ type GameOverWindow =
     }
     
     with
-        static member Init(content: Content, playScene: IScene, mainMenu: IScene) =
+        static member Init(content: Content, playScene: IScene, mainMenu: IScene, language: Language) =
             {
-                OkButton = Button.Create (content.UiFontRegular, "Ok", Vector2(288f, 229f))
+                OkButton = Button.Create (content.UiFontRegular, (fun _ -> "Ok"), Vector2(288f, 229f), language)
                 Content = content
-                MinimizeButton = MinimizeButton.Create <| Vector2(193f, 134f)
+                MinimizeButton = MinimizeButton.Create(Vector2(193f, 134f), language)
                 PlayScene = playScene
                 MainMenuScene = mainMenu 
             }
@@ -43,12 +43,12 @@ type GameOverWindow =
             member this.Update(input, time, state) =
                 let scene =
                     { this with
-                        OkButton = this.OkButton.Update input
+                        OkButton = this.OkButton.Update(input, state.Language)
                         MinimizeButton = this.MinimizeButton.Update input 
                     }
                 let scene: IScene =
-                    if this.OkButton.State = ButtonState.Clicked then this.MainMenuScene
-                    elif this.MinimizeButton.State = ButtonState.Clicked then this.PlayScene
+                    if this.OkButton.State.InteractionState = ButtonInteractionState.Clicked then this.MainMenuScene
+                    elif this.MinimizeButton.State.InteractionState = ButtonInteractionState.Clicked then this.PlayScene
                     else scene
                 {
                     state with Scene = scene 

@@ -1,9 +1,10 @@
-﻿namespace O21.Game.Scenes
+namespace O21.Game.Scenes
 
 open System.Numerics
 open O21.Game
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
+open O21.Localization.Translations
 
 type MinimizeButton =
     {
@@ -15,10 +16,13 @@ type MinimizeButton =
         
         member private this.Rectangle = Rectangle(this.Position.X, this.Position.Y, this.Size, this.Size)
             
-        static member Create(position: Vector2): MinimizeButton =
+        static member Create(position: Vector2, language: Language): MinimizeButton =
             {
                 Position = position
-                State = ButtonState.Default
+                State = {
+                    InteractionState = ButtonInteractionState.Default
+                    Language = language
+                }
                 Size = 18f
             }
         
@@ -28,10 +32,10 @@ type MinimizeButton =
             let size = int this.Size
             
             let color =
-                match this.State with
-                | ButtonState.Default -> WHITE
-                | ButtonState.Hover -> GRAY
-                | ButtonState.Clicked -> BLACK
+                match this.State.InteractionState with
+                | ButtonInteractionState.Default -> WHITE
+                | ButtonInteractionState.Hover -> GRAY
+                | ButtonInteractionState.Clicked -> BLACK
             
             DrawRectangle(x,y, size, size, Color(130,130,130, 255))
             DrawRectangleLines(x+3, y+8, 13, 3, BLACK)
@@ -42,9 +46,9 @@ type MinimizeButton =
             let state =
                 if Raylib.CheckCollisionPointRec(input.MouseCoords, this.Rectangle) then
                     if input.MouseButtonPressed then
-                        ButtonState.Clicked
+                        ButtonInteractionState.Clicked
                     else
-                        ButtonState.Hover
+                        ButtonInteractionState.Hover
                 else
-                    ButtonState.Default
-            { this with State = state }
+                    ButtonInteractionState.Default
+            { this with State = { this.State with InteractionState = state } }

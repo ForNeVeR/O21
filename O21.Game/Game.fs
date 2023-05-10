@@ -16,7 +16,7 @@ type Game(u95DataDirectory: string) =
         content <- Content.Load()
         let defaultLanguage = Language.English
         state <- {
-            Scene = MainMenuScene.Init(content, defaultLanguage)
+            Scene = MainMenuScene.Init(content)
             Settings = { SoundVolume = 0.1f }
             U95Data = (U95Data.Load u95DataDirectory).Result // TODO[#38]: Preloader, combine with downloader
             SoundsToStartPlaying = Set.empty

@@ -19,10 +19,9 @@ type HelpScene = {
 } with        
 
     static member Init(content: Content, previous: IScene, helpDocument: DocumentFragment[], language: Language): HelpScene = 
-        let translation = Translation language
         {
             Content = content
-            BackButton = Button.Create(content.UiFontRegular, translation.BackLabel, Vector2(200f, 00f))
+            BackButton = Button.Create(content.UiFontRegular, (fun language -> (Translation language).BackLabel), Vector2(200f, 00f), language)
             Previous = previous
             OffsetY = 0f
             TotalHeight = HelpScene.GetFragmentsHeight content helpDocument
@@ -84,11 +83,11 @@ type HelpScene = {
 
             let scene = {
                 this with
-                    BackButton = this.BackButton.Update input
+                    BackButton = this.BackButton.Update(input, state.Language)
                     OffsetY = offsetY
             }
             let scene: IScene =
-                if scene.BackButton.State = ButtonState.Clicked then this.Previous
+                if scene.BackButton.State.InteractionState = ButtonInteractionState.Clicked then this.Previous
                 else scene
             { state with Scene = scene }
 

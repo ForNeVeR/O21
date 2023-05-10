@@ -38,7 +38,7 @@ type PlayScene = {
                     SoundsToStartPlaying = state.SoundsToStartPlaying |> Set.add SoundType.Shot
                 }
             elif this.HUD.Lives < 0 then
-                { state with Scene = GameOverWindow.Init(this.Content, this, this.MainMenu) }  
+                { state with Scene = GameOverWindow.Init(this.Content, this, this.MainMenu, state.Language) }  
             else
                 state
  
