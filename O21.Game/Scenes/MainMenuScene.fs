@@ -33,7 +33,7 @@ type MainMenuScene = {
                     if scene.PlayButton.State = ButtonState.Clicked then
                         PlayScene.Init(state.U95Data.Levels[0], this.Content, this)
                     elif scene.HelpButton.State = ButtonState.Clicked then
-                        HelpScene.Init(this.Content, this, state.U95Data.Help, state.Language)
+                        HelpScene.Init(this.Content, this, state.Language |> state.U95Data.Help, state.Language)
                     elif scene.GameOverButton.State = ButtonState.Clicked then
                         GameOverWindow.Init(this.Content, PlayScene.Init (state.U95Data.Levels[0], this.Content, this), this)
                     else scene

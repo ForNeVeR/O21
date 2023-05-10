@@ -6,6 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <None Include="localization\help\english.md">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Include="Resources\LICENSE.txt" />
         <None Include="Resources\README.md" />
     </ItemGroup>
