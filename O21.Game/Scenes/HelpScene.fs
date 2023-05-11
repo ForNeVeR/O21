@@ -8,25 +8,34 @@ open O21.Game.Documents
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
-type HelpScene = {
-    Content: Content
-    Previous: IScene
-    BackButton: Button
-    OffsetY: float32
-    TotalHeight: float32
-    HelpDocument: DocumentFragment[]
-} with        
+[<RequireQualifiedAccess>]
+module HelpScene =
+    let measureFragment content style (text: string) =
+        let font =
+            match style with
+                | Style.Bold -> content.UiFontBold
+                | _ -> content.UiFontRegular
 
-    static member Init(content: Content, previous: IScene, helpDocument: DocumentFragment[]): HelpScene = {
-        Content = content
-        BackButton = Button.Create(content.UiFontRegular, "Back", Vector2(200f, 00f))
-        Previous = previous
-        OffsetY = 0f
-        TotalHeight = HelpScene.GetFragmentsHeight content helpDocument
-        HelpDocument = helpDocument
-    }
+        font, MeasureTextEx(font, text, float32 font.baseSize, 0.0f)
 
-    static member private GetScrollMomentum(input: Input) =
+    let getFragmentsHeight content fragments =
+        let mutable fragmentsHeight = 0f
+        let mutable currentLineHeight = 0f
+
+        for fragment in fragments do
+            match fragment with
+                | DocumentFragment.Text(style, text) ->
+                    let _, size = measureFragment content style text
+                    currentLineHeight <- max currentLineHeight size.Y
+                | DocumentFragment.NewParagraph ->
+                    fragmentsHeight <- fragmentsHeight + currentLineHeight
+                    currentLineHeight <- 0f
+                | DocumentFragment.Image texture ->
+                    currentLineHeight <- max currentLineHeight (float32 texture.height)
+
+        fragmentsHeight
+
+    let getScrollMomentum (input: Input) =
         let mouseScrollSpeed = 5f
         let keyboardScrollSpeed = 2f
 
@@ -42,62 +51,38 @@ type HelpScene = {
             else
                 0f
 
-    static member private MeasureFragment content style (text: string) =
-        let font =
-            match style with
-                | Style.Bold -> content.UiFontBold
-                | _ -> content.UiFontRegular
-
-        font, MeasureTextEx(font, text, float32 font.baseSize, 0.0f)
-
-    static member private GetFragmentsHeight content fragments =
-        let mutable fragmentsHeight = 0f
-        let mutable currentLineHeight = 0f
-
-        for fragment in fragments do
-            match fragment with
-                | DocumentFragment.Text(style, text) ->
-                    let _, size = HelpScene.MeasureFragment content style text
-                    currentLineHeight <- max currentLineHeight size.Y
-                | DocumentFragment.NewParagraph ->
-                    fragmentsHeight <- fragmentsHeight + currentLineHeight
-                    currentLineHeight <- 0f
-                | DocumentFragment.Image texture ->
-                    currentLineHeight <- max currentLineHeight (float32 texture.height)
-
-        fragmentsHeight
+type HelpScene(content: Content, helpDocument: DocumentFragment[]) =
+    let backButton = Button(content.UiFontRegular, "Back", Vector2(200f, 00f))
+    let totalHeight = HelpScene.getFragmentsHeight content helpDocument
+    let mutable offsetY = 0f
 
     interface IScene with               
-        member this.Update(input, _, state) =
-            let mutable fragmentsHeight = this.TotalHeight
+        member _.Update(input, _) =
+            let mutable fragmentsHeight = totalHeight
             let renderHeight = GetRenderHeight() / 2 |> float32
             let maxOffsetY = fragmentsHeight - renderHeight + 4f // add some padding to the bottom
-            let offsetYAfterScroll = this.OffsetY + HelpScene.GetScrollMomentum input
+            let offsetYAfterScroll = offsetY + HelpScene.getScrollMomentum input
 
-            let offsetY =
+            backButton.Update(input)
+            offsetY <-
                 if offsetYAfterScroll >= 0f && offsetYAfterScroll <= maxOffsetY
                 then offsetYAfterScroll
-                else this.OffsetY
+                else offsetY
 
-            let scene = {
-                this with
-                    BackButton = this.BackButton.Update input
-                    OffsetY = offsetY
-            }
-            let scene: IScene =
-                if scene.BackButton.State = ButtonState.Clicked then this.Previous
-                else scene
-            { state with Scene = scene }
+            if backButton.State = ButtonState.Clicked then
+                Some Scene.MainMenu
+            else
+                None
 
-        member this.Draw(_) =
-            let mutable y = -this.OffsetY
+        member _.Draw() =
+            let mutable y = -offsetY
             let mutable x = 0f
             let mutable currentLineHeight = 0f
 
-            for fragment in this.HelpDocument do
+            for fragment in helpDocument do
                 match fragment with
                     | DocumentFragment.Text(style, text) ->
-                        let font, size = HelpScene.MeasureFragment this.Content style text
+                        let font, size = HelpScene.measureFragment content style text
                         DrawTextEx(font, text, Vector2(x, y), float32 font.baseSize, 0.0f, BLACK)
                         x <- x + size.X
                         currentLineHeight <- max currentLineHeight size.Y
@@ -111,4 +96,4 @@ type HelpScene = {
                         x <- x + float32 texture.width
                         currentLineHeight <- max currentLineHeight (float32 texture.height)
 
-            this.BackButton.Draw()  
+            backButton.Draw()  

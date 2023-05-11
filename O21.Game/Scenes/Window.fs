@@ -2,10 +2,8 @@
 
 open type Raylib_CsLo.Raylib
 
-module WindowRenderer =
-    
-    let render(x:int, y: int) =    // Render the background and window frame
-        
+module Window =
+    let draw(x:int, y: int) =    // Render the background and window frame
         DrawRectangle(0,0, 600, 480, GRAY) 
         DrawRectangleLines(0,0, 600, 480, BLACK)
         DrawRectangleLines(1,1, 598, 478, WHITE)  

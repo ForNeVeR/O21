@@ -1,64 +1,55 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <Content Include="Resources\Inter-Regular.otf">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="Resources\Inter-Bold.otf">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="Resources\LICENSE.txt" />
-        <None Include="Resources\README.md" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Compile Include="Documents\DocumentFragments.fs" />
-
-        <Compile Include="U95\Background.fs" />
-        <Compile Include="U95\HUDSprites.fs" />
-        <Compile Include="U95\BonusSprites.fs" />
-        <Compile Include="U95\Fish.fs" />
-        <Compile Include="U95\Sprites.fs" />
-        <Compile Include="U95\Help.fs" />
-        <Compile Include="U95\Sound.fs" />
-        <Compile Include="U95\Parser.fs" />
-        <Compile Include="U95\Level.fs" />
-        <Compile Include="U95\U95Data.fs" />
-        <Compile Include="U95\GameRules.fs" />
-
-        <Compile Include="HUDRenderer.fs" />
-        <Compile Include="HUD.fs" />
-        <Compile Include="Content.fs" />
-        <Compile Include="Input.fs" />
-        <Compile Include="State.fs" />
-
-        <Compile Include="Scenes\Button.fs" />
-        <Compile Include="Scenes\MinimizeButton.fs" />
-        <Compile Include="Scenes\WindowRenderer.fs" />
-        <Compile Include="Scenes\GameOverWindow.fs" />
-        <Compile Include="Scenes\PlayScene.fs" />
-        <Compile Include="Scenes\HelpScene.fs" />
-        <Compile Include="Scenes\MainMenuScene.fs" />
-        
-        <Compile Include="Game.fs" />
-        <Compile Include="Program.fs" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\O21.MRB\O21.MRB.csproj" />
-        <ProjectReference Include="..\O21.Resources\O21.Resources.fsproj" />
-        <ProjectReference Include="..\O21.WinHelp\O21.WinHelp.csproj" />
-    </ItemGroup>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Resources\Inter-Regular.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Inter-Bold.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\LICENSE.txt" />
+    <None Include="Resources\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Documents\DocumentFragments.fs" />
+    <Compile Include="U95\Background.fs" />
+    <Compile Include="U95\HUDSprites.fs" />
+    <Compile Include="U95\BonusSprites.fs" />
+    <Compile Include="U95\Fish.fs" />
+    <Compile Include="U95\Sprites.fs" />
+    <Compile Include="U95\Help.fs" />
+    <Compile Include="U95\Sound.fs" />
+    <Compile Include="U95\Parser.fs" />
+    <Compile Include="U95\Level.fs" />
+    <Compile Include="U95\U95Data.fs" />
+    <Compile Include="U95\GameRules.fs" />
+    <Compile Include="HUDRenderer.fs" />
+    <Compile Include="HUD.fs" />
+    <Compile Include="Content.fs" />
+    <Compile Include="Input.fs" />
+    <Compile Include="Time.fs" />
+    <Compile Include="Scene.fs" />
+    <Compile Include="Scenes\Button.fs" />
+    <Compile Include="Scenes\MinimizeButton.fs" />
+    <Compile Include="Scenes\Window.fs" />
+    <Compile Include="Scenes\GameOverScene.fs" />
+    <Compile Include="Scenes\PlayScene.fs" />
+    <Compile Include="Scenes\HelpScene.fs" />
+    <Compile Include="Scenes\MainMenuScene.fs" />
+    <Compile Include="Game.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\O21.MRB\O21.MRB.csproj" />
+    <ProjectReference Include="..\O21.Resources\O21.Resources.fsproj" />
+    <ProjectReference Include="..\O21.WinHelp\O21.WinHelp.csproj" />
+  </ItemGroup>
 </Project>
