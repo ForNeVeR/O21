@@ -5,6 +5,7 @@ open System.Collections.Generic
 open System.Threading.Tasks
 open System.IO
 open System.Threading
+open LocalizationPaths
 
 type HelpRequest =
     | MarkdownHelp of string * CancellationToken
@@ -26,5 +27,5 @@ let private readMarkdown(file: string, cancellationToken: CancellationToken) =
 
 let HelpDescription(request: HelpRequest) =
         match request with
-            | MarkdownHelp (name, cancellationToken) -> readMarkdown($"Localization/Help/{name}.md", cancellationToken)
+            | MarkdownHelp (name, cancellationToken) -> readMarkdown($"{HelpFolder()}/{name}.md", cancellationToken)
             | RussianHelp hlpReader -> hlpReader()

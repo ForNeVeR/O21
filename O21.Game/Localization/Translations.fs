@@ -2,6 +2,7 @@ module O21.Localization.Translations
 
 open FSharp.Data
 open System.IO
+open LocalizationPaths
 
 type TranslationLanguageType = 
     | Json
@@ -18,14 +19,12 @@ type Language = {
 
 type private Provider = JsonProvider<"Localization/Translations/english.json">
 
-let private rootFolder = "Localization/Translations/"
-
 let Translation(language: Language) =
     Provider.Load (match language.Type with
-                    | Json -> $"{rootFolder}{language.Name.ToLowerInvariant()}.json")
+                    | Json -> $"{TranslationsFolder()}{language.Name.ToLowerInvariant()}.json")
 
 let AvailableLanguages = 
-    let files = Directory.GetFiles(rootFolder, "*.json")
+    let files = Directory.GetFiles(TranslationsFolder(), "*.json")
     seq {
         for file in files do
             let fileName = (Path.GetFileNameWithoutExtension file).ToLowerInvariant()
@@ -33,8 +32,8 @@ let AvailableLanguages =
                 Name = fileName
                 Type = TranslationLanguageType.Json
                 HelpRequestType = match fileName with
-                                | "russian" -> HelpRequestType.RussianHelp
-                                | _ -> HelpRequestType.MarkdownHelp
+                                    | "russian" -> HelpRequestType.RussianHelp
+                                    | _ -> HelpRequestType.MarkdownHelp
             }
     } |> Seq.cache
 

@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Localization\LocalizationPaths.fs" />
         <None Include="Localization\Help\english.md">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
