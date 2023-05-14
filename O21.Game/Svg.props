@@ -1,0 +1,15 @@
+<Project>
+    <Target Name="DotNetToolRestore"
+            BeforeTargets="ProcessSvgFiles"
+            Inputs="..\.config\dotnet-tools.json"
+            Outputs="$(IntermediateOutputPath)\dotnet-tool-restore.timestamp">
+        <Exec Command="dotnet tool restore" WorkingDirectory=".." />
+        <Touch Files="$(IntermediateOutputPath)\dotnet-tool-restore.timestamp" AlwaysCreate="true" />
+    </Target>
+
+    <Target Name="ProcessSvgFiles" BeforeTargets="Build" DependsOnTargets="DotNetToolRestore"
+            Inputs="@(Svg)"
+            Outputs="@(Svg->'$(OutputPath)\Resources\%(FileName).png')">
+        <Exec Command="dotnet tool run Svg.Skia.Converter --inputFiles @(Svg) --outputDirectory $(OutputPath)\Resources" />
+    </Target>
+</Project>

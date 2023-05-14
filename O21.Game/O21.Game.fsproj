@@ -15,8 +15,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Svg Include="Artwork\submarine.svg" />
         <None Include="Resources\LICENSE.txt" />
         <None Include="Resources\README.md" />
+        <None Include="Svg.props" />
     </ItemGroup>
 
     <ItemGroup>
@@ -50,6 +52,8 @@
     <ItemGroup>
         <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />
     </ItemGroup>
+    
+    <Import Project="Svg.props" />
 
     <ItemGroup>
         <ProjectReference Include="..\O21.MRB\O21.MRB.csproj" />
