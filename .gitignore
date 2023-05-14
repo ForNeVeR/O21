@@ -7,4 +7,6 @@ obj/
 .vscode
 
 .DS_Store
+
 /.vs
+/O21.Game/Properties/launchSettings.json

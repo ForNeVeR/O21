@@ -1,6 +1,7 @@
 namespace O21.Game.Scenes
 
 open System.Numerics
+open System.Linq
 open O21.Game
 open O21.Game.U95
 open O21.Localization.Translations
@@ -14,7 +15,7 @@ type MainMenuScene = {
 }
     with
         static member Init(content: Content): MainMenuScene = 
-            let defaultLanguage = English
+            let defaultLanguage = DefaultLanguage
             {
                 Content = content
                 PlayButton = Button.Create (content.UiFontRegular, (fun language -> (Translation language).PlayLabel), Vector2(10f, 10f), defaultLanguage)
@@ -33,16 +34,20 @@ type MainMenuScene = {
                         LanguageButton = this.LanguageButton.Update(input, state.Language) 
                     }
                 if scene.LanguageButton.State.InteractionState = ButtonInteractionState.Clicked then
-                    let newLanguage = match state.Language with 
-                                                | English -> Russian
-                                                | Russian -> English
+                    let languagesWithIndex = (Seq.mapi (fun i -> fun v -> (i, v)) AvailableLanguages)
+                    let numberOfLanguages = AvailableLanguages.Count()
+                    let (currentLanguageIndex, _) = languagesWithIndex |> (Seq.map (fun (index, lang) -> (index, lang = state.Language))) |> Seq.filter (fun (index, isCurrentLanguage) -> isCurrentLanguage) |> Enumerable.First
+                    let (_, newLanguage) = match currentLanguageIndex with
+                                                | index when index = (numberOfLanguages - 1) -> languagesWithIndex.First()
+                                                | index -> (Seq.filter (fun (languageIndex, _) -> languageIndex = (index + 1)) languagesWithIndex).First()
                     { state with Language = newLanguage }
                 else 
                     let scene: IScene =
                         if scene.PlayButton.State.InteractionState = ButtonInteractionState.Clicked then
                             PlayScene.Init(state.U95Data.Levels[0], this.Content, this)
                         elif scene.HelpButton.State.InteractionState = ButtonInteractionState.Clicked then
-                            HelpScene.Init(this.Content, this, state.Language |> state.U95Data.Help, state.Language)
+                            let loadedHelp = (state.Language |> state.U95Data.Help).Result
+                            HelpScene.Init(this.Content, this, loadedHelp, state.Language)
                         elif scene.GameOverButton.State.InteractionState = ButtonInteractionState.Clicked then
                             GameOverWindow.Init(this.Content, PlayScene.Init (state.U95Data.Levels[0], this.Content, this), this, state.Language)
                         else scene

@@ -14,7 +14,7 @@ type Game(u95DataDirectory: string) =
 
     do
         content <- Content.Load()
-        let defaultLanguage = Language.English
+        let defaultLanguage = DefaultLanguage
         state <- {
             Scene = MainMenuScene.Init(content)
             Settings = { SoundVolume = 0.1f }

@@ -7,7 +7,7 @@ open System.IO
 open System.Threading
 
 type HelpRequest =
-    | EnglishHelp of CancellationToken
+    | MarkdownHelp of string * CancellationToken
     | RussianHelp of (unit -> Task<DocumentFragment array>)
 
 let private readMarkdown(file: string, cancellationToken: CancellationToken) =
@@ -26,5 +26,5 @@ let private readMarkdown(file: string, cancellationToken: CancellationToken) =
 
 let HelpDescription(request: HelpRequest) =
         match request with
-            | EnglishHelp cancellationToken -> readMarkdown("Localization/Help/english.md", cancellationToken)
+            | MarkdownHelp (name, cancellationToken) -> readMarkdown($"Localization/Help/{name}.md", cancellationToken)
             | RussianHelp hlpReader -> hlpReader()
