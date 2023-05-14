@@ -6,9 +6,9 @@ open O21.Game.Scenes
 open O21.Game.U95
 
 module O21Game =
-    let private init (dataDirectory: string) gameData = {
+    let private init (config: Config) (dataDirectory: string) gameData = {
         SoundVolume = 0.1f
-        Scene = LoadingScene(GameContent.Load(), gameData)
+        Scene = LoadingScene(config, GameContent.Load(), gameData)
         // TODO[#47]: Async commands
         CurrentLevel = (Level.Load dataDirectory 1 2).Result
         SoundsToStartPlaying = Set.empty
@@ -29,11 +29,11 @@ module O21Game =
         Raylib.ClearBackground(Raylib.WHITE)
         world.Scene.Render gameData world
 
-    let game (dataDirectory: string) = {
+    let game (config: Config) (dataDirectory: string) = {
         LoadGameData = fun () ->
             // TODO[#38]: Preloader, combine with downloader
             (U95Data.Load dataDirectory).Result
-        Init = init dataDirectory
+        Init = init config dataDirectory
         HandleInput = Input.handle
         Update = update
         PostUpdate = postUpdate

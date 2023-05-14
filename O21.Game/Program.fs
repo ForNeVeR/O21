@@ -84,7 +84,7 @@ let main(args: string[]): int =
             IsFixedTimeStep = false
         }
 
-        GameState.run config (O21Game.game dataDir)
+        GameState.run config (O21Game.game config dataDir)
 
         ()
     | _ -> printfn "Usage:\nexport <inputFile> <outDir>: export resources\n<dataDir>: start the game"

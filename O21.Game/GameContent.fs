@@ -12,16 +12,17 @@ type GameContent = {
     LoadingTexture: Texture
 } with
     static member Load(): GameContent = 
-        let workingDir = Path.GetDirectoryName(Environment.ProcessPath)
+        let binDir = Path.GetDirectoryName(Environment.ProcessPath)
         let pathToResource fileName =
-            Path.Combine(workingDir, "Resources", fileName)
+            Path.Combine(binDir, "Resources", fileName)
         let fontChars = [|
             for i in 0..95 -> 32 + i // Basic ASCII characters
-            for i in 0..255 -> 0x400 + i // Cyrillic characters 
+            for i in 0..255 -> 0x400 + i // Cyrillic characters
+            yield int '…'
         |]
         use ptr = fixed fontChars
         {
             UiFontRegular = Raylib.LoadFontEx(pathToResource "Inter-Regular.otf", 12, ptr, fontChars.Length)
             UiFontBold = Raylib.LoadFontEx(pathToResource "Inter-Bold.otf", 12, ptr, fontChars.Length)
-            LoadingTexture = Raylib.LoadTexture "../../../../art/submarine.png" // TODO: Proper path to embedded resources
+            LoadingTexture = Raylib.LoadTexture(pathToResource "submarine.png")
         }
