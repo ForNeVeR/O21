@@ -8,7 +8,7 @@
     <ItemGroup>
         <Compile Include="Localization\LocalizationPaths.fs" />
         <None Include="Localization\Help\english.md">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Include="Resources\LICENSE.txt" />
         <None Include="Resources\README.md" />
@@ -50,11 +50,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Localization\Translations\russian.json">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="Localization\Help\Images\*.*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="Localization\Translations\english.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Content Include="Localization\Translations\*.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="Resources\Inter-Regular.otf">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -66,6 +66,7 @@
 
     <ItemGroup>
         <PackageReference Include="FSharp.Data" Version="6.2.0" />
+        <PackageReference Include="FSharp.Formatting" Version="18.1.0" />
         <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />
     </ItemGroup>
 
@@ -73,5 +74,9 @@
         <ProjectReference Include="..\O21.MRB\O21.MRB.csproj" />
         <ProjectReference Include="..\O21.Resources\O21.Resources.fsproj" />
         <ProjectReference Include="..\O21.WinHelp\O21.WinHelp.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Localization\Help\Images\" />
     </ItemGroup>
 </Project>

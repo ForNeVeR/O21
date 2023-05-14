@@ -8,5 +8,5 @@ obj/
 
 .DS_Store
 
-/.vs
-/O21.Game/Properties/launchSettings.json
+.vs/
+*/Properties/launchSettings.json

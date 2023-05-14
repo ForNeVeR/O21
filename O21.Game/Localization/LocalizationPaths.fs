@@ -11,3 +11,6 @@ let TranslationsFolder() =
 
 let HelpFolder() =
     rootFolder() + "Help/"
+
+let HelpImagesFolder() =
+    HelpFolder() + "Images/"
