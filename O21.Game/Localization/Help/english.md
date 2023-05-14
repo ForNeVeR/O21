@@ -5,7 +5,8 @@ Programming: Anton Butsev
 Graphics: Evgeniy Kharkevich
 
 Music and sound design: Alexander Chistiakov
-- - -
+
+---
 Welcome to the underwater world!
 
 You are a captain of a supermodern submarine U-95.
@@ -17,6 +18,7 @@ Apart from the monsters, the underwater realm contain lots of
 useful items: diskettes, light bulbs, compasses, etc. 
 
 Though the most useful one is a lifebuoy:
+
 ![lifebuoy](lifebuoy)
 
 It allows to refill your oxygen supply or 
