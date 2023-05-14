@@ -14,6 +14,7 @@ type U95Data = {
     Help: DocumentFragment[]
 }
     with
+        
         static member Load (directory: string): Task<U95Data> = task {
             let! sprites = Sprites.LoadFrom directory
             let! help = Help.Load (Path.Combine(directory, "U95.HLP"))
