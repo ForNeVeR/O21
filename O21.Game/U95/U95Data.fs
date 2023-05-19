@@ -40,8 +40,8 @@ type U95Data private (sprites0: Sprites, sounds0: Map<SoundType, Sound>, help0: 
 
             let markdownHelp = fun (name: string) -> (O21.Localization.Help.HelpDescription (HelpRequest.MarkdownHelp (name, CancellationToken.None)))
             let help = fun (language: Language) -> match language.HelpRequestType with 
-                                        | HelpRequestType.RussianHelp -> O21.Localization.Help.HelpDescription (HelpRequest.RussianHelp (fun () -> Help.Load (Path.Combine(directory, "U95.HLP"))))
-                                        | HelpRequestType.MarkdownHelp -> markdownHelp language.Name
+                                                    | HelpRequestType.RussianHelp -> O21.Localization.Help.HelpDescription (HelpRequest.RussianHelp (fun () -> Help.Load (Path.Combine(directory, "U95.HLP"))))
+                                                    | HelpRequestType.MarkdownHelp -> markdownHelp language.Name
             let! sounds = Sound.Load directory
             let! level = Level.Load directory 1 2
             return new U95Data(sprites, sounds, CachedAsyncFunc help, [| level |])
