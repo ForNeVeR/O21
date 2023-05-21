@@ -32,7 +32,7 @@ let main(args: string[]): int =
 
             match entry.FileName with
             | x when x.StartsWith "|bm" ->
-                let dib = Help.extractDibImageFromMrb bytes
+                let dib = HlpFile.extractDibImageFromMrb bytes
                 dibs.Add dib
             | "|SYSTEM" ->
                 use stream = new MemoryStream(bytes)

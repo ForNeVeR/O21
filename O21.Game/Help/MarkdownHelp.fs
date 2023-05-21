@@ -1,4 +1,4 @@
-module O21.Localization.Help
+module O21.Localization.MarkdownHelp
 
 open O21.Game.Documents
 open System.Collections.Generic

@@ -1,17 +1,19 @@
-module O21.Game.U95.Help
+module O21.Game.U95.HlpFile
 
 open System.IO
 open System.Text
 open System.Threading.Tasks
 
 open Raylib_CsLo
+open Oxage.Wmf.Records
+
 open O21.Game.Documents
+open O21.Game.TextureUtils
 open O21.MRB
 open O21.Resources
 open O21.WinHelp
 open O21.WinHelp.Fonts
 open O21.WinHelp.Topics
-open Oxage.Wmf.Records
 
 let private loadFontDescriptors(content: byte[]) =
     use stream = new MemoryStream(content)
@@ -87,7 +89,7 @@ let Load (helpFile: string): Task<DocumentFragment[]> = task {
         let name = $"|bm{string index}"
         let file = files[name]
         let dib = extractDibImageFromMrb <| helpFile.ReadFile file
-        Sprites.CreateSprite dib
+        CreateSprite dib
 
     let contentEncoding = Encoding.GetEncoding 1251 // TODO[#57]: Extract from config
     return

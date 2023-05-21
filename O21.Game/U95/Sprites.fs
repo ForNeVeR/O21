@@ -3,16 +3,14 @@ namespace O21.Game.U95
 open System
 open System.IO
 open System.Threading.Tasks
-open Microsoft.FSharp.NativeInterop
 
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
 open O21.Game
 open O21.Game.U95.Fish
+open O21.Game.TextureUtils
 open O21.Resources
-
-#nowarn "9"
 
 type Sprites = {
     Bricks: Map<int, Texture>
@@ -31,55 +29,6 @@ type Sprites = {
 
 module Sprites =
 
-    let private transparentColor = struct(0xFFuy, 0xFFuy, 0xFFuy)
-    let private isColor(struct(r1, g1, b1), struct(r2, g2, b2)) =
-        r1 = r2 && g1 = g2 && b1 = b2
-
-    let private createSprite (colors: Dib) (transparency: Dib) =
-        let width = colors.Width
-        let height = colors.Height
-        let image = GenImageColor(width, height, BLANK)
-        let colors = Array.init (width * height) (fun i ->
-            let x = i % width
-            let y = i / width
-            let isTransparent = isColor(transparency.GetPixel(x, y), transparentColor)
-            if isTransparent then
-                BLANK
-            else
-                let struct(r, g, b) = colors.GetPixel(x, y)
-                Color(r, g, b, 255uy)
-        )
-        use colorsPtr = fixed colors
-        let image = Image(
-            data = NativePtr.toVoidPtr colorsPtr,
-            width = width,
-            height = height,
-            format = int PixelFormat.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
-            mipmaps = 1
-        )
-        let texture = LoadTextureFromImage(image)
-        texture
-
-    let CreateSprite (colors: Dib) =
-        let width = colors.Width
-        let height = colors.Height
-        let colors = Array.init (width * height) (fun i ->
-            let x = i % width
-            let y = i / width
-            let struct(r, g, b) = colors.GetPixel(x, y)
-            Color(r, g, b, 255uy)
-        )
-        use colorsPtr = fixed colors
-        let image = Image(
-            data = NativePtr.toVoidPtr colorsPtr,
-            width = width,
-            height = height,
-            format = int PixelFormat.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
-            mipmaps = 1
-        )
-        let texture = LoadTextureFromImage(image)
-        texture
-       
     let private loadBonuses (exeGraphics: Dib[]): BonusSprites =
         let lifebuoyMasks = [|172..183|]
         let lifebuoyTextures = [|160..171|]
@@ -87,12 +36,12 @@ module Sprites =
         let bonusesTextures = [|213; 214; 216; 217; 218; 219; 220; 221; 222; 223|]
         {
             Lifebuoy = Array.init 12 (fun i ->
-                createSprite exeGraphics[lifebuoyTextures[i]] exeGraphics[lifebuoyMasks[i]]
+                CreateTransparentSprite exeGraphics[lifebuoyTextures[i]] exeGraphics[lifebuoyMasks[i]]
             )
             Static = Array.init 10 (fun i ->
-                createSprite exeGraphics[bonusesTextures[i]] exeGraphics[bonusesMasks[i]]    
+                CreateTransparentSprite exeGraphics[bonusesTextures[i]] exeGraphics[bonusesMasks[i]]
             )
-            LifeBonus = createSprite exeGraphics[215] exeGraphics[204] 
+            LifeBonus = CreateTransparentSprite exeGraphics[215] exeGraphics[204]
         }
              
     let private loadBricks (brickGraphics: Dib[]) =
@@ -100,7 +49,7 @@ module Sprites =
         |> Seq.map(fun direction ->
             let colors = brickGraphics[direction]
             let transparency = brickGraphics[direction + 10]
-            direction, createSprite colors transparency
+            direction, CreateTransparentSprite colors transparency
         ) |> Map.ofSeq
     
     let private loadBackgrounds (backgroundGraphics: Dib[]): Texture[] =
@@ -115,16 +64,16 @@ module Sprites =
             Height = fishGraphics[index * 9].Height
             
             LeftDirection = Array.init 8 (fun i ->
-                createSprite fishGraphics[shift + i + 45] fishGraphics[shift + i]
+                CreateTransparentSprite fishGraphics[shift + i + 45] fishGraphics[shift + i]
             )
             
             RightDirection = Array.init 8 (fun i ->
-                createSprite fishGraphics[shift + i + 135] fishGraphics[shift + i + 90] 
+                CreateTransparentSprite fishGraphics[shift + i + 135] fishGraphics[shift + i + 90]
             )
             
             OnDying = [|
-                  createSprite fishGraphics[shift + 53] fishGraphics[shift + 8];
-                  createSprite fishGraphics[shift + 143] fishGraphics[shift + 98]
+                  CreateTransparentSprite fishGraphics[shift + 53] fishGraphics[shift + 8];
+                  CreateTransparentSprite fishGraphics[shift + 143] fishGraphics[shift + 98]
                   |]
         }
                

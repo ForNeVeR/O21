@@ -8,7 +8,7 @@ open Raylib_CsLo
 
 open O21.Game.Documents
 open O21.Localization.Translations
-open O21.Localization.Help
+open O21.Localization.MarkdownHelp
 open System.Linq
 open System.Threading
 
@@ -38,9 +38,9 @@ type U95Data private (sprites0: Sprites, sounds0: Map<SoundType, Sound>, help0: 
         static member Load (directory: string): Task<U95Data> = task {
             let! sprites = Sprites.LoadFrom directory
 
-            let markdownHelp = fun (name: string) -> (O21.Localization.Help.HelpDescription (HelpRequest.MarkdownHelp (name, CancellationToken.None)))
+            let markdownHelp = fun (name: string) -> (O21.Localization.MarkdownHelp.HelpDescription (HelpRequest.MarkdownHelp (name, CancellationToken.None)))
             let help = fun (language: Language) -> match language.HelpRequestType with 
-                                                    | HelpRequestType.RussianHelp -> O21.Localization.Help.HelpDescription (HelpRequest.RussianHelp (fun () -> Help.Load (Path.Combine(directory, "U95.HLP"))))
+                                                    | HelpRequestType.RussianHelp -> O21.Localization.MarkdownHelp.HelpDescription (HelpRequest.RussianHelp (fun () -> HlpFile.Load (Path.Combine(directory, "U95.HLP"))))
                                                     | HelpRequestType.MarkdownHelp -> markdownHelp language.Name
             let! sounds = Sound.Load directory
             let! level = Level.Load directory 1 2

@@ -19,7 +19,7 @@ useful items: diskettes, light bulbs, compasses, etc.
 
 Though the most useful one is a lifebuoy:
 
-![lifebuoy](lifebuoy)
+![lifebuoy](data://bm0)
 
 It allows to refill your oxygen supply or 
 
@@ -29,4 +29,4 @@ The submarine is controlled by the arrow keys or
 
 via the mouse and buttons on the game screen:
 
-![down](down)![fire](fire)![left](left)![right](right)![up](up)
+![down](data://bm1)! [fire](data://bm2) ![left](data://bm3) ![right](data://bm4) ![up](data://bm5)
