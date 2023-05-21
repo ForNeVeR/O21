@@ -1,9 +1,12 @@
 namespace O21.Game.Scenes
 
 open System.Numerics
-open O21.Game
-open O21.Game.U95
+
 open type Raylib_CsLo.Raylib
+
+open O21.Game
+open O21.Game.GeometryUtils
+open O21.Game.U95
 
 type LoadingScene(config: Config, content: GameContent, gameData: U95Data) =
     
@@ -13,17 +16,10 @@ type LoadingScene(config: Config, content: GameContent, gameData: U95Data) =
     let renderImage() =
         let texture = content.LoadingTexture 
         let center = Vector2(float32 <| config.GameWidth / 2, float32 <| config.GameHeight / 2)
-        let texCoords = [|
-            Vector2(0f, 0f)
-            Vector2(0f, 1f)
-            Vector2(1f, 1f)
-            Vector2(1f, 0f)
-            Vector2(0f, 0f)
-        |]
+        let texCoords = GenerateSquareSector loadingProgress
         let pixelCoords = texCoords |> Array.map(fun v -> Vector2((v.X - 0.5f) * float32 texture.width, (v.Y - 0.5f) * float32 texture.height))
         DrawTexturePoly(texture, center, pixelCoords, texCoords, texCoords.Length, WHITE)
-        // TODO: Loading percent
-    
+
     let paddingAfterImage = 5
     
     let renderText() =
@@ -52,7 +48,8 @@ type LoadingScene(config: Config, content: GameContent, gameData: U95Data) =
             renderText()
             ()
         member this.Update world _ time =
-            loadingProgress <- loadingProgress + float time.Delta * 0.1
+            if time.Total > 1.0 then
+                loadingProgress <- loadingProgress + float time.Delta * 0.1
             // TODO: switch to the new scene after loading complete
             ignore gameData // TODO: pass to MenuScene
             world

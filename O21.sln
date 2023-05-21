@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "O21.MRB", "O21.MRB\O21.MRB.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{58DB85EB-D5FC-4D30-9FC7-BDD95AFE31EB}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "O21.Tests", "O21.Tests\O21.Tests.fsproj", "{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,5 +77,9 @@ Global
 		{C64EE6D7-A7D8-4824-A091-613A31C55FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C64EE6D7-A7D8-4824-A091-613A31C55FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C64EE6D7-A7D8-4824-A091-613A31C55FDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

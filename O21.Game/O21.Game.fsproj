@@ -40,6 +40,7 @@
         <Compile Include="Game.fs" />
         <Compile Include="Input.fs" />
         <Compile Include="GameWorld.fs" />
+        <Compile Include="GeometryUtils.fs" />
         <Compile Include="Scenes\Button.fs" />
         <Compile Include="Scenes\PlayScene.fs" />
         <Compile Include="Scenes\HelpScene.fs" />
