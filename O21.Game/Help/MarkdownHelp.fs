@@ -44,7 +44,7 @@ let Load (hlpFilePath: string) (markdownFilePath: string): DocumentFragment[] =
     let readFile name =
         hfs[name] |> hlpFile.ReadFile
 
-    // TODO: Make this async
+    // TODO[#93]: Make this async
     let markdown = File.ReadAllText markdownFilePath
     let fragments = ResizeArray<DocumentFragment> 0
     let parsed = Markdown.Parse(markdown)
