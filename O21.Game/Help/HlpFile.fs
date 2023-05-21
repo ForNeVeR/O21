@@ -1,8 +1,7 @@
-module O21.Game.U95.HlpFile
+module O21.Game.Help.HlpFile
 
 open System.IO
 open System.Text
-open System.Threading.Tasks
 
 open Raylib_CsLo
 open Oxage.Wmf.Records
@@ -44,7 +43,7 @@ let private convertParagraphs (fonts: FontDescriptor[]) (bitmaps: int -> Texture
         | _ -> failwith $"Unknown paragraph item: {item}"
 }
 
-let extractDibImageFromMrb(file: byte[]): Dib =
+let ExtractDibImageFromMrb(file: byte[]): Dib =
     use stream = new MemoryStream(file)
     let file = MrbFile.Load stream
     if file.ImageCount <> 1s then
@@ -73,13 +72,17 @@ let private loadTopic encoding fonts bitmaps (content: byte[]) =
     |> convertParagraphs fonts bitmaps
     |> Seq.toArray
 
-let Load (helpFile: string): Task<DocumentFragment[]> = task {
-    use input = new FileStream(helpFile, FileMode.Open, FileAccess.Read)
+let ReadMainData(input: Stream): WinHelpFile * Map<string, DirectoryIndexEntry> =
     let helpFile = WinHelpFile.Load input
     let files =
         helpFile.GetFiles Encoding.UTF8
         |> Seq.map(fun d -> d.FileName, d)
         |> Map.ofSeq
+    helpFile, files
+
+let Load (helpFile: string): DocumentFragment[] =
+    use input = new FileStream(helpFile, FileMode.Open, FileAccess.Read)
+    let helpFile, files = ReadMainData input
 
     let fonts =
         helpFile.ReadFile files["|FONT"]
@@ -88,12 +91,10 @@ let Load (helpFile: string): Task<DocumentFragment[]> = task {
     let bitmaps index =
         let name = $"|bm{string index}"
         let file = files[name]
-        let dib = extractDibImageFromMrb <| helpFile.ReadFile file
+        let dib = ExtractDibImageFromMrb <| helpFile.ReadFile file
         CreateSprite dib
 
     let contentEncoding = Encoding.GetEncoding 1251 // TODO[#57]: Extract from config
-    return
-        helpFile.ReadFile files["|TOPIC"]
-        |> loadTopic contentEncoding fonts bitmaps
-        |> Seq.toArray
-}
+    helpFile.ReadFile files["|TOPIC"]
+    |> loadTopic contentEncoding fonts bitmaps
+    |> Seq.toArray

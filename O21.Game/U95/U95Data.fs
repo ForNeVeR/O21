@@ -7,50 +7,42 @@ open System.Threading.Tasks
 open Raylib_CsLo
 
 open O21.Game.Documents
+open O21.Game.Help
+open O21.Game.Localization
 open O21.Localization.Translations
-open O21.Localization.MarkdownHelp
-open System.Linq
-open System.Threading
 
-type private CachedAsyncFunc<'TArg, 'TResult when 'TArg: equality>(func: 'TArg -> Task<'TResult>) =
-    let mutable cache = System.Collections.Generic.Dictionary<'TArg, 'TResult>()
-    let mutable f = func
-    member this.Cache with get() = cache.Values
-    member this.Get(arg) = task {
-        match cache.TryGetValue arg with
-            | (true, value) -> return value
-            | (false, _) -> 
-                let! newValue = f(arg)
-                cache.Add((arg, newValue))
-                return newValue
+type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Language -> DocumentFragment[], levels: Level[]) =
+
+    let mutable helpCache = Map.empty
+
+    member this.Sprites: Sprites = sprites
+    member this.Sounds: Map<SoundType, Sound> = sounds
+    member this.Help(language: Language): DocumentFragment[] =
+        match helpCache |> Map.tryFind language with
+        | Some fragments -> fragments
+        | None ->
+            let fragments = help language
+            helpCache <- helpCache |> Map.add language fragments
+            fragments
+    member this.Levels = levels
+    static member Load (directory: string): Task<U95Data> = task {
+        let! sprites = Sprites.LoadFrom directory
+
+        let hlpFilePath = Path.Combine(directory, "U95.HLP")
+        let help (language: Language) =
+            match language.HelpRequestType with
+            | HelpRequestType.WinHelpFile -> HlpFile.Load hlpFilePath
+            | HelpRequestType.MarkdownFile ->
+                let markdownFilePath = Path.Combine(LocalizationPaths.HelpFolder, $"{language.Name}.md")
+                MarkdownHelp.Load hlpFilePath markdownFilePath
+
+        let! sounds = Sound.Load directory
+        let! level = Level.Load directory 1 2
+        return new U95Data(sprites, sounds, help, [| level |])
     }
 
-type U95Data private (sprites0: Sprites, sounds0: Map<SoundType, Sound>, help0: CachedAsyncFunc<Language, DocumentFragment[]>, levels0: Level[]) = 
-    let mutable sprites = sprites0
-    let mutable sounds = sounds0
-    let mutable help = help0
-    let mutable levels = levels0
-    with
-        member this.Sprites = sprites
-        member this.Sounds = sounds
-        member this.Help = help.Get
-        member this.Levels = levels
-        static member Load (directory: string): Task<U95Data> = task {
-            let! sprites = Sprites.LoadFrom directory
-
-            let markdownHelp = fun (name: string) -> (O21.Localization.MarkdownHelp.HelpDescription (HelpRequest.MarkdownHelp (name, CancellationToken.None)))
-            let help = fun (language: Language) -> match language.HelpRequestType with 
-                                                    | HelpRequestType.RussianHelp -> O21.Localization.MarkdownHelp.HelpDescription (HelpRequest.RussianHelp (fun () -> HlpFile.Load (Path.Combine(directory, "U95.HLP"))))
-                                                    | HelpRequestType.MarkdownHelp -> markdownHelp language.Name
-            let! sounds = Sound.Load directory
-            let! level = Level.Load directory 1 2
-            return new U95Data(sprites, sounds, CachedAsyncFunc help, [| level |])
-        }
-
-        interface IDisposable with
-            member this.Dispose() =
-                (this.Sprites :> IDisposable).Dispose()
-                help.Cache |> 
-                    (fun array -> array.SelectMany(fun fragments -> fragments.AsEnumerable())) |>
-                    Enumerable.ToArray |>
-                    Array.iter(fun d -> (d :> IDisposable).Dispose())
+    interface IDisposable with
+        member this.Dispose() =
+            (this.Sprites :> IDisposable).Dispose()
+            helpCache
+            |> Map.iter(fun _ fragments -> fragments |> Array.iter(fun f -> (f :> IDisposable).Dispose()))

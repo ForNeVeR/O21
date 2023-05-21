@@ -2,8 +2,8 @@ namespace O21.Game.Scenes
 
 open System.Numerics
 open System.Linq
+
 open O21.Game
-open O21.Game.U95
 open O21.Localization.Translations
 
 type MainMenuScene = {
@@ -46,7 +46,7 @@ type MainMenuScene = {
                         if scene.PlayButton.State.InteractionState = ButtonInteractionState.Clicked then
                             PlayScene.Init(state.U95Data.Levels[0], this.Content, this)
                         elif scene.HelpButton.State.InteractionState = ButtonInteractionState.Clicked then
-                            let loadedHelp = (state.Language |> state.U95Data.Help).Result
+                            let loadedHelp = (state.Language |> state.U95Data.Help)
                             HelpScene.Init(this.Content, this, loadedHelp, state.Language)
                         elif scene.GameOverButton.State.InteractionState = ButtonInteractionState.Clicked then
                             GameOverWindow.Init(this.Content, PlayScene.Init (state.U95Data.Levels[0], this.Content, this), this, state.Language)

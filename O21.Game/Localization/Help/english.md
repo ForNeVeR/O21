@@ -29,4 +29,4 @@ The submarine is controlled by the arrow keys or
 
 via the mouse and buttons on the game screen:
 
-![down](data://bm1)! [fire](data://bm2) ![left](data://bm3) ![right](data://bm4) ![up](data://bm5)
+![down](data://bm1) ![fire](data://bm2) ![left](data://bm3) ![right](data://bm4) ![up](data://bm5)

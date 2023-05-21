@@ -3,7 +3,7 @@ open System.IO
 open System.Text
 
 open O21.Game
-open O21.Game.U95
+open O21.Game.Help
 open O21.Resources
 open O21.WinHelp
 open O21.WinHelp.Fonts
@@ -32,7 +32,7 @@ let main(args: string[]): int =
 
             match entry.FileName with
             | x when x.StartsWith "|bm" ->
-                let dib = HlpFile.extractDibImageFromMrb bytes
+                let dib = HlpFile.ExtractDibImageFromMrb bytes
                 dibs.Add dib
             | "|SYSTEM" ->
                 use stream = new MemoryStream(bytes)

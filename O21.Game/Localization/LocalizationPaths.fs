@@ -1,16 +1,13 @@
-module O21.Localization.LocalizationPaths
+module O21.Game.Localization.LocalizationPaths
 
-open System.IO
 open System
+open System.IO
 
-let private rootFolder() = 
+let private rootFolder =
     Path.GetDirectoryName(Environment.ProcessPath) + "/Localization/"
 
-let TranslationsFolder() =
-    rootFolder() + "Translations/"
+let TranslationsFolder =
+    rootFolder + "Translations/"
 
-let HelpFolder() =
-    rootFolder() + "Help/"
-
-let HelpImagesFolder() =
-    HelpFolder() + "Images/"
+let HelpFolder =
+    rootFolder + "Help/"

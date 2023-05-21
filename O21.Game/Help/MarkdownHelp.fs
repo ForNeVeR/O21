@@ -1,48 +1,37 @@
-module O21.Localization.MarkdownHelp
+module O21.Game.Help.MarkdownHelp
 
-open O21.Game.Documents
-open System.Collections.Generic
-open System.Threading.Tasks
+open System
 open System.IO
-open System.Threading
-open LocalizationPaths
+
 open FSharp.Formatting.Markdown
-open System.Linq
+open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
-type HelpRequest =
-    | MarkdownHelp of string * CancellationToken
-    | RussianHelp of (unit -> Task<DocumentFragment array>)
-  
+open O21.Game
+open O21.Game.Documents
+
 type private Width = uint
 type private Height = uint
-type private PngChunk = 
-    | End
-    | Ihdr of Width * Height
 
-let private parseParagraph(paragraph) = 
+let private loadTextureFromData (readFile: string -> byte[]) (address: string): Texture =
+    let fileName = $"|{address}"
+    readFile fileName
+    |> HlpFile.ExtractDibImageFromMrb
+    |> TextureUtils.CreateSprite
+
+let private parseParagraph readFile paragraph =
     let parseSpans(spans, isHeading) =
-        let getImage(body, link, title) =
-            let unhandledValue = 
-               [| DocumentFragment.Text(Style.Normal, (match title with 
-                                                        | Some title -> title
-                                                        | None -> body) + " "); DocumentFragment.NewParagraph |]
-
-            let imageFolder = HelpImagesFolder()
-            let image = Directory.GetFiles(imageFolder, $"{link}.*").FirstOrDefault()
-            let extension = Path.GetExtension(image)
-            match (match extension with
-                    | ".png" -> Some (LoadTexture(image))
-                    | _  -> None) with
-                | Some texture -> [| DocumentFragment.Image texture |]
-                | None -> unhandledValue
+        let getImage(link: Uri) =
+            match link.Scheme with
+            | "data" -> DocumentFragment.Image <| loadTextureFromData readFile link.Authority
+            | _ -> failwith $"Unsupported image URI in help file: {link}"
 
         seq {
             let style = if isHeading then Style.Bold else Style.Normal
             for span in spans do
                 match span with
                 | Literal (text = text) -> yield DocumentFragment.Text(style, text.Replace("\r\n", "\n"))
-                | DirectImage (body = body; link = link; title = title) -> yield! getImage(body, link, title)
+                | DirectImage(link = link) -> yield getImage(Uri link)
                 | _ -> ()
             yield DocumentFragment.NewParagraph
         }
@@ -53,18 +42,16 @@ let private parseParagraph(paragraph) =
         | HorizontalRule _ -> [| DocumentFragment.Text(Style.Normal, "____________________________________________"); DocumentFragment.NewParagraph  |]
         | _ -> [||]
 
-let private readMarkdown(file: string, cancellationToken: CancellationToken) =
-    task {
-        use sr = new StreamReader (file)
-        let! text = sr.ReadToEndAsync cancellationToken
-        let fragments = List<DocumentFragment> 0
-        let parsed = Markdown.Parse(text)
-        for paragraph in parsed.Paragraphs do
-                paragraph |> parseParagraph |> fragments.AddRange
-        return fragments.ToArray()
-    }
+let Load (hlpFilePath: string) (markdownFilePath: string): DocumentFragment[] =
+    use hlpFileStream = new FileStream(hlpFilePath, FileMode.Open, FileAccess.Read)
+    let hlpFile, hfs = HlpFile.ReadMainData hlpFileStream
+    let readFile name =
+        hfs[name] |> hlpFile.ReadFile
 
-let HelpDescription(request: HelpRequest) =
-        match request with
-            | MarkdownHelp (name, cancellationToken) -> readMarkdown($"{HelpFolder()}/{name}.md", cancellationToken)
-            | RussianHelp hlpReader -> hlpReader()
+    // TODO: Make this async
+    let markdown = File.ReadAllText markdownFilePath
+    let fragments = ResizeArray<DocumentFragment> 0
+    let parsed = Markdown.Parse(markdown)
+    for paragraph in parsed.Paragraphs do
+            paragraph |> parseParagraph readFile |> fragments.AddRange
+    fragments.ToArray()
