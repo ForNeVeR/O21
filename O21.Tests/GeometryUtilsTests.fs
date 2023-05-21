@@ -11,7 +11,7 @@ let assertPolygonEqual (a: Vector2[]) (b: Vector2[]) =
     let fail() =
         let stringifyD (d: float32) = d.ToString("F3", CultureInfo.InvariantCulture)
         let stringifyV = String.concat ", " << Seq.map (fun (v: Vector2) -> $"({stringifyD v.X}, {stringifyD v.Y})")
-        Assert.Fail $"Should be equal:\n{stringifyV a}\n{stringifyV b}"
+        Assert.Fail $"Should be equal:\nExp.: {stringifyV a}\nAct.: {stringifyV b}"
 
     if a.Length <> b.Length then fail()
     for a, b in Seq.zip a b do

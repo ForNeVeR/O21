@@ -48,7 +48,7 @@ type LoadingScene(config: Config, content: GameContent, gameData: U95Data) =
             renderText()
             ()
         member this.Update world _ time =
-            if time.Total > 1.0 then
+            if time.Total > 3.0 then
                 loadingProgress <- loadingProgress + float time.Delta * 0.1
             // TODO: switch to the new scene after loading complete
             ignore gameData // TODO: pass to MenuScene
