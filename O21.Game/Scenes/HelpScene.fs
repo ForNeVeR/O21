@@ -3,7 +3,7 @@ namespace O21.Game.Scenes
 open System.Numerics
 
 open O21.Game
-open O21.Game.Documents
+open O21.Game.Help
 
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib

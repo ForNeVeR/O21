@@ -6,7 +6,6 @@ open System.Threading.Tasks
 
 open Raylib_CsLo
 
-open O21.Game.Documents
 open O21.Game.Help
 open O21.Game.Localization
 open O21.Localization.Translations

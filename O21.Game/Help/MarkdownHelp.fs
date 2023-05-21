@@ -8,7 +8,6 @@ open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
 open O21.Game
-open O21.Game.Documents
 
 type private Width = uint
 type private Height = uint

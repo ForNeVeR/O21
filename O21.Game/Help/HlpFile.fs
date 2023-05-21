@@ -6,7 +6,7 @@ open System.Text
 open Raylib_CsLo
 open Oxage.Wmf.Records
 
-open O21.Game.Documents
+open O21.Game.Help
 open O21.Game.TextureUtils
 open O21.MRB
 open O21.Resources
