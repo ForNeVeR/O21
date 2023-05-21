@@ -1,3 +1,4 @@
+<!-- Note that this is the translation of the original help text, and thus is covered by the same copyright as the original help. See the Licensing section in the accompanying README file for licensing details. The original text belongs to Nikita, Ltd. -->
 # U-95
 
 Programming: Anton Butsev
