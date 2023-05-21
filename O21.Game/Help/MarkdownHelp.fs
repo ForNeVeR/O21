@@ -9,9 +9,6 @@ open type Raylib_CsLo.Raylib
 
 open O21.Game
 
-type private Width = uint
-type private Height = uint
-
 let private loadTextureFromData (readFile: string -> byte[]) (address: string): Texture =
     let fileName = $"|{address}"
     readFile fileName
