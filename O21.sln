@@ -38,6 +38,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "O21.MRB", "O21.MRB\O21.MRB.csproj", "{C64EE6D7-A7D8-4824-A091-613A31C55FDD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{58DB85EB-D5FC-4D30-9FC7-BDD95AFE31EB}"
+	ProjectSection(SolutionItems) = preProject
+		.config\dotnet-tools.json = .config\dotnet-tools.json
+	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "O21.Tests", "O21.Tests\O21.Tests.fsproj", "{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}"
 EndProject
