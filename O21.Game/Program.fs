@@ -84,7 +84,7 @@ let main(args: string[]): int =
 
         RaylibEnvironment.Run(config, fun () ->
             match LoadingLoop.Run config with
-            | Some(_, data) -> GameLoop.Run data // TODO: Get rid of output content?
+            | Some(content, data) -> GameLoop.Run(content, data)
             | None -> ()
         )
 

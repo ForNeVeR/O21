@@ -8,9 +8,7 @@ open O21.Game.Loading
 type PreloadingScene() =
 
     interface ILoadingScene<unit, LocalContent> with
-        member this.Load _ = async {
-            return LocalContent.Load() // TODO: async
-        }
+        member this.Load _ = LocalContent.Load()
 
         member _.Update _ = ()
         member _.Draw _ = ClearBackground(BLACK)
