@@ -6,12 +6,13 @@ open Raylib_CsLo
 
 #nowarn "9"
 
-type GameContent = {
+type Content = {
     UiFontRegular: Font
     UiFontBold: Font
     LoadingTexture: Texture
 } with
-    static member Load(): GameContent = 
+
+    static member Load() =
         let binDir = Path.GetDirectoryName(Environment.ProcessPath)
         let pathToResource fileName =
             Path.Combine(binDir, "Resources", fileName)
@@ -20,9 +21,11 @@ type GameContent = {
             for i in 0..255 -> 0x400 + i // Cyrillic characters
             yield int '…'
         |]
+
         use ptr = fixed fontChars
+
         {
-            UiFontRegular = Raylib.LoadFontEx(pathToResource "Inter-Regular.otf", 12, ptr, fontChars.Length)
-            UiFontBold = Raylib.LoadFontEx(pathToResource "Inter-Bold.otf", 12, ptr, fontChars.Length)
+            UiFontRegular = Raylib.LoadFontEx(pathToResource "Inter-Regular.otf", 24, ptr, fontChars.Length)
+            UiFontBold = Raylib.LoadFontEx(pathToResource "Inter-Bold.otf", 24, ptr, fontChars.Length)
             LoadingTexture = Raylib.LoadTexture(pathToResource "submarine.png")
         }

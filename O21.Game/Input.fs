@@ -22,15 +22,16 @@ module Input =
                 KeyboardKey.KEY_RIGHT, Right
                 KeyboardKey.KEY_SPACE, Fire 
             ]
-    
-    let handle (scale: int): Input =
+
+type Input with    
+    static member Handle(): Input =
         let keys = 
-            [ for KeyValue(k, v) in keyBindings do
+            [ for KeyValue(k, v) in Input.keyBindings do
                 if Raylib.IsKeyDown(k) then yield v ]
 
         let mouse = Raylib.GetMousePosition()
 
         { Pressed = keys
-          MouseCoords = Vector2(mouse.X / float32 scale, mouse.Y / float32 scale)
+          MouseCoords = Vector2(mouse.X, mouse.Y)
           MouseButtonPressed = Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT)
           MouseWheelMove = Raylib.GetMouseWheelMove() }

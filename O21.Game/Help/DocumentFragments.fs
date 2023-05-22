@@ -1,4 +1,4 @@
-namespace O21.Game.Documents
+namespace O21.Game.Help
 
 open System
 open Raylib_CsLo

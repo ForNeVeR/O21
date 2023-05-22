@@ -30,16 +30,26 @@ It was created in 1995 by one of the first Russian game development companies, N
 
 Since the original game is probably named after a [German submarine U-95][wikipedia.u-95], that was sunk by Dutch [O 21][wikipedia.o21], the authors decided to name the remake project O21, as a (wishfully) superior project (at least in some aspects).
 
-Legal Disclaimers
------------------
+License and Legal Disclaimers
+-----------------------------
 
-- This project is not affiliated with or endorsed by Nikita Online in any way.
-- This project is non-commercial. The source code is available for free and always will be.
-- This is a blackbox re-implementation project. The code in this project was written based on reading data files, and observing the game running. In some cases the code was written based on specs available on the Internet.
-  
-  I believe this puts the project in the clear, legally speaking. If someone disagrees, please reach the lead maintainer, [Friedrich von Never][fornever].
+_This section is maintained by me, the O21 project lead, [Friedrich von Never][fornever]. The statements made in first person are all mine, do not hesitate to contact me if you have any comments._
 
-- No assets from the original game are included in this repo.
+All the content and code in this program (except the `O21.Game/Translations` folder and the fonts, see below) is covered by the [MIT license][docs.license].
+
+This program is designed to use resources of the U-95 game by [NIKITA][nikita]. This project is not affiliated with or endorsed by NIKITA in any way. The project is non-commercial. The source code is available for free and always will be.
+
+This is a blackbox re-implementation project. The code in this project was written based on reading data files, and observing the game running. In some cases the code was written based on specs available on the Internet.
+
+I believe this puts the project in the clear, legally speaking. If someone disagrees, please reach me.
+
+The distribution license of the original game is unknown, so the game has an unclear de jure status. De facto, it is [abandonware][] nowadays.
+
+The `O21.Game/Translations` folder contains translations of some of the original game content, legally distributed under the same terms as the original game content. As no user should access this content without agreeing with the original distribution license, I consider this as a proper distribution. 
+
+Other than the translations described above, no assets from the original game are included in this software (though it may allow the user to use any assets downloaded under the user's informed consent).
+
+The software also bundles the Inter font, covered by the [SIL Open Font License][docs.inter-font-license].
 
 Documentation
 -------------
@@ -60,10 +70,12 @@ Acknowledgments
   - Manfred Winterhoff, the author of [the documentation][docs.winhelp],
   - Paul Wise and other contributors of [helpdeco][].
 
+[abandonware]: https://en.wikipedia.org/wiki/Abandonware
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier#status-enfer-
 [book.windows-undocumented-file-formats]: https://a.co/d/dq5fCoj
 [docs.code-of-conduct]: CODE_OF_CONDUCT.md
 [docs.contributing]: CONTRIBUTING.md
+[docs.inter-font-license]: O21.Game/Resources/LICENSE.txt
 [docs.license]: LICENSE.md
 [docs.resources]: docs/resources.md
 [docs.winhelp]: http://www.oocities.org/mwinterhoff/helpfile.htm
@@ -76,4 +88,3 @@ Acknowledgments
 [status-enfer]: https://img.shields.io/badge/status-enfer-orange.svg
 [wikipedia.o21]: https://en.wikipedia.org/wiki/HNLMS_O_21
 [wikipedia.u-95]: https://en.wikipedia.org/wiki/German_submarine_U-95_(1940)
-[docs.inter-font-license]: O21.Game/Resources/LICENSE.txt

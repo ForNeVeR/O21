@@ -2,56 +2,82 @@ namespace O21.Game.Scenes
 
 open System.Numerics
 open Raylib_CsLo
+open type Raylib_CsLo.Raylib
 
 open O21.Game
+open O21.Localization.Translations
 
 [<RequireQualifiedAccess>]
-type ButtonState = Default | Hover | Clicked
+type ButtonInteractionState = Default | Hover | Clicked
+type ButtonState = {
+    InteractionState: ButtonInteractionState
+    Language: Language
+}
 
 type Button = {
     Font: Font
-    Text: string
+    Text: Language -> string
     Position: Vector2
     State: ButtonState
 } with
-    static member DefaultColor = Raylib.GRAY
-    static member HoverColor = Raylib.DARKGRAY
-    static member ClickedColor = Raylib.BLACK
+    static member DefaultColor = BLACK
+    static member HoverColor = DARKGRAY
+    static member ClickedColor = BLACK
 
-    static member Create (font: Font) (text: string) (position: Vector2): Button = {
+    static member Create(font: Font, text: Language -> string, position: Vector2, language: Language): Button = {
         Font = font
         Text = text
         Position = position
-        State = ButtonState.Default
+        State = { 
+            InteractionState = ButtonInteractionState.Default
+            Language = language 
+        }
     }
 
-    member private this.Rectangle =
-        let size = Raylib.MeasureTextEx(this.Font, this.Text, float32 this.Font.baseSize, 1.0f)
-        Rectangle(this.Position.X, this.Position.Y, size.X, size.Y)
+    member private this.Rectangle(language: Language) =
+        let size = Raylib.MeasureTextEx(this.Font, language |> this.Text, float32 this.Font.baseSize, 1.0f)
+        Rectangle(this.Position.X, this.Position.Y, size.X + 22f, size.Y + 5f)
 
-    member this.Render(): unit =
+    member this.Draw(): unit =
+        let x = int this.Position.X
+        let y = int this.Position.Y
+        let rectangle = this.Rectangle this.State.Language
+        let width = int rectangle.width 
+        let height = int rectangle.height 
+        
+        DrawRectangle(x, y, width, height, Color(195, 195, 195, 255))
+        DrawRectangle(x-2, y-2, width, 2, WHITE)
+        DrawRectangle(x-2, y, 2, height, WHITE)
+        DrawRectangle(x-1, y+height, width+3, 2, Color(130,130,130, 255))
+        DrawRectangle(x+width, y, 2, height, Color(130, 130, 130, 255))
+        DrawRectangle(x-3, y-3, 2, height+6, BLACK)
+        DrawRectangle(x+width+2, y-3, 2, height+6, BLACK)
+        DrawRectangle(x-2, y-3, width+6, 2, BLACK)
+        DrawRectangle(x-2, y+height+2, width+6, 2, BLACK)
+                
         let color =
-            match this.State with
-            | ButtonState.Default -> Button.DefaultColor
-            | ButtonState.Hover -> Button.HoverColor
-            | ButtonState.Clicked -> Button.ClickedColor
-        Raylib.DrawRectangleLines(int this.Position.X, int this.Position.Y, int this.Rectangle.width, int this.Rectangle.height, Raylib.RED)
-        Raylib.DrawTextEx(
+            match this.State.InteractionState with
+            | ButtonInteractionState.Default -> Button.DefaultColor
+            | ButtonInteractionState.Hover -> Button.HoverColor
+            | ButtonInteractionState.Clicked -> Button.ClickedColor
+
+        DrawTextEx(
             this.Font,
-            this.Text,
-            this.Position,
+            this.State.Language |> this.Text,
+            Vector2(float32 (x + 11), float32 (y + 2)),
             float32 this.Font.baseSize,
             0.0f,
             color
         )
 
-    member this.Update(input: Input): Button =
+    member this.Update(input: Input, language: Language): Button =
         let state =
-            if Raylib.CheckCollisionPointRec(input.MouseCoords, this.Rectangle) then
+            if CheckCollisionPointRec(input.MouseCoords, this.Rectangle this.State.Language) then
                 if input.MouseButtonPressed then
-                    ButtonState.Clicked
+                    ButtonInteractionState.Clicked
                 else
-                    ButtonState.Hover
+                    ButtonInteractionState.Hover
             else
-                ButtonState.Default
-        { this with State = state }
+                ButtonInteractionState.Default
+
+        { this with State = { this.State with InteractionState = state; Language = language } }
