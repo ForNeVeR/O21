@@ -6,7 +6,8 @@ open Raylib_CsLo
 
 #nowarn "9"
 
-type Content = {
+/// The game content that's always available locally, even if the main game resources haven't been downloaded, yet.
+type LocalContent = {
     UiFontRegular: Font
     UiFontBold: Font
     LoadingTexture: Texture

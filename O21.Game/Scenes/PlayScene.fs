@@ -11,11 +11,11 @@ type PlayScene = {
     CurrentLevel: Level
     LastShotTime: float option
     HUD: HUD
-    Content: Content
+    Content: LocalContent
     MainMenu: IScene
 } with
 
-    static member Init(level: Level, content: Content, mainMenu: IScene): PlayScene = {
+    static member Init(level: Level, content: LocalContent, mainMenu: IScene): PlayScene = {
         CurrentLevel = level
         LastShotTime = None
         HUD = HUD.Init()

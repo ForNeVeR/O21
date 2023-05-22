@@ -49,7 +49,7 @@
 
         <Compile Include="HUDRenderer.fs" />
         <Compile Include="HUD.fs" />
-        <Compile Include="Content.fs" />
+        <Compile Include="LocalContent.fs" />
         <Compile Include="Input.fs" />
         <Compile Include="State.fs" />
         <Compile Include="GeometryUtils.fs" />
@@ -61,8 +61,15 @@
         <Compile Include="Scenes\HelpScene.fs" />
         <Compile Include="Scenes\MainMenuScene.fs" />
 
-        <Compile Include="Scenes\LoadingScene.fs" />
+        <Compile Include="Loading\Loader.fs" />
+
+        <Compile Include="Loading\PreloadingScene.fs" />
+        <Compile Include="Loading\LoadingScene.fs" />
+        <Compile Include="Loading\LoadingLoop.fs" />
+        
         <Compile Include="Game.fs" />
+        
+        <Compile Include="RaylibEnvironment.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

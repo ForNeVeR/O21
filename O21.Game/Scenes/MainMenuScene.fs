@@ -7,14 +7,14 @@ open O21.Game
 open O21.Localization.Translations
 
 type MainMenuScene = {
-    Content: Content
+    Content: LocalContent
     PlayButton: Button
     HelpButton: Button
     GameOverButton: Button
     LanguageButton: Button
 }
     with
-        static member Init(content: Content): MainMenuScene = 
+        static member Init(content: LocalContent): MainMenuScene =
             let defaultLanguage = DefaultLanguage
             {
                 Content = content

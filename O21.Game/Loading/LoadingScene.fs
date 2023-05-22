@@ -6,13 +6,15 @@ open type Raylib_CsLo.Raylib
 
 open O21.Game
 open O21.Game.GeometryUtils
+open O21.Game.Loading
+open O21.Game.U95
 
-type LoadingScene(config: Config, content: Content) =
+type LoadingScene(config: Config) =
     
     let mutable loadingProgress = 0.0
-    let mutable loadingStatus = "Loading…"
+    let mutable loadingStatus = "Loading…" // TODO: Localization
     
-    let renderImage() =
+    let renderImage content =
         let texture = content.LoadingTexture 
         let center = Vector2(float32 <| config.ScreenWidth / 2, float32 <| config.ScreenHeight / 2)
         let texCoords = GenerateSquareSector loadingProgress
@@ -21,7 +23,7 @@ type LoadingScene(config: Config, content: Content) =
 
     let paddingAfterImage = 5
     
-    let renderText() =
+    let renderText content =
         let font = content.UiFontRegular
         let fontSize = 24f
 
@@ -40,15 +42,17 @@ type LoadingScene(config: Config, content: Content) =
             WHITE
         )
     
-    interface IScene with
-        member this.Draw _ =
+    interface ILoadingScene<LocalContent, U95Data> with
+        member _.Load controller = async {
+            return! Async.AwaitTask <| U95Data.Load config.U95DataDirectory
+        }
+
+        member _.Draw content =
             ClearBackground(BLACK)
-            renderImage()
-            renderText()
+            renderImage content
+            renderText content
             ()
-        member this.Update(_, time, state) =
-            if time.Total > 3.0 then
-                loadingProgress <- loadingProgress + float time.Delta * 0.1
-            // TODO: switch to the new scene after loading complete
-            // TODO: pass loaded game data to MenuScene
-            state
+        member _.Update controller =
+            let status, progress = controller.GetLoadProgress()
+            loadingStatus <- status
+            loadingProgress <- progress

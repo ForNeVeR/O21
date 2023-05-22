@@ -4,6 +4,7 @@ open System.Text
 
 open O21.Game
 open O21.Game.Help
+open O21.Game.Loading
 open O21.Resources
 open O21.WinHelp
 open O21.WinHelp.Fonts
@@ -81,7 +82,11 @@ let main(args: string[]): int =
             U95DataDirectory = dataDir
         }
 
-        GameLoop.start(config)
+        RaylibEnvironment.Run(config, fun () ->
+            match LoadingLoop.Run config with
+            | Some(_, data) -> GameLoop.Run data // TODO: Get rid of output content?
+            | None -> ()
+        )
 
     | _ -> printfn "Usage:\nexport <inputFile> <outDir>: export resources\n<dataDir>: start the game"
 

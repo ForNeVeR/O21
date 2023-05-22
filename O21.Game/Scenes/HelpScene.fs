@@ -10,7 +10,7 @@ open type Raylib_CsLo.Raylib
 open O21.Localization.Translations
 
 type HelpScene = {
-    Content: Content
+    Content: LocalContent
     Previous: IScene
     BackButton: Button
     OffsetY: float32
@@ -18,7 +18,7 @@ type HelpScene = {
     HelpDocument: DocumentFragment[]
 } with        
 
-    static member Init(content: Content, previous: IScene, helpDocument: DocumentFragment[], language: Language): HelpScene = 
+    static member Init(content: LocalContent, previous: IScene, helpDocument: DocumentFragment[], language: Language): HelpScene = 
         {
             Content = content
             BackButton = Button.Create(content.UiFontRegular, (fun language -> (Translation language).BackLabel), Vector2(200f, 00f), language)

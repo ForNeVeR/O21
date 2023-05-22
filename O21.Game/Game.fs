@@ -1,23 +1,21 @@
 namespace O21.Game
 
-open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
 open O21.Game.Scenes
 open O21.Game.U95
 open O21.Localization.Translations
 
-type Game(config: Config) =
+type Game(data: U95Data) =
     let mutable state = Unchecked.defaultof<State>
-    let mutable content = Unchecked.defaultof<Content>
+    let mutable content = Unchecked.defaultof<LocalContent>
 
     do
-        content <- Content.Load()
+        content <- LocalContent.Load()
         state <- {
-            Config = config
-            Scene = LoadingScene(config, content)
+            Scene = MainMenuScene.Init(content)
             Settings = { SoundVolume = 0.1f }
-            U95Data = (U95Data.Load config.U95DataDirectory).Result // TODO[#38]: Preloader, combine with downloader
+            U95Data = data
             SoundsToStartPlaying = Set.empty
             Language = DefaultLanguage
         }
@@ -41,15 +39,8 @@ type Game(config: Config) =
         EndDrawing()
 
 module GameLoop =
-    let start(config: Config) =
-        InitWindow(config.ScreenWidth, config.ScreenHeight, config.Title)
-        InitAudioDevice()
-        SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT)
-
-        let game = Game(config)
+    let Run(data: U95Data): unit =
+        let game = Game data
         while not (WindowShouldClose()) do
             game.Update()
             game.Draw()
-
-        CloseAudioDevice()
-        CloseWindow()

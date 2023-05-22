@@ -8,14 +8,14 @@ open O21.Localization.Translations
 type GameOverWindow =
     {
         OkButton: Button
-        Content: Content
+        Content: LocalContent
         MinimizeButton: MinimizeButton
         PlayScene: IScene
         MainMenuScene: IScene
     }
     
     with
-        static member Init(content: Content, playScene: IScene, mainMenu: IScene, language: Language) =
+        static member Init(content: LocalContent, playScene: IScene, mainMenu: IScene, language: Language) =
             {
                 OkButton = Button.Create (content.UiFontRegular, (fun _ -> "Ok"), Vector2(288f, 229f), language)
                 Content = content

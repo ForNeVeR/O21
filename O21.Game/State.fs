@@ -24,7 +24,6 @@ type IScene =
     abstract member Draw: State -> unit
 
 and State = {
-    Config: Config
     Scene: IScene
     Settings: Settings
     U95Data: U95Data
