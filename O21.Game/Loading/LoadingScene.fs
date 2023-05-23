@@ -6,7 +6,6 @@ open type Raylib_CsLo.Raylib
 
 open O21.Game
 open O21.Game.GeometryUtils
-open O21.Game.Loading
 open O21.Game.U95
 
 type LoadingScene(config: Config) =
@@ -43,9 +42,7 @@ type LoadingScene(config: Config) =
         )
     
     interface ILoadingScene<LocalContent, U95Data> with
-        member _.Load controller = async {
-            return! Async.AwaitTask <| U95Data.Load config.U95DataDirectory
-        }
+        member _.Load controller = U95Data.Load controller config.U95DataDirectory
 
         member _.Draw content =
             ClearBackground(BLACK)

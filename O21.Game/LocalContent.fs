@@ -2,6 +2,7 @@ namespace O21.Game
 
 open System
 open System.IO
+open System.Threading.Tasks
 
 open Raylib_CsLo
 
@@ -11,7 +12,7 @@ type LocalContent = {
     UiFontBold: Font
     LoadingTexture: Texture
 } with
-    static member Load(): Async<LocalContent> = async {
+    static member Load(): Task<LocalContent> = task {
         let binDir = Path.GetDirectoryName(Environment.ProcessPath)
         let pathToResource fileName =
             Path.Combine(binDir, "Resources", fileName)

@@ -4,5 +4,7 @@
     "PlayLabel": "Play",
     "BackLabel": "Back",
     "GameOverNotification": "Game over !!!",
-    "LanguageLabel": "Change language"
+    "LanguageLabel": "Change language",
+    "LoadingData": "Loading Data…",
+    "CatchingUp": "Catching Up…"
 }

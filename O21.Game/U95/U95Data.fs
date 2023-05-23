@@ -2,10 +2,11 @@ namespace O21.Game.U95
 
 open System
 open System.IO
-open System.Threading.Tasks
 
+open System.Threading.Tasks
 open Raylib_CsLo
 
+open O21.Game
 open O21.Game.Help
 open O21.Game.Localization
 open O21.Localization.Translations
@@ -24,8 +25,20 @@ type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Lan
             helpCache <- helpCache |> Map.add language fragments
             fragments
     member this.Levels = levels
-    static member Load (directory: string): Task<U95Data> = task {
+    static member Load (loadController: LoadController) (directory: string): Task<U95Data> = task {
+        let loadTranslation() = async {
+            do! Async.SwitchToThreadPool()
+            return Translation(AvailableLanguages |> Seq.find(fun x -> x.Name = "english"))
+        }
+
+        // TODO: Get the translation from local content (should be loaded)
+        // TODO: Get the active language from settings
+        let! translation = loadTranslation()
+
+        loadController.ReportProgress(translation.LoadingData, 0.2)
         let! sprites = Sprites.LoadFrom directory
+
+        loadController.ReportProgress(translation.LoadingData, 0.4)
         let hlpFilePath = Path.Combine(directory, "U95.HLP")
         let help (language: Language) =
             match language.HelpRequestType with
@@ -34,8 +47,13 @@ type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Lan
                 let markdownFilePath = Path.Combine(LocalizationPaths.HelpFolder, $"{language.Name}.md")
                 MarkdownHelp.Load hlpFilePath markdownFilePath
 
-        let! sounds = Sound.Load directory
-        let! level = Level.Load directory 1 2
+        loadController.ReportProgress(translation.LoadingData, 0.6)
+        let! sounds = Async.AwaitTask <| Sound.Load directory
+
+        loadController.ReportProgress(translation.LoadingData, 0.8)
+        let! level = Async.AwaitTask <| Level.Load directory 1 2
+
+        loadController.ReportProgress(translation.CatchingUp, 1.0)
         return new U95Data(sprites, sounds, help, [| level |])
     }
 

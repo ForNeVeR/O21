@@ -34,7 +34,7 @@ module Sound =
         Raylib.UnloadWave(wave)
         sound
 
-    let Load(directory: string): Task<Map<SoundType, Sound>> = task {
+    let Load(directory: string): Task<Map<SoundType, Sound>> = task { // TODO: Proper async
         return
             Enum.GetValues<SoundType>()
             |> Seq.map(fun soundType ->

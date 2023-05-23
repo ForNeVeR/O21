@@ -3,7 +3,6 @@ namespace O21.Game.Loading
 open type Raylib_CsLo.Raylib
 
 open O21.Game
-open O21.Game.Loading
 
 type PreloadingScene() =
 

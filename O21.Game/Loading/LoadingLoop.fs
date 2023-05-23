@@ -42,7 +42,7 @@ let private processWithPumping(scene: ILoadingScene<_, _>, input) =
         SynchronizationContext.SetSynchronizationContext context
 
         let controller = LoadController()
-        let task = scene.Load controller |> Async.StartImmediateAsTask
+        let task = scene.Load controller
 
         let mutable result = None
         while Option.isNone result do
@@ -57,8 +57,13 @@ let private processWithPumping(scene: ILoadingScene<_, _>, input) =
                 | true, action -> action()
                 | false, _ -> ()
 
-                scene.Draw input
                 scene.Update controller
+
+                BeginDrawing()
+                try
+                    scene.Draw input
+                finally
+                    EndDrawing()
 
         Option.get result
     finally
