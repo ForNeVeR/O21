@@ -45,11 +45,9 @@ I believe this puts the project in the clear, legally speaking. If someone disag
 
 The distribution license of the original game is unknown, so the game has an unclear de jure status. De facto, it is [abandonware][] nowadays.
 
-The `O21.Game/Translations` folder contains translations of some of the original game content, legally distributed under the same terms as the original game content. As no user should access this content without agreeing with the original distribution license, I consider this as a proper distribution. 
+No assets from the original game are included in this software (though it may allow the user to use any assets downloaded under the user's informed consent).
 
-Other than the translations described above, no assets from the original game are included in this software (though it may allow the user to use any assets downloaded under the user's informed consent).
-
-The software also bundles the Inter font, covered by the [SIL Open Font License][docs.inter-font-license].
+The software bundles the Inter font, covered by the [SIL Open Font License][docs.inter-font-license].
 
 Documentation
 -------------
