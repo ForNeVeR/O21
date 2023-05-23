@@ -9,19 +9,19 @@ Music and sound design: Alexander Chistiakov
 ---
 Welcome aboard captain!
 
-Your babe is U-95 - supermodern submarine in whole world.
+Your babe is U-95 - the most supermodern submarine in the whole world.
 
-Your missing is to protect your darling from terrible monsters. 
+Your mission is to protect your darling from terrible monsters. 
 
 Apart from the monsters, in the ocean you can find lots of very
 
-useful items: diskettes, light bulbs, compasses, etc. 
+useful items: diskettes, light bulbs, compasses, etc.
 
 Though the most useful for your would be a lifebuoy:
 
 ![lifebuoy](data://bm0)
 
-It helps to refill your submarine's oxygen so you can say on mission longer
+It helps to refill your submarine's oxygen so you can stay on the mission longer
 
 or enhance the submarine with all sorts of useful gadgets.
 
