@@ -49,6 +49,7 @@
 
         <Compile Include="HUDRenderer.fs" />
         <Compile Include="HUD.fs" />
+        <Compile Include="RaylibUtils.fs" />
         <Compile Include="LocalContent.fs" />
         <Compile Include="Input.fs" />
         <Compile Include="State.fs" />

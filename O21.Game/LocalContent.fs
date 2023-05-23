@@ -2,10 +2,8 @@ namespace O21.Game
 
 open System
 open System.IO
-open System.Threading
-open Raylib_CsLo
 
-#nowarn "9"
+open Raylib_CsLo
 
 /// The game content that's always available locally, even if the main game resources haven't been downloaded, yet.
 type LocalContent = {
@@ -13,11 +11,7 @@ type LocalContent = {
     UiFontBold: Font
     LoadingTexture: Texture
 } with
-
     static member Load(): Async<LocalContent> = async {
-        let x = SynchronizationContext.Current
-
-        do! Async.SwitchToThreadPool() // TODO: For test yet; implement good asynchronous loading
         let binDir = Path.GetDirectoryName(Environment.ProcessPath)
         let pathToResource fileName =
             Path.Combine(binDir, "Resources", fileName)
@@ -26,15 +20,23 @@ type LocalContent = {
             for i in 0..255 -> 0x400 + i // Cyrillic characters
             yield int '…'
         |]
+        let fontSize = 24
 
-        let loadFont(path: string) =
-            use ptr = fixed fontChars
-            Raylib.LoadFontEx(path, 24, ptr, fontChars.Length)
+        let loadFont path = async {
+            let! ct = Async.CancellationToken
+            let! data = Async.AwaitTask <| File.ReadAllBytesAsync(path, ct)
+            return RaylibUtils.LoadFontFromMemory (Path.GetExtension path) data fontSize fontChars
+        }
 
-        do! Async.SwitchToContext x
-        let regular = loadFont(pathToResource "Inter-Regular.otf")
-        let bold = loadFont(pathToResource "Inter-Bold.otf")
-        let loading = Raylib.LoadTexture(pathToResource "submarine.png")
+        let loadTexture path = async {
+            let! ct = Async.CancellationToken
+            let! data = Async.AwaitTask <| File.ReadAllBytesAsync(path, ct)
+            return RaylibUtils.LoadTextureFromMemory (Path.GetExtension path) data
+        }
+
+        let! regular = loadFont <| pathToResource "Inter-Regular.otf"
+        let! bold = loadFont <| pathToResource "Inter-Bold.otf"
+        let! loading = loadTexture <| pathToResource "submarine.png"
 
         return {
             UiFontRegular = regular
