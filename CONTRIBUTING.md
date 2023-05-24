@@ -27,7 +27,7 @@ Download the Original
 
 [Download it from the Internet Archive][archive.u95].
 
-SHA256 hash of the `U_95.rar` file is `2F85B004B8C9BE21BE7327BD677370433DBD04B65F3B909561FE17EA6B43534A`.
+SHA256 hash of the `U-95.zip` file is `7F884B5FCCF65198F510905C41AF06BE1715E3482B123BBB8149D51FAE6A1460`.
 
 See [the documentation on the original resources][docs.resources].
 

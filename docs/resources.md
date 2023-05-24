@@ -1,7 +1,7 @@
 Original Game Resources
 =======================
 
-Here we'll discuss the resources of [the game version available from the Internet Achive][archive.u95] (`U_95.rar` file, SHA256 hash: `2F85B004B8C9BE21BE7327BD677370433DBD04B65F3B909561FE17EA6B43534A`). It is unknown yet whether there are any other versions available in the web.
+Here we'll discuss the resources of [the game version available from the Internet Archive][archive.u95] (`U-95.zip` file, SHA256 hash: `7F884B5FCCF65198F510905C41AF06BE1715E3482B123BBB8149D51FAE6A1460`). It is unknown yet whether there are any other versions available in the web.
 
 Archive Content List
 --------------------
