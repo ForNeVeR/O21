@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="Localization\Help\english.md">
+        <None Include="Localization\Help\*.md">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <Content Include="Localization\Translations\*.json">

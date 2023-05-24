@@ -1,4 +1,3 @@
-<!-- Note that this is the translation of the original help text, and thus is covered by the same copyright as the original help. See the Licensing section in the accompanying README file for licensing details. The original text belongs to Nikita, Ltd. -->
 # U-95
 
 Programming: Anton Butsev
@@ -8,25 +7,25 @@ Graphics: Evgeniy Kharkevich
 Music and sound design: Alexander Chistiakov
 
 ---
-Welcome to the underwater world!
+Welcome aboard captain!
 
-You are a captain of a supermodern submarine U-95.
+Your babe is U-95 - the most supermodern submarine in the whole world.
 
-Your task is to avoid getting caught by terrible monsters. 
+Your mission is to protect your darling from terrible monsters. 
 
-Apart from the monsters, the underwater realm contain lots of 
+Apart from the monsters, in the ocean you can find lots of very
 
-useful items: diskettes, light bulbs, compasses, etc. 
+useful items: diskettes, light bulbs, compasses, etc.
 
-Though the most useful one is a lifebuoy:
+Though the most useful for your would be a lifebuoy:
 
 ![lifebuoy](data://bm0)
 
-It allows to refill your oxygen supply or 
+It helps to refill your submarine's oxygen so you can stay on the mission longer
 
-augment the submarine with all sorts of useful gadgets.
+or enhance the submarine with all sorts of useful gadgets.
 
-The submarine is controlled by the arrow keys or 
+You can control the submarine using the arrow keys or 
 
 via the mouse and buttons on the game screen:
 
