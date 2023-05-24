@@ -2,12 +2,12 @@ namespace O21.Game.Scenes
 
 open System.Numerics
 
-open O21.Game
-open O21.Game.Help
-
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
-open O21.Localization.Translations
+
+open O21.Game
+open O21.Game.Help
+open O21.Game.Localization.Translations
 
 type HelpScene = {
     Content: LocalContent

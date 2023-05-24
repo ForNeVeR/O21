@@ -1,12 +1,12 @@
-module O21.Localization.Translations
+module O21.Game.Localization.Translations
 
 open System.IO
 
 open FSharp.Data
 
-open O21.Game.Localization.LocalizationPaths
+open O21.Game
 
-type TranslationLanguageType = 
+type TranslationLanguageType =
     | Json
 
 [<RequireQualifiedAccess>]
@@ -24,10 +24,10 @@ type private Provider = JsonProvider<"Localization/Translations/english.json">
 
 let Translation(language: Language) =
     Provider.Load (match language.Type with
-                    | Json -> Path.Combine(TranslationsFolder, $"{language.Name}.json"))
+                    | Json -> Path.Combine(Paths.TranslationsFolder, $"{language.Name}.json"))
 
 let AvailableLanguages = 
-    let files = Directory.GetFiles(TranslationsFolder, "*.json")
+    let files = Directory.GetFiles(Paths.TranslationsFolder, "*.json")
     seq {
         for file in files do
             let fileName = Path.GetFileNameWithoutExtension file

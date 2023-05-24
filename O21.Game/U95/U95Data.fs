@@ -8,8 +8,7 @@ open Raylib_CsLo
 
 open O21.Game
 open O21.Game.Help
-open O21.Game.Localization
-open O21.Localization.Translations
+open O21.Game.Localization.Translations
 
 type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Language -> DocumentFragment[], levels: Level[]) =
 
@@ -44,7 +43,7 @@ type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Lan
             match language.HelpRequestType with
             | HelpRequestType.WinHelpFile -> HlpFile.Load hlpFilePath
             | HelpRequestType.MarkdownFile ->
-                let markdownFilePath = Path.Combine(LocalizationPaths.HelpFolder, $"{language.Name}.md")
+                let markdownFilePath = Path.Combine(Paths.HelpFolder, $"{language.Name}.md")
                 MarkdownHelp.Load hlpFilePath markdownFilePath
 
         loadController.ReportProgress(translation.LoadingData, 0.6)

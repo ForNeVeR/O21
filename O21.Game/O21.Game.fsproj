@@ -6,29 +6,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="Localization\Help\*.md">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <Content Include="Localization\Translations\*.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="Resources\Inter-Regular.otf">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="Resources\Inter-Bold.otf">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
+        <Content Include="Localization\Help\*.md" CopyToOutputDirectory="Always" />
+        <Content Include="Localization\Translations\*.json" CopyToOutputDirectory="Always" />
 
-    <ItemGroup>
+        <Content Include="Resources\Inter-Bold.otf" CopyToOutputDirectory="Always" />
+        <Content Include="Resources\Inter-Regular.otf" CopyToOutputDirectory="Always" />
+        <Content Include="Resources\LICENSE.txt" CopyToOutputDirectory="Always" />
+        <Content Include="Resources\README.md" CopyToOutputDirectory="Always" />
+
+        <Content Include="content.json" CopyToOutputDirectory="Always" />
+
         <Svg Include="Artwork\submarine.svg" />
-        <None Include="Resources\LICENSE.txt" />
-        <None Include="Resources\README.md" />
         <None Include="Svg.props" />
+        <Compile Include="Paths.fs" />
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="Localization\LocalizationPaths.fs" />
         <Compile Include="Localization\Translations.fs" />
         <Compile Include="TextureUtils.fs" />
 
@@ -71,6 +64,8 @@
         <Compile Include="Game.fs" />
         
         <Compile Include="RaylibEnvironment.fs" />
+        
+        <Compile Include="Downloader.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
