@@ -4,5 +4,9 @@
     "PlayLabel": "Играть",
     "BackLabel": "Назад",
     "GameOverNotification": "Игра окончена !!!",
-    "LanguageLabel": "Смена языка"
+    "LanguageLabel": "Смена языка",
+    "LoadingData": "TODO",
+    "CatchingUp": "TODO",
+    "Accept": "TODO",
+    "Reject": "TODO"
 }

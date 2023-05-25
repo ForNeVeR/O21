@@ -27,7 +27,7 @@ type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Lan
     static member Load (loadController: LoadController) (directory: string): Task<U95Data> = task {
         let loadTranslation() = async {
             do! Async.SwitchToThreadPool()
-            return Translation(AvailableLanguages |> Seq.find(fun x -> x.Name = "english"))
+            return Translation(DefaultLanguage)
         }
 
         // TODO: Get the translation from local content (should be loaded)

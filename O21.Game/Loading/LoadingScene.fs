@@ -40,16 +40,19 @@ type LoadingScene(config: Config) =
             0f,
             WHITE
         )
-    
+
+    let mutable content = Unchecked.defaultof<_>
+
     interface ILoadingScene<LocalContent, U95Data> with
+        member _.Init loadedContent = content <- loadedContent
         member _.Load controller = U95Data.Load controller config.U95DataDirectory
 
-        member _.Draw content =
+        member _.Draw() =
             ClearBackground(BLACK)
             renderImage content
             renderText content
             ()
-        member _.Update controller =
+        member _.Update(_, controller) =
             let status, progress = controller.GetLoadProgress()
             loadingStatus <- status
             loadingProgress <- progress

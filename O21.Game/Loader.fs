@@ -21,7 +21,8 @@ type LoadController() =
     member _.GetLoadProgress(): ProgressReport =
         lock locker (fun () -> currentStatus, currentProgress)
 
-type ILoadingScene<'Input, 'Output> =
+type ILoadingScene<'TInput, 'Output> =
+    abstract Init: 'TInput -> unit
     abstract Load: LoadController -> Task<'Output>
-    abstract Update: LoadController -> unit
-    abstract Draw: 'Input -> unit
+    abstract Update: O21.Game.Input * LoadController -> unit
+    abstract Draw: unit -> unit

@@ -31,6 +31,7 @@
         <Compile Include="RaylibUtils.fs" />
         <Compile Include="LocalContent.fs" />
         <Compile Include="GeometryUtils.fs" />
+        <Compile Include="Input.fs" />
         <Compile Include="Loader.fs" />
 
         <Compile Include="U95\Background.fs" />
@@ -46,13 +47,8 @@
 
         <Compile Include="HUDRenderer.fs" />
         <Compile Include="HUD.fs" />
-        <Compile Include="Input.fs" />
         <Compile Include="State.fs" />
 
-        <Compile Include="Loading\PreloadingScene.fs" />
-        <Compile Include="Loading\LoadingScene.fs" />
-        <Compile Include="Loading\LoadingLoop.fs" />
-        
         <Compile Include="Scenes\Button.fs" />
         <Compile Include="Scenes\MinimizeButton.fs" />
         <Compile Include="Scenes\WindowRenderer.fs" />
@@ -60,12 +56,16 @@
         <Compile Include="Scenes\PlayScene.fs" />
         <Compile Include="Scenes\HelpScene.fs" />
         <Compile Include="Scenes\MainMenuScene.fs" />
+        <Compile Include="Downloader.fs" />
+
+        <Compile Include="Loading\PreloadingScene.fs" />
+        <Compile Include="Loading\DisclaimerScene.fs" />
+        <Compile Include="Loading\LoadingScene.fs" />
+        <Compile Include="Loading\LoadingLoop.fs" />
 
         <Compile Include="Game.fs" />
         
         <Compile Include="RaylibEnvironment.fs" />
-        
-        <Compile Include="Downloader.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

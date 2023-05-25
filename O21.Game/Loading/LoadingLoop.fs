@@ -15,7 +15,7 @@ type private CustomSynchronizationContext(queue: ConcurrentQueue<unit -> unit>) 
 
     override this.CreateCopy() = CustomSynchronizationContext(queue)
     override this.Post(callback, state) = queue.Enqueue(fun () -> callback.Invoke state)
-    override this.Send(d, state) = failwith "Cannot use synchronous send on custom context."
+    override this.Send(_, _) = failwith "Cannot use synchronous send on custom context."
 
 type private Result<'a> =
     | Success of 'a
@@ -41,6 +41,8 @@ let private processWithPumping(scene: ILoadingScene<_, _>, input) =
     try
         SynchronizationContext.SetSynchronizationContext context
 
+        scene.Init input
+
         let controller = LoadController()
         let task = scene.Load controller
 
@@ -57,11 +59,11 @@ let private processWithPumping(scene: ILoadingScene<_, _>, input) =
                 | true, action -> action()
                 | false, _ -> ()
 
-                scene.Update controller
+                scene.Update(Input.Handle(), controller)
 
                 BeginDrawing()
                 try
-                    scene.Draw input
+                    scene.Draw()
                 finally
                     EndDrawing()
 
@@ -73,7 +75,11 @@ let Run(config: Config): Option<LocalContent * U95Data> =
     let result =
         processWithPumping(PreloadingScene(), ())
         |> Result<_>.Bind(fun content ->
-            processWithPumping(LoadingScene(config), content)
+            processWithPumping(DisclaimerScene config, content)
+            |> Result<_>.Map(fun _ -> content)
+        )
+        |> Result<_>.Bind(fun content ->
+            processWithPumping(LoadingScene config, content)
             |> Result<_>.Map(fun data -> content, data)
         )
     match result with

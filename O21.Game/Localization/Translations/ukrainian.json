@@ -4,5 +4,9 @@
     "PlayLabel": "Грати",
     "BackLabel": "Назад",
     "GameOverNotification": "Гра закінчена !!!",
-    "LanguageLabel": "Зміна мови"
+    "LanguageLabel": "Зміна мови",
+    "LoadingData": "TODO",
+    "CatchingUp": "TODO",
+    "Accept": "TODO",
+    "Reject": "TODO"
 }
