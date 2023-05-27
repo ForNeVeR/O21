@@ -34,14 +34,14 @@ type Button = {
         }
     }
 
-    member private this.Rectangle(language: Language) =
+    member this.Measure(language: Language) =
         let size = Raylib.MeasureTextEx(this.Font, language |> this.Text, float32 this.Font.baseSize, 1.0f)
         Rectangle(this.Position.X, this.Position.Y, size.X + 22f, size.Y + 5f)
 
     member this.Draw(): unit =
         let x = int this.Position.X
         let y = int this.Position.Y
-        let rectangle = this.Rectangle this.State.Language
+        let rectangle = this.Measure this.State.Language
         let width = int rectangle.width 
         let height = int rectangle.height 
         
@@ -72,7 +72,7 @@ type Button = {
 
     member this.Update(input: Input, language: Language): Button =
         let state =
-            if CheckCollisionPointRec(input.MouseCoords, this.Rectangle this.State.Language) then
+            if CheckCollisionPointRec(input.MouseCoords, this.Measure this.State.Language) then
                 if input.MouseButtonPressed then
                     ButtonInteractionState.Clicked
                 else

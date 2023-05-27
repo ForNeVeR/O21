@@ -1,9 +1,9 @@
 namespace O21.Game.Loading
 
-open System.IO
 open System.Numerics
 open System.Threading.Tasks
 
+open Microsoft.FSharp.Core
 open type Raylib_CsLo.Raylib
 
 open O21.Game
@@ -22,8 +22,10 @@ type DisclaimerScene(config: Config) =
     let disclaimerAccepted = TaskCompletionSource<unit>()
 
     let mutable content = Unchecked.defaultof<_>
-    let mutable disclaimerHeight = 0f
+    let mutable disclaimerPosition = Vector2.Zero
     let fontSizePx = 24f
+    let buttonTopMarginPx = 25f
+    let buttonBetweenPx = 100f
     let mutable acceptButton = Unchecked.defaultof<Button>
     let mutable rejectButton = Unchecked.defaultof<Button>
 
@@ -32,33 +34,62 @@ type DisclaimerScene(config: Config) =
         DrawTextEx(
             content.UiFontRegular,
             disclaimerText lang,
-            Vector2(0f, 0f),
+            disclaimerPosition,
             fontSizePx,
             0f,
             WHITE
         )
 
+    let doLayout() =
+        let screenWidth = float32 config.ScreenWidth
+        let screenHeight = float32 config.ScreenHeight
+
+        let disclaimerSize = MeasureTextEx(
+            content.UiFontRegular,
+            disclaimerText language,
+            float32 fontSizePx,
+            0f
+        )
+        if disclaimerSize.X > screenWidth || disclaimerSize.Y > screenHeight then
+            failwith $"Disclaimer size ({disclaimerSize}) is too big to fit on the screen."
+
+        acceptButton <- Button.Create(
+            content.UiFontRegular,
+            (fun l -> (Translations.Translation l).Accept),
+            Vector2.Zero,
+            language
+        )
+        rejectButton <- Button.Create(
+            content.UiFontRegular,
+            (fun l -> (Translations.Translation l).Reject),
+            Vector2.Zero,
+            language
+        )
+
+        let acceptButtonSize = acceptButton.Measure language
+        let acceptButtonWidth = acceptButtonSize.width
+        let buttonTotalWidth = acceptButtonWidth + buttonBetweenPx + (rejectButton.Measure language).width
+
+        let totalWidth = max disclaimerSize.X buttonTotalWidth
+        let totalHeight = disclaimerSize.Y + buttonTopMarginPx + acceptButtonSize.height
+
+        disclaimerPosition <- Vector2(screenWidth / 2f - totalWidth / 2f, screenHeight / 2f - totalHeight / 2f)
+        let buttonTopPx = disclaimerPosition.Y + disclaimerSize.Y + buttonTopMarginPx
+        acceptButton <- {
+            acceptButton with
+                Position = Vector2(screenWidth / 2f - buttonTotalWidth / 2f, buttonTopPx)
+        }
+        rejectButton <- {
+            rejectButton with
+                Position = Vector2(acceptButton.Position.X + acceptButtonWidth + buttonBetweenPx, buttonTopPx)
+        }
+
+
     interface ILoadingScene<LocalContent, unit> with
         member _.Init newContent =
             content <- newContent
-            disclaimerHeight <- MeasureTextEx(
-                content.UiFontRegular,
-                disclaimerText language,
-                float32 fontSizePx,
-                0f
-            ).Y
-            acceptButton <- Button.Create(
-                content.UiFontRegular,
-                (fun l -> (Translations.Translation l).Accept),
-                Vector2(0f, disclaimerHeight + 10f),
-                language
-            )
-            rejectButton <- Button.Create(
-                content.UiFontRegular,
-                (fun l -> (Translations.Translation l).Reject),
-                Vector2(100f, disclaimerHeight + 10f), // TODO: Proper x positioning
-                language
-            )
+            // TODO: Update this layout on language change
+            doLayout()
 
         member this.Draw() =
             ClearBackground(BLACK)
