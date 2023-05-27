@@ -74,7 +74,9 @@ type DisclaimerScene(config: Config) =
         member this.Update(input, _) =
             match areFilesOnDisk with
             | None -> if onDiskChecker.IsCompleted then areFilesOnDisk <- Some onDiskChecker.Result
-            | Some _ ->
+            | Some true ->
+                disclaimerAccepted.SetResult()
+            | Some false ->
                 acceptButton <- acceptButton.Update(input, language)
                 rejectButton <- rejectButton.Update(input, language)
                 if acceptButton.State.InteractionState = ButtonInteractionState.Clicked then
