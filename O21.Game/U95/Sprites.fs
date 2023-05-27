@@ -102,7 +102,7 @@ module Sprites =
            )
        }
 
-    let LoadFrom (directory: string): Async<Sprites> = async { // TODO: Task
+    let LoadFrom (directory: string): Async<Sprites> = async {
         let context = SynchronizationContext.Current
         do! Async.SwitchToThreadPool()
         let brickResources = Graphics.Load(Path.Combine(directory, "U95_BRIC.DLL"))

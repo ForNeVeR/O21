@@ -23,15 +23,13 @@ type LocalContent = {
         |]
         let fontSize = 24
 
-        let loadFont path = async {
-            let! ct = Async.CancellationToken
-            let! data = Async.AwaitTask <| File.ReadAllBytesAsync(path, ct)
+        let loadFont path = task {
+            let! data = File.ReadAllBytesAsync(path)
             return RaylibUtils.LoadFontFromMemory (Path.GetExtension path) data fontSize fontChars
         }
 
-        let loadTexture path = async {
-            let! ct = Async.CancellationToken
-            let! data = Async.AwaitTask <| File.ReadAllBytesAsync(path, ct)
+        let loadTexture path = task {
+            let! data = File.ReadAllBytesAsync(path)
             return RaylibUtils.LoadTextureFromMemory (Path.GetExtension path) data
         }
 
