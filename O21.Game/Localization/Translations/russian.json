@@ -5,16 +5,17 @@
     "BackLabel": "Назад",
     "GameOverNotification": "Игра окончена !!!",
     "LanguageLabel": "Смена языка",
-    "LoadingData": "TODO",
-    "CatchingUp": "TODO",
+    "LoadingData": "Загрузка данных…",
+    "CatchingUp": "Завершение…",
     "LegalDisclaimerText": "O21 воссоздаёт игру U-95, разработанную компанией Nikita, Ltd.\n\nЛицензия, по которой распространялась оригинальная игра, на данный момент неизвестна, поэтому игра имеет неопределённый юридический статус.\nДе-факто, она является abandonware (заброшенным программным обеспечением).\n\nНикакие ресурсы оригинальной игры не включены в состав O21, но они требуются, чтобы начать игру.\n\nНажмите кнопку Принять, если вы разрешаете O21 скачать ресурсы оригинальной игры из интернета.",
     "Accept": "Принять",
     "Reject": "Отклонить и выйти",
-    "Preparing": "TODO",
-    "DownloadErrorRetrying": "TODO",
+    "Preparing": "Подготовка…",
+    "DownloadErrorRetrying": "Ошибка загрузки. Повтор…",
     "BytesAbbreviated": "Б",
     "KibibytesAbbreviated": "КиБ",
     "MebibytesAbbreviated": "МиБ",
-    "Verifying": "TODO",
-    "Unpacking": "TODO"
+    "Unpacking": "Распаковка…",
+    "DownloadingFormat": "Скачивание ({0})…",
+    "Verifying": "Проверка…"
 }
