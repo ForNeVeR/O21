@@ -6,6 +6,8 @@ Development Prerequisites
 
 To develop O21, you'll need [.NET 7 SDK][dotnet] (or a later version).
 
+Note that for now, because [of tooling restrictions][svg-skia.164], a version of .NET Core 3.1 SDK is also required.
+
 Build the Project
 -----------------
 
@@ -18,7 +20,7 @@ $ dotnet build
 Play the Original
 -----------------
 
-So far, the simplest way to play the original game is from [PlayMiniGames][playminigames.u95].
+So far, the simplest way to play the original game is from [PlayMiniGames][play-mini-games.u95].
 
 If the game sound is too loud and annoys you, you can disable it via the main menu. Unfortunately, PlayMiniGames' version of Windows 3.x doesn't seem to support Cyrillic, so you won't be able to read the actual names of the menu items. So, just open the first item of the main menu, and disable all the checkboxes there if you want to completely disable the in-game sound. 
 
@@ -45,4 +47,5 @@ This will create a bunch of `.bmp` files in the output directory containing the 
 [archive.u95]: https://archive.org/details/u-95_20230304
 [docs.resources]: docs/resources.md
 [dotnet]: https://dot.net/
-[playminigames.u95]: https://playminigames.net/game/u95
+[play-mini-games.u95]: https://playminigames.net/game/u95
+[svg-skia.164]: https://github.com/wieslawsoltes/Svg.Skia/issues/164
