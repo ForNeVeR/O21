@@ -23,6 +23,6 @@ type LoadController() =
 
 type ILoadingScene<'TInput, 'Output> =
     abstract Init: 'TInput -> unit
-    abstract Load: LoadController -> Task<'Output>
+    abstract Load: LoadController -> Task<'Output> // TODO: Support cancellation
     abstract Update: O21.Game.Input * LoadController -> unit
     abstract Draw: unit -> unit

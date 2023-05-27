@@ -7,7 +7,6 @@ open System.Threading
 open type Raylib_CsLo.Raylib
 
 open O21.Game
-open O21.Game.Scenes
 open O21.Game.U95
 
 type private CustomSynchronizationContext(queue: ConcurrentQueue<unit -> unit>) =
@@ -76,6 +75,10 @@ let Run(config: Config): Option<LocalContent * U95Data> =
         processWithPumping(PreloadingScene(), ())
         |> Result<_>.Bind(fun content ->
             processWithPumping(DisclaimerScene config, content)
+            |> Result<_>.Map(fun _ -> content)
+        )
+        |> Result<_>.Bind(fun content ->
+            processWithPumping(DownloadScene config, content)
             |> Result<_>.Map(fun _ -> content)
         )
         |> Result<_>.Bind(fun content ->

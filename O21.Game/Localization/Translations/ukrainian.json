@@ -8,5 +8,12 @@
     "LoadingData": "TODO",
     "CatchingUp": "TODO",
     "Accept": "TODO",
-    "Reject": "TODO"
+    "Reject": "TODO",
+    "Preparing": "TODO",
+    "DownloadErrorRetrying": "TODO",
+    "BytesAbbreviated": "Б",
+    "KibibytesAbbreviated": "КіБ",
+    "MebibytesAbbreviated": "МіБ",
+    "Verifying": "TODO",
+    "Unpacking": "TODO"
 }

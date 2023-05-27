@@ -9,5 +9,13 @@
     "CatchingUp": "Catching Up…",
     "LegalDisclaimerText": "O21 is a recreation of the game U-95 created by Nikita, Ltd.\n\nThe distribution license of the original game is unknown, so the game has an unclear de jure status.\nDe facto, it is abandonware nowadays.\n\nNo assets from the original game are included in O21, but they are required to run the game.\n\nPress the Accept button if you agree for O21 to download the original assets from the internet.",
     "Accept": "Accept",
-    "Reject": "Reject and Exit"
+    "Reject": "Reject and Exit",
+    "Preparing": "Preparing…",
+    "DownloadErrorRetrying": "Download error. Retrying…",
+    "DownloadingFormat": "Downloading ({0})…",
+    "BytesAbbreviated": "B",
+    "KibibytesAbbreviated": "KiB",
+    "MebibytesAbbreviated": "MiB",
+    "Verifying": "Verifying…",
+    "Unpacking": "Unpacking…"
 }

@@ -12,16 +12,9 @@ open O21.Game.Scenes
 
 type DisclaimerScene(config: Config) =
     let onDiskChecker = task {
-        if Directory.Exists config.U95DataDirectory then
-            let hashFilePath = Paths.U95ContentHashFile config.U95DataDirectory
-            if File.Exists hashFilePath then
-                let! actualHash = File.ReadAllTextAsync hashFilePath
-                let! contentConfig = Downloader.LoadContentConfiguration()
-                return actualHash.Trim() = contentConfig.Sha256
-            else return false
-        else return false
+        let! contentConfig = Downloader.LoadContentConfiguration()
+        return! Downloader.CheckIfAlreadyLoaded contentConfig config.U95DataDirectory
     }
-
     let mutable areFilesOnDisk = None
 
     // TODO: Localization controls on this page

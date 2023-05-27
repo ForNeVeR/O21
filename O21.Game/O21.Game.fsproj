@@ -60,6 +60,8 @@
 
         <Compile Include="Loading\PreloadingScene.fs" />
         <Compile Include="Loading\DisclaimerScene.fs" />
+        <Compile Include="Loading\LoadingSceneBase.fs" />
+        <Compile Include="Loading\DownloadScene.fs" />
         <Compile Include="Loading\LoadingScene.fs" />
         <Compile Include="Loading\LoadingLoop.fs" />
 
@@ -72,6 +74,7 @@
     <ItemGroup>
         <PackageReference Include="FSharp.Data" Version="6.2.0" />
         <PackageReference Include="FSharp.Formatting" Version="18.1.0" />
+        <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
         <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />
     </ItemGroup>
 

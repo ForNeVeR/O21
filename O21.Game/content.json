@@ -1,4 +1,5 @@
 {
     "Uri": "https://archive.org/download/u-95_20230304/U-95.zip",
+    "ContentDirectoryInsideArchive": "U95",
     "Sha256": "7F884B5FCCF65198F510905C41AF06BE1715E3482B123BBB8149D51FAE6A1460"
 }
