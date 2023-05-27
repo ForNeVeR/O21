@@ -52,3 +52,7 @@ jobs:
 
       - name: Test
         run: dotnet test
+
+      - name: Verify translations
+        shell: pwsh
+        run: ./Scripts/Verify-Translations.ps1

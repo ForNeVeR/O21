@@ -44,6 +44,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{58DB
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "O21.Tests", "O21.Tests\O21.Tests.fsproj", "{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{2CE77AD3-3D08-48EA-B13C-660932CFA8E4}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\Verify-Translations.ps1 = Scripts\Verify-Translations.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
