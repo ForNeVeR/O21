@@ -5,43 +5,30 @@ open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
 open O21.Game
-open O21.Localization.Translations
 
-[<RequireQualifiedAccess>]
-type ButtonInteractionState = Default | Hover | Clicked
-type ButtonState = {
-    InteractionState: ButtonInteractionState
-    Language: Language
-}
+module Button =
+    let DefaultColor = BLACK
+    let HoverColor = DARKGRAY
+    let ClickedColor = BLACK
+    
+    [<RequireQualifiedAccess>]
+    type InteractionState = Default | Hover | Clicked
 
-type Button = {
-    Font: Font
-    Text: Language -> string
-    Position: Vector2
-    State: ButtonState
-} with
-    static member DefaultColor = BLACK
-    static member HoverColor = DARKGRAY
-    static member ClickedColor = BLACK
+open Button
 
-    static member Create(font: Font, text: Language -> string, position: Vector2, language: Language): Button = {
-        Font = font
-        Text = text
-        Position = position
-        State = { 
-            InteractionState = ButtonInteractionState.Default
-            Language = language 
-        }
-    }
+type Button(font: Font, text: string, position: Vector2) =
+    let mutable text = text
+    let mutable state = InteractionState.Default
+    
+    let computeRectangle() =
+        let size = Raylib.MeasureTextEx(font, text, float32 font.baseSize, 1.0f)
+        Rectangle(position.X, position.Y, size.X + 22f, size.Y + 5f)
+        
+    let mutable rectangle = computeRectangle()
 
-    member private this.Rectangle(language: Language) =
-        let size = Raylib.MeasureTextEx(this.Font, language |> this.Text, float32 this.Font.baseSize, 1.0f)
-        Rectangle(this.Position.X, this.Position.Y, size.X + 22f, size.Y + 5f)
-
-    member this.Draw(): unit =
-        let x = int this.Position.X
-        let y = int this.Position.Y
-        let rectangle = this.Rectangle this.State.Language
+    member this.Draw() =
+        let x = int position.X
+        let y = int position.Y
         let width = int rectangle.width 
         let height = int rectangle.height 
         
@@ -56,28 +43,33 @@ type Button = {
         DrawRectangle(x-2, y+height+2, width+6, 2, BLACK)
                 
         let color =
-            match this.State.InteractionState with
-            | ButtonInteractionState.Default -> Button.DefaultColor
-            | ButtonInteractionState.Hover -> Button.HoverColor
-            | ButtonInteractionState.Clicked -> Button.ClickedColor
+            match state with
+            | InteractionState.Default -> DefaultColor
+            | InteractionState.Hover -> HoverColor
+            | InteractionState.Clicked -> ClickedColor
 
         DrawTextEx(
-            this.Font,
-            this.State.Language |> this.Text,
-            Vector2(float32 (x + 11), float32 (y + 2)),
-            float32 this.Font.baseSize,
-            0.0f,
-            color
+            font,
+            text,
+            position = Vector2(float32 (x + 11), float32 (y + 2)),
+            fontSize = float32 font.baseSize,
+            spacing = 0.0f,
+            tint = color
         )
 
-    member this.Update(input: Input, language: Language): Button =
-        let state =
-            if CheckCollisionPointRec(input.MouseCoords, this.Rectangle this.State.Language) then
+    member this.Text
+        with get() = text
+        and set value =
+            if value <> text then
+                text <- value
+                rectangle <- computeRectangle()
+    
+    member this.Update(input: Input) =
+        state <-
+            if CheckCollisionPointRec(input.MouseCoords, rectangle) then
                 if input.MouseButtonPressed then
-                    ButtonInteractionState.Clicked
+                    InteractionState.Clicked
                 else
-                    ButtonInteractionState.Hover
+                    InteractionState.Hover
             else
-                ButtonInteractionState.Default
-
-        { this with State = { this.State with InteractionState = state; Language = language } }
+                InteractionState.Default
