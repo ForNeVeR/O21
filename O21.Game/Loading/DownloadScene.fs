@@ -9,7 +9,7 @@ type DownloadScene(config: Config) =
 
     inherit LoadingSceneBase<unit>(config)
 
-    let language = Translations.DefaultLanguage // TODO: Take from the current settings
+    let language = Translations.DefaultLanguage // TODO[#99]: Take from the current settings
 
     override _.Load controller = task {
         controller.ReportProgress((Translations.Translation language).Preparing, 0.0)

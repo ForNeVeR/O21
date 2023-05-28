@@ -31,7 +31,7 @@ type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Lan
         }
 
         // TODO: Get the translation from local content (should be loaded)
-        // TODO: Get the active language from settings
+        // TODO[#99]: Get the active language from settings
         let! translation = loadTranslation()
 
         loadController.ReportProgress(translation.LoadingData, 0.2)
