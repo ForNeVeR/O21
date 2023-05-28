@@ -47,10 +47,10 @@ type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Lan
                 MarkdownHelp.Load hlpFilePath markdownFilePath
 
         loadController.ReportProgress(translation.LoadingData, 0.6)
-        let! sounds = Async.AwaitTask <| Sound.Load directory
+        let! sounds = Sound.Load directory
 
         loadController.ReportProgress(translation.LoadingData, 0.8)
-        let! level = Async.AwaitTask <| Level.Load directory 1 2
+        let! level = Level.Load directory 1 2
 
         loadController.ReportProgress(translation.CatchingUp, 1.0)
         return new U95Data(sprites, sounds, help, [| level |])

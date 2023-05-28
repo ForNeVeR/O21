@@ -28,8 +28,7 @@ type LoadingSceneBase<'Output>(config: Config) =
         let font = content.UiFontRegular
         let fontSize = 24f
 
-        let mutable progressString = (loadingProgress * 100.0).ToString("##", CultureInfo.InvariantCulture)
-        if progressString = "" then progressString <- "00"
+        let progressString = (loadingProgress * 100.0).ToString("00", CultureInfo.InvariantCulture)
 
         let text = $"{loadingStatus} {progressString}%%"
         let textRect = MeasureTextEx(font, text, fontSize, 0f)

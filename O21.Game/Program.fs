@@ -83,9 +83,8 @@ let main(args: string[]): int =
         }
 
         RaylibEnvironment.Run(config, fun () ->
-            match LoadingLoop.Run config with
-            | Some(content, data) -> GameLoop.Run(content, data)
-            | None -> ()
+            LoadingLoop.Run config
+            |> Option.iter GameLoop.Run
         )
 
     | _ -> printfn "Usage:\nexport <inputFile> <outDir>: export resources\n<dataDir>: start the game"
