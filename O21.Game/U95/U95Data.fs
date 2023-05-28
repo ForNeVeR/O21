@@ -35,7 +35,7 @@ type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Lan
         let! translation = loadTranslation()
 
         loadController.ReportProgress(translation.LoadingData, 0.2)
-        let! sprites = Sprites.LoadFrom directory
+        let! sprites = Async.StartImmediateAsTask(Sprites.LoadFrom directory)
 
         loadController.ReportProgress(translation.LoadingData, 0.4)
         let hlpFilePath = Path.Combine(directory, "U95.HLP")
