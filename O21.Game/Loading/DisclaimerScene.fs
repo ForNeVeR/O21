@@ -17,7 +17,7 @@ type DisclaimerScene(config: Config) =
     }
     let mutable areFilesOnDisk = None
 
-    // TODO: Localization controls on this page
+    // TODO[#98]: Localization controls on this page
     let language = Translations.DefaultLanguage
     let disclaimerAccepted = TaskCompletionSource<unit>()
 
@@ -88,7 +88,7 @@ type DisclaimerScene(config: Config) =
     interface ILoadingScene<LocalContent, unit> with
         member _.Init newContent =
             content <- newContent
-            // TODO: Update this layout on language change
+            // TODO[#98]: Update this layout on language change
             doLayout()
 
         member this.Draw() =
