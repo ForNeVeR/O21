@@ -22,7 +22,7 @@ type Language = {
 
 type private Provider = JsonProvider<"Localization/Translations/english.json">
 
-// TODO: Migrate to LocalContent
+// TODO[#101]: Migrate to LocalContent
 let Translation(language: Language) =
     Provider.Load (match language.Type with
                     | Json -> Path.Combine(Paths.TranslationsFolder, $"{language.Name}.json"))

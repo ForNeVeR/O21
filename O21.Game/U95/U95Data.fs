@@ -30,7 +30,7 @@ type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Lan
             return Translation(DefaultLanguage)
         }
 
-        // TODO: Get the translation from local content (should be loaded)
+        // TODO[#101]: Get the translation from local content (should be loaded)
         // TODO[#99]: Get the active language from settings
         let! translation = loadTranslation()
 

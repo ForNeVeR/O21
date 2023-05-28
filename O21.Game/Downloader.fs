@@ -44,7 +44,7 @@ let CheckIfAlreadyLoaded (contentConfig: ContentConfiguration) (dataFolder: stri
 let private retryPause = TimeSpan.FromSeconds 5.0
 
 let private BytesToString language =
-    let translation = Translation language // TODO: Get translation from the arguments, not the language
+    let translation = Translation language // TODO[#101]: Get translation from the arguments, not the language
     let KiB = 1024L
     let MiB = 1024L * KiB
 
@@ -61,7 +61,7 @@ let private DownloadToTempFile contentConfig
                                (controller: LoadController)
                                language
                                progressPart = task {
-    let translation = Translation language // TODO: Get translation from the arguments, not the language
+    let translation = Translation language // TODO[#101]: Get translation from the arguments, not the language
 
     use handler = new ProgressMessageHandler(new HttpClientHandler(AllowAutoRedirect = true))
     handler.HttpReceiveProgress.Add(fun args ->
@@ -128,7 +128,7 @@ let private DownloadAndUnpackData contentConfig
                                   (controller: LoadController)
                                   outputPath
                                   language = task {
-    let translation = Translation language // TODO: Get translation from the arguments, not the language
+    let translation = Translation language // TODO[#101]: Get translation from the arguments, not the language
     let! archivePath = DownloadToTempFile contentConfig controller language 0.85
     controller.ReportProgress(translation.Verifying, 0.9)
     try
@@ -152,7 +152,7 @@ let DownloadData (controller: LoadController) (outputPath: string) (language: La
     let! alreadyLoaded = CheckIfAlreadyLoaded contentConfig outputPath
     if alreadyLoaded then return true
     else
-        let translation = Translation language // TODO: Get translation from the arguments, not the language
+        let translation = Translation language // TODO[#101]: Get translation from the arguments, not the language
 
         let mutable finished = false
         let mutable retry = 3
