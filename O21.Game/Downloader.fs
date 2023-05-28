@@ -36,7 +36,7 @@ let CheckIfAlreadyLoaded (contentConfig: ContentConfiguration) (dataFolder: stri
         let hashFilePath = Paths.U95ContentHashFile dataFolder
         if File.Exists hashFilePath then
             let! actualHash = File.ReadAllTextAsync hashFilePath
-            return actualHash.Trim() = contentConfig.Sha256
+            return actualHash.Trim().Equals(contentConfig.Sha256, StringComparison.OrdinalIgnoreCase)
         else return false
     else return false
 }
@@ -113,10 +113,11 @@ let private UnpackData inputFile directoryInArchive outputDirectory =
 
         use file = ZipFile.OpenRead inputFile
         for entry in file.Entries do
-            if not (entry.FullName.EndsWith Path.DirectorySeparatorChar
-                    || entry.FullName.EndsWith Path.AltDirectorySeparatorChar) then
+            let isDirectoryEntry = Path.EndsInDirectorySeparator entry.FullName
+            if not isDirectoryEntry then
                 match getRelativePath directoryInArchive entry.FullName with
-                | Some relativePath -> entry.ExtractToFile(Path.Combine(outputDirectory, relativePath))
+                | Some relativePath ->
+                    entry.ExtractToFile(Path.Combine(outputDirectory, relativePath), overwrite = true)
                 | None -> ()
     )
 
