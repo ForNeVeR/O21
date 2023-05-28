@@ -15,5 +15,5 @@ type DownloadScene(config: Config) =
         controller.ReportProgress((Translations.Translation language).Preparing, 0.0)
         let! result = Downloader.DownloadData controller config.U95DataDirectory language
         if not result then failwith "Unable to download the game data"
-         // TODO: Show an error message to the user instead of throwing from here
+         // TODO[#100]: Show an error message to the user instead of throwing from here
     }
