@@ -77,6 +77,7 @@
         <PackageReference Include="FSharp.Formatting" Version="18.1.0" />
         <PackageReference Include="FVNever.Oddities.DIB" Version="1.0.0" />
         <PackageReference Include="FVNever.Oddities.NE" Version="1.0.0" />
+        <PackageReference Include="FVNever.Oddities.WinHelp" Version="1.0.0" />
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
         <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />
     </ItemGroup>
@@ -85,6 +86,5 @@
 
     <ItemGroup>
         <ProjectReference Include="..\O21.MRB\O21.MRB.csproj" />
-        <ProjectReference Include="..\O21.WinHelp\O21.WinHelp.csproj" />
     </ItemGroup>
 </Project>

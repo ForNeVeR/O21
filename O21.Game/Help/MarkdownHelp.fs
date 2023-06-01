@@ -3,6 +3,7 @@ module O21.Game.Help.MarkdownHelp
 open System
 open System.IO
 
+open System.Text
 open FSharp.Formatting.Markdown
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
@@ -40,7 +41,8 @@ let private parseParagraph readFile paragraph =
 
 let Load (hlpFilePath: string) (markdownFilePath: string): DocumentFragment[] =
     use hlpFileStream = new FileStream(hlpFilePath, FileMode.Open, FileAccess.Read)
-    let hlpFile, hfs = HlpFile.ReadMainData hlpFileStream
+    use reader = new BinaryReader(hlpFileStream, Encoding.UTF8, leaveOpen = true)
+    let hlpFile, hfs = HlpFile.ReadMainData reader
     let readFile name =
         hfs[name] |> hlpFile.ReadFile
 

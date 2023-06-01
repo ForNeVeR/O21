@@ -3,14 +3,14 @@ open System.IO
 open System.Text
 
 open Oddities.Resources
+open Oddities.WinHelp
+open Oddities.WinHelp.Fonts
+open Oddities.WinHelp.Topics
 
 open O21.Game
 open O21.Game.Help
 open O21.Game.Loading
 open O21.Game.U95
-open O21.WinHelp
-open O21.WinHelp.Fonts
-open O21.WinHelp.Topics
 
 let private exportImagesAsBmp outDir (images: Dib seq) =
     Directory.CreateDirectory outDir |> ignore
@@ -28,7 +28,8 @@ let main(args: string[]): int =
         Console.OutputEncoding <- Encoding.UTF8
 
         use input = new FileStream(inputFile, FileMode.Open, FileAccess.Read)
-        let file = WinHelpFile.Load input
+        use reader = new BinaryReader(input, Encoding.UTF8, leaveOpen = true)
+        let file = WinHelpFile.Load reader
         let dibs = ResizeArray()
         for entry in file.GetFiles(Encoding.UTF8) do
             printfn $"%s{entry.FileName}"
@@ -43,18 +44,21 @@ let main(args: string[]): int =
                 dibs.Add dib
             | "|SYSTEM" ->
                 use stream = new MemoryStream(bytes)
-                let header = SystemHeader.Load stream
+                use streamReader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
+                let header = SystemHeader.Load streamReader
                 printfn " - SystemHeader ok."
             | "|FONT" ->
                 use stream = new MemoryStream(bytes)
-                let fontFile = FontFile.Load stream
+                use streamReader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
+                let fontFile = FontFile.Load streamReader
                 printfn " - Font ok."
 
                 for descriptor in fontFile.ReadDescriptors() do
                     printfn $" - - Font descriptor: {descriptor.Attributes}"
             | "|TOPIC" ->
                 use stream = new MemoryStream(bytes)
-                let topic = TopicFile.Load stream
+                use streamReader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
+                let topic = TopicFile.Load streamReader
                 printfn " - Topic ok."
 
                 let mutable i = 0

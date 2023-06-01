@@ -4,19 +4,20 @@ open System.IO
 open System.Text
 
 open Oddities.Resources
+open Oddities.WinHelp
+open Oddities.WinHelp.Fonts
+open Oddities.WinHelp.Topics
 open Oxage.Wmf.Records
 open Raylib_CsLo
 
 open O21.Game.Help
 open O21.Game.TextureUtils
 open O21.MRB
-open O21.WinHelp
-open O21.WinHelp.Fonts
-open O21.WinHelp.Topics
 
 let private loadFontDescriptors(content: byte[]) =
     use stream = new MemoryStream(content)
-    let fontFile = FontFile.Load(stream)
+    use reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
+    let fontFile = FontFile.Load reader
     fontFile.ReadDescriptors()
 
 let private style = function
@@ -66,13 +67,14 @@ let ExtractDibImageFromMrb(file: byte[]): Dib =
 
 let private loadTopic encoding fonts bitmaps (content: byte[]) =
     use stream = new MemoryStream(content)
-    TopicFile.Load(stream).ReadParagraphs()
+    use reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
+    TopicFile.Load(reader).ReadParagraphs()
     |> Seq.filter(fun p -> p.RecordType = ParagraphRecordType.TextRecord)
     |> Seq.collect(fun p -> p.ReadItems(encoding).Items)
     |> convertParagraphs fonts bitmaps
     |> Seq.toArray
 
-let ReadMainData(input: Stream): WinHelpFile * Map<string, DirectoryIndexEntry> =
+let ReadMainData(input: BinaryReader): WinHelpFile * Map<string, DirectoryIndexEntry> =
     let helpFile = WinHelpFile.Load input
     let files =
         helpFile.GetFiles Encoding.UTF8
@@ -82,7 +84,8 @@ let ReadMainData(input: Stream): WinHelpFile * Map<string, DirectoryIndexEntry> 
 
 let Load (helpFile: string): DocumentFragment[] =
     use input = new FileStream(helpFile, FileMode.Open, FileAccess.Read)
-    let helpFile, files = ReadMainData input
+    use reader = new BinaryReader(input, Encoding.UTF8, leaveOpen = true)
+    let helpFile, files = ReadMainData reader
 
     let fonts =
         helpFile.ReadFile files["|FONT"]
