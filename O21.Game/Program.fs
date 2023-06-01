@@ -2,22 +2,28 @@ open System
 open System.IO
 open System.Text
 
+open Oddities.Resources
+
 open O21.Game
 open O21.Game.Help
 open O21.Game.Loading
-open O21.Resources
+open O21.Game.U95
 open O21.WinHelp
 open O21.WinHelp.Fonts
 open O21.WinHelp.Topics
+
+let private exportImagesAsBmp outDir (images: Dib seq) =
+    Directory.CreateDirectory outDir |> ignore
+    for i, dib in Seq.indexed images do
+        let data = dib.AsBmp()
+        let filePath = Path.Combine(outDir, $"{string i}.bmp")
+        File.WriteAllBytes(filePath, data)
 
 [<EntryPoint>]
 let main(args: string[]): int =
     Encoding.RegisterProvider CodePagesEncodingProvider.Instance
 
     match args with
-    | [| "export"; inputFile; outDir |] ->
-        Graphics.Load inputFile
-        |> Graphics.Export outDir
     | [| "help"; inputFile; outDir |] ->
         Console.OutputEncoding <- Encoding.UTF8
 
@@ -72,7 +78,12 @@ let main(args: string[]): int =
                     i <- i + 1
             | _ -> ()
 
-            Graphics.Export outDir dibs
+            exportImagesAsBmp outDir dibs
+    | [| "export"; inputFile; outDir |] ->
+        Async.RunSynchronously(async {
+            let! resources = Async.AwaitTask(NeExeFile.LoadResources inputFile)
+            exportImagesAsBmp outDir resources
+        })
 
     | [| dataDir |] ->
         let config = {

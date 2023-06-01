@@ -3,13 +3,13 @@ module O21.Game.Help.HlpFile
 open System.IO
 open System.Text
 
-open Raylib_CsLo
+open Oddities.Resources
 open Oxage.Wmf.Records
+open Raylib_CsLo
 
 open O21.Game.Help
 open O21.Game.TextureUtils
 open O21.MRB
-open O21.Resources
 open O21.WinHelp
 open O21.WinHelp.Fonts
 open O21.WinHelp.Topics

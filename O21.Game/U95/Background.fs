@@ -1,7 +1,9 @@
 ﻿namespace O21.Game.U95
 
 open System.IO
-open O21.Resources
+open System.Threading.Tasks
+
+open Oddities.Resources
 
 module Background =
     
@@ -13,7 +15,9 @@ module Background =
         |> Array.skip 14 // skip bitmap file header bytes
         |> Dib
         
-    let LoadBackgrounds (directory:string): Dib[] =
-        Array.init parts.Length (fun i ->
+    let LoadBackgrounds (directory:string): Task<Dib[]> = task {
+        do! Task.Yield()
+        return Array.init parts.Length (fun i ->
             LoadBackground (Path.Combine(directory, $"U95_{parts[i]}.SCR"))  
         )
+    }

@@ -2,15 +2,15 @@ namespace O21.Game.U95
 
 open System
 open System.IO
-open System.Threading
 
+open System.Threading.Tasks
+open Oddities.Resources
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
 open O21.Game
 open O21.Game.U95.Fish
 open O21.Game.TextureUtils
-open O21.Resources
 
 type Sprites = {
     Bricks: Map<int, Texture>
@@ -102,14 +102,11 @@ module Sprites =
            )
        }
 
-    let LoadFrom (directory: string): Async<Sprites> = async {
-        let context = SynchronizationContext.Current
-        do! Async.SwitchToThreadPool()
-        let brickResources = Graphics.Load(Path.Combine(directory, "U95_BRIC.DLL"))
-        let fishes = Graphics.Load(Path.Combine(directory, "U95_PIC.DLL"))
-        let exeSprites = Graphics.Load(Path.Combine(directory, "U95.EXE"))
-        let backgrounds = Background.LoadBackgrounds(directory)
-        do! Async.SwitchToContext context
+    let LoadFrom (directory: string): Task<Sprites> = task {
+        let! brickResources = NeExeFile.LoadResources(Path.Combine(directory, "U95_BRIC.DLL"))
+        let! fishes = NeExeFile.LoadResources(Path.Combine(directory, "U95_PIC.DLL"))
+        let! exeSprites = NeExeFile.LoadResources(Path.Combine(directory, "U95.EXE"))
+        let! backgrounds = Background.LoadBackgrounds(directory)
         
         return {
             Bricks = loadBricks brickResources

@@ -3,8 +3,7 @@ module O21.Game.TextureUtils
 open Microsoft.FSharp.NativeInterop
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
-
-open O21.Resources
+open Oddities.Resources
 
 let private transparentColor = struct(0xFFuy, 0xFFuy, 0xFFuy)
 let private isColor(struct(r1, g1, b1), struct(r2, g2, b2)) =
