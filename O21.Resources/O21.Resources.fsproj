@@ -11,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\O21.NE\O21.NE.csproj" />
+      <PackageReference Include="FVNever.Oddities.NE" Version="1.0.0" />
     </ItemGroup>
 
 </Project>

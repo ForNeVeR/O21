@@ -3,11 +3,13 @@
 open System
 open System.IO
 
-open O21.NE
+open System.Text
+open Oddities.NE
 
 let Load(path: string): Dib[] =
     use stream = new FileStream(path, FileMode.Open, FileAccess.Read)
-    let neFile = NeFile.ReadFrom stream
+    use reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
+    let neFile = NeFile.ReadFrom reader
     let resources = neFile.ReadResourceTable()
     let bitmapResourceType =
         resources
