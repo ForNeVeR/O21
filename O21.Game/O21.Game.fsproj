@@ -76,6 +76,7 @@
         <PackageReference Include="FSharp.Data" Version="6.2.0" />
         <PackageReference Include="FSharp.Formatting" Version="18.1.0" />
         <PackageReference Include="FVNever.Oddities.DIB" Version="1.0.0" />
+        <PackageReference Include="FVNever.Oddities.MRB" Version="1.0.0" />
         <PackageReference Include="FVNever.Oddities.NE" Version="1.0.0" />
         <PackageReference Include="FVNever.Oddities.WinHelp" Version="1.0.0" />
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
@@ -83,8 +84,4 @@
     </ItemGroup>
 
     <Import Project="Svg.props" />
-
-    <ItemGroup>
-        <ProjectReference Include="..\O21.MRB\O21.MRB.csproj" />
-    </ItemGroup>
 </Project>

@@ -27,10 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{ED5D37B9-3
 		docs\resources.md = docs\resources.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "O21.StreamUtil", "O21.StreamUtil\O21.StreamUtil.csproj", "{87A951E1-4146-46A5-AECD-3AEAD9270632}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "O21.MRB", "O21.MRB\O21.MRB.csproj", "{C64EE6D7-A7D8-4824-A091-613A31C55FDD}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{58DB85EB-D5FC-4D30-9FC7-BDD95AFE31EB}"
 	ProjectSection(SolutionItems) = preProject
 		.config\dotnet-tools.json = .config\dotnet-tools.json
@@ -53,14 +49,6 @@ Global
 		{26A002F1-A77B-4339-99D7-866BDF4BC1E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26A002F1-A77B-4339-99D7-866BDF4BC1E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26A002F1-A77B-4339-99D7-866BDF4BC1E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{87A951E1-4146-46A5-AECD-3AEAD9270632}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{87A951E1-4146-46A5-AECD-3AEAD9270632}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{87A951E1-4146-46A5-AECD-3AEAD9270632}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{87A951E1-4146-46A5-AECD-3AEAD9270632}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C64EE6D7-A7D8-4824-A091-613A31C55FDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C64EE6D7-A7D8-4824-A091-613A31C55FDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C64EE6D7-A7D8-4824-A091-613A31C55FDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C64EE6D7-A7D8-4824-A091-613A31C55FDD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}.Release|Any CPU.ActiveCfg = Release|Any CPU

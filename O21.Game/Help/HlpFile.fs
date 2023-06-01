@@ -3,6 +3,7 @@ module O21.Game.Help.HlpFile
 open System.IO
 open System.Text
 
+open Oddities.MRB
 open Oddities.Resources
 open Oddities.WinHelp
 open Oddities.WinHelp.Fonts
@@ -12,7 +13,6 @@ open Raylib_CsLo
 
 open O21.Game.Help
 open O21.Game.TextureUtils
-open O21.MRB
 
 let private loadFontDescriptors(content: byte[]) =
     use stream = new MemoryStream(content)
@@ -46,7 +46,8 @@ let private convertParagraphs (fonts: FontDescriptor[]) (bitmaps: int -> Texture
 
 let ExtractDibImageFromMrb(file: byte[]): Dib =
     use stream = new MemoryStream(file)
-    let file = MrbFile.Load stream
+    use reader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
+    let file = MrbFile.Load reader
     if file.ImageCount <> 1s then
         failwith "Invalid image count."
 
