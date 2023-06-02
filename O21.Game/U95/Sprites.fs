@@ -15,6 +15,7 @@ open O21.Game.TextureUtils
 type Sprites = {
     Bricks: Map<int, Texture>
     Background: Texture[]
+    TitleScreenBackground: Texture
     Fishes: Fish[]
     HUD: HUDSprites
     Bonuses: BonusSprites
@@ -107,10 +108,12 @@ module Sprites =
         let! fishes = NeExeFile.LoadResources(Path.Combine(directory, "U95_PIC.DLL"))
         let! exeSprites = NeExeFile.LoadResources(Path.Combine(directory, "U95.EXE"))
         let! backgrounds = Background.LoadBackgrounds(directory)
+        let! titleScreen = Background.LoadBackground(Path.Combine(directory, "U95_T.SCR"))
         
         return {
             Bricks = loadBricks brickResources
             Background = loadBackgrounds backgrounds
+            TitleScreenBackground = CreateSprite titleScreen 
             Fishes = loadFishes fishes
             HUD = loadHUD exeSprites
             Bonuses = loadBonuses exeSprites

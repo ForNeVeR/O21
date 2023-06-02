@@ -3,21 +3,26 @@ namespace O21.Game.Scenes
 open System.Numerics
 open System.Linq
 
+open Raylib_CsLo
+
 open O21.Game
 open O21.Game.Localization.Translations
+open O21.Game.U95
 
 type MainMenuScene = {
     Content: LocalContent
+    Data: U95Data
     PlayButton: Button
     HelpButton: Button
     GameOverButton: Button
     LanguageButton: Button
 }
     with
-        static member Init(content: LocalContent): MainMenuScene =
+        static member Init(content: LocalContent, data: U95Data): MainMenuScene =
             let defaultLanguage = DefaultLanguage
             {
                 Content = content
+                Data = data
                 PlayButton = Button.Create (content.UiFontRegular, (fun language -> (Translation language).PlayLabel), Vector2(10f, 10f), defaultLanguage)
                 HelpButton = Button.Create (content.UiFontRegular, (fun language -> (Translation language).HelpLabel), Vector2(10f, 60f), defaultLanguage)
                 GameOverButton = Button.Create(content.UiFontRegular, (fun language -> (Translation language).OverLabel), Vector2(10f, 110f), defaultLanguage) 
@@ -53,7 +58,8 @@ type MainMenuScene = {
                         else scene
                     { state with Scene = scene }
 
-            member this.Draw(_) =
+            member this.Draw _ =
+                Raylib.DrawTexture(this.Data.Sprites.TitleScreenBackground, 0, 0, Raylib.WHITE)
                 this.PlayButton.Draw()
                 this.HelpButton.Draw()
                 this.GameOverButton.Draw()
