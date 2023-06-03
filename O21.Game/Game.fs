@@ -6,9 +6,9 @@ open O21.Game.Localization.Translations
 open O21.Game.Scenes
 open O21.Game.U95
 
-type Game(content: LocalContent, data: U95Data) =
+type Game(config: Config, content: LocalContent, data: U95Data) =
     let mutable state = {
-        Scene = MainMenuScene.Init(content, data)
+        Scene = MainMenuScene.Init(config, content, data)
         Settings = { SoundVolume = 0.1f }
         U95Data = data
         SoundsToStartPlaying = Set.empty
@@ -34,8 +34,8 @@ type Game(content: LocalContent, data: U95Data) =
         EndDrawing()
 
 module GameLoop =
-    let Run(content: LocalContent, data: U95Data): unit =
-        let game = Game(content, data)
+    let Run (config: Config) (content: LocalContent, data: U95Data): unit =
+        let game = Game(config, content, data)
         while not (WindowShouldClose()) do
             game.Update()
             game.Draw()

@@ -99,7 +99,7 @@ let main(args: string[]): int =
 
         RaylibEnvironment.Run(config, fun () ->
             LoadingLoop.Run config
-            |> Option.iter GameLoop.Run
+            |> Option.iter(GameLoop.Run config)
         )
 
     | _ -> printfn "Usage:\nexport <inputFile> <outDir>: export resources\n<dataDir>: start the game"
