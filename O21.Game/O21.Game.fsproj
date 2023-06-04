@@ -45,7 +45,8 @@
         <Compile Include="U95\Level.fs" />
         <Compile Include="U95\U95Data.fs" />
         <Compile Include="U95\GameRules.fs" />
-
+        <Compile Include="Music.fs" />
+        
         <Compile Include="HUDRenderer.fs" />
         <Compile Include="HUD.fs" />
         <Compile Include="State.fs" />
@@ -79,7 +80,9 @@
         <PackageReference Include="FVNever.Oddities.MRB" Version="1.0.0" />
         <PackageReference Include="FVNever.Oddities.NE" Version="1.0.0" />
         <PackageReference Include="FVNever.Oddities.WinHelp" Version="1.0.0" />
+        <PackageReference Include="MeltySynth" Version="2.4.1" />
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
+        <PackageReference Include="NAudio" Version="2.1.0" />
         <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />
     </ItemGroup>
 

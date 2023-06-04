@@ -10,12 +10,17 @@ open O21.Game
 open O21.Game.Help
 open O21.Game.Localization.Translations
 
-type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Language -> DocumentFragment[], levels: Level[]) =
+type U95Data private(sprites: Sprites,
+                     sounds: Map<SoundType, Sound>,
+                     midiFilePath: string,
+                     help: Language -> DocumentFragment[],
+                     levels: Level[]) =
 
     let mutable helpCache = Map.empty
 
     member this.Sprites: Sprites = sprites
     member this.Sounds: Map<SoundType, Sound> = sounds
+    member this.MidiFilePath = midiFilePath
     member this.Help(language: Language): DocumentFragment[] =
         match helpCache |> Map.tryFind language with
         | Some fragments -> fragments
@@ -48,12 +53,13 @@ type U95Data private (sprites: Sprites, sounds: Map<SoundType, Sound>, help: Lan
 
         loadController.ReportProgress(translation.LoadingData, 0.6)
         let! sounds = Sound.Load directory
+        let midiFilePath = Path.Combine(directory, "U95.MID")
 
         loadController.ReportProgress(translation.LoadingData, 0.8)
         let! level = Level.Load directory 1 2
 
         loadController.ReportProgress(translation.CatchingUp, 1.0)
-        return new U95Data(sprites, sounds, help, [| level |])
+        return new U95Data(sprites, sounds, midiFilePath, help, [| level |])
     }
 
     interface IDisposable with
