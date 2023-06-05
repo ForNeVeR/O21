@@ -11,6 +11,7 @@ type LocalContent = {
     UiFontRegular: Font
     UiFontBold: Font
     LoadingTexture: Texture
+    SoundFontPath: string
 } with
     static member Load(): Task<LocalContent> = task {
         let binDir = Path.GetDirectoryName(Environment.ProcessPath)
@@ -33,13 +34,14 @@ type LocalContent = {
             return RaylibUtils.LoadTextureFromMemory (Path.GetExtension path) data
         }
 
-        let! regular = loadFont <| pathToResource "Inter-Regular.otf"
-        let! bold = loadFont <| pathToResource "Inter-Bold.otf"
+        let! regular = loadFont <| pathToResource "Fonts/Inter-Regular.otf"
+        let! bold = loadFont <| pathToResource "Fonts/Inter-Bold.otf"
         let! loading = loadTexture <| pathToResource "submarine.png"
 
         return {
             UiFontRegular = regular
             UiFontBold = bold
             LoadingTexture = loading
+            SoundFontPath = pathToResource "SoundFont/microgm.sf2"
         }
     }

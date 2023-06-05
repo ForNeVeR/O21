@@ -46,7 +46,7 @@ type MainMenuScene = {
             // TODO: Proper music control, at least some kind of it
             Task.Run(Func<Task>(fun () -> (task {
                 try
-                    do! Music.PlayMusic(data.MidiFilePath, CancellationToken.None)
+                    do! Music.PlayMusic(content.SoundFontPath, data.MidiFilePath, CancellationToken.None)
                 with
                 | ex ->
                     // TODO: Logging
