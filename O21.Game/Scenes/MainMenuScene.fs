@@ -42,11 +42,11 @@ type MainMenuScene = {
     LanguageButton: Button
 }
     with
-        static member Init(config: Config, content: LocalContent, data: U95Data): MainMenuScene =
+        static member Init(config: Config, settings: Settings, content: LocalContent, data: U95Data): MainMenuScene =
             // TODO: Proper music control, at least some kind of it
             Task.Run(Func<Task>(fun () -> (task {
                 try
-                    do! Music.PlayMusic(content.SoundFontPath, data.MidiFilePath, CancellationToken.None)
+                    do! Music.PlayMusic(settings, content.SoundFontPath, data.MidiFilePath, CancellationToken.None)
                 with
                 | ex ->
                     // TODO: Logging

@@ -7,9 +7,10 @@ open O21.Game.Scenes
 open O21.Game.U95
 
 type Game(config: Config, content: LocalContent, data: U95Data) =
+    let settings = { SoundVolume = 0.1f }
     let mutable state = {
-        Scene = MainMenuScene.Init(config, content, data)
-        Settings = { SoundVolume = 0.1f }
+        Scene = MainMenuScene.Init(config, settings, content, data)
+        Settings = settings
         U95Data = data
         SoundsToStartPlaying = Set.empty
         Language = DefaultLanguage

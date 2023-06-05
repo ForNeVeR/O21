@@ -46,11 +46,11 @@
         <Compile Include="U95\Level.fs" />
         <Compile Include="U95\U95Data.fs" />
         <Compile Include="U95\GameRules.fs" />
-        <Compile Include="Music.fs" />
         
         <Compile Include="HUDRenderer.fs" />
         <Compile Include="HUD.fs" />
         <Compile Include="State.fs" />
+        <Compile Include="Music.fs" />
 
         <Compile Include="Scenes\Button.fs" />
         <Compile Include="Scenes\MinimizeButton.fs" />

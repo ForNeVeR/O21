@@ -1,10 +1,10 @@
 module O21.Game.Music
 
 open System
-
 open System.IO
 open System.Threading
 open System.Threading.Tasks
+
 open MeltySynth
 open NAudio.Wave
 
@@ -30,7 +30,10 @@ let private ConvertToWavFile soundFontPath (midiFilePath: string) =
     wavFile.WriteSamples(samples, 0, samples.Length)
     wavFilePath
 
-let PlayMusic(soundFontPath: string, midiFilePath: string, cancellationToken: CancellationToken): Task = task {
+let PlayMusic(settings: Settings,
+              soundFontPath: string,
+              midiFilePath: string,
+              cancellationToken: CancellationToken): Task = task {
     do! Task.Yield()
 
     let wavFile = ConvertToWavFile soundFontPath midiFilePath
@@ -38,7 +41,7 @@ let PlayMusic(soundFontPath: string, midiFilePath: string, cancellationToken: Ca
     use audioFile = new AudioFileReader(wavFile)
     use outputDevice = new WaveOutEvent()
     outputDevice.Init audioFile
-    outputDevice.Volume <- 0.1f
+    outputDevice.Volume <- settings.SoundVolume
     outputDevice.Play()
     try
         while outputDevice.PlaybackState = PlaybackState.Playing do
