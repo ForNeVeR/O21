@@ -29,7 +29,7 @@ type MusicPlayer =
             Raylib.StopAudioStream this.Stream
 
 let CreateMusicPlayer(soundFontPath: string, midiFilePath: string): MusicPlayer =
-    let synthesizer = Synthesizer(soundFontPath, SampleRate)
+    let synthesizer = Synthesizer(soundFontPath, SampleRate) // TODO: Async sound font loading during content load stage
     let sequencer = MidiFileSequencer synthesizer
     let midiFile = MidiFile midiFilePath
     sequencer.Play(midiFile, loop = true)
