@@ -83,7 +83,6 @@
         <PackageReference Include="FVNever.Oddities.WinHelp" Version="1.0.0" />
         <PackageReference Include="MeltySynth" Version="2.4.1" />
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
-        <PackageReference Include="NAudio" Version="2.1.0" />
         <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />
     </ItemGroup>
 

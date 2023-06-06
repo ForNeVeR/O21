@@ -1,11 +1,8 @@
 namespace O21.Game.Scenes
 
-open System
 open System.Numerics
 open System.Linq
 
-open System.Threading
-open System.Threading.Tasks
 open Raylib_CsLo
 
 open O21.Game
@@ -42,16 +39,7 @@ type MainMenuScene = {
     LanguageButton: Button
 }
     with
-        static member Init(config: Config, settings: Settings, content: LocalContent, data: U95Data): MainMenuScene =
-            // TODO: Proper music control, at least some kind of it
-            Task.Run(Func<Task>(fun () -> (task {
-                try
-                    do! Music.PlayMusic(settings, content.SoundFontPath, data.MidiFilePath, CancellationToken.None)
-                with
-                | ex ->
-                    // TODO: Logging
-                    eprintf $"{ex.Message}:\n{ex.StackTrace}"
-            }))) |> ignore
+        static member Init(config: Config, content: LocalContent, data: U95Data): MainMenuScene =
             let [| play; help; gameOver; changeLanguage |] =
                 MainMenuLayout.CreateButtons config content.UiFontRegular DefaultLanguage [|
                     (fun t -> t.PlayLabel)
