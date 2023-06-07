@@ -63,5 +63,5 @@ type PlayScene = {
                         ()
             for i = 0 to state.U95Data.Sprites.Fishes.Length-1 do
                 let fish = state.U95Data.Sprites.Fishes[i]
-                let frameNumber = state.Game.FrameNumber % fish.LeftDirection.Length
+                let frameNumber = state.Game.Tick % fish.LeftDirection.Length
                 DrawTexture(fish.LeftDirection[frameNumber], 60*i, 60*i, WHITE)

@@ -9,13 +9,13 @@ type Time = {
 
 type GameEngine = {
     StartTime: Time
-    FrameNumber: int
+    Tick: int
 } with
     static member Start(time: Time): GameEngine = {
         StartTime = time
-        FrameNumber = 0
+        Tick = 0
     }
 
     member this.Update(time: Time): GameEngine =
         let newFrameNumber = int <| (time.Total -  this.StartTime.Total) * GameRules.TicksPerSecond
-        { this with FrameNumber = newFrameNumber }
+        { this with Tick = newFrameNumber }
