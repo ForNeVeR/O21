@@ -8,3 +8,6 @@ let GameWidth = 600
 
 [<Literal>]
 let GameHeight = 400
+
+[<Literal>]
+let TicksPerSecond = 10.0

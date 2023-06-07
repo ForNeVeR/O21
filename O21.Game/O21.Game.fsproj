@@ -49,6 +49,7 @@
         
         <Compile Include="HUDRenderer.fs" />
         <Compile Include="HUD.fs" />
+        <Compile Include="GameEngine.fs" />
         <Compile Include="State.fs" />
         <Compile Include="Music.fs" />
 

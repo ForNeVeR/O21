@@ -3,11 +3,6 @@ namespace O21.Game
 open O21.Game.Localization.Translations
 open O21.Game.U95
 
-type Time = { 
-    Total: float
-    Delta: float32 
-}
-
 type Settings = { 
     SoundVolume: float32
 }
@@ -29,4 +24,5 @@ and State = {
     U95Data: U95Data
     SoundsToStartPlaying: Set<SoundType>
     Language: Language
+    Game: GameEngine
 }

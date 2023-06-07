@@ -6,7 +6,6 @@ open O21.Game
 open O21.Game.U95
 open O21.Game.U95.Parser
 
-
 type PlayScene = {
     CurrentLevel: Level
     LastShotTime: float option
@@ -20,7 +19,7 @@ type PlayScene = {
         LastShotTime = None
         HUD = HUD.Init()
         Content = content
-        MainMenu = mainMenu 
+        MainMenu = mainMenu
     }
 
     interface IScene with
@@ -32,6 +31,7 @@ type PlayScene = {
                 | None -> true
                 | Some lastShot -> time.Total - float lastShot > GameRules.ShotCooldownSec
 
+            let state = { state with Game = state.Game.Update time }
             if wantShot && allowedShot then
                 { state with 
                     Scene = { this with LastShotTime = Some time.Total }
@@ -53,8 +53,6 @@ type PlayScene = {
                         DrawTexture(state.U95Data.Sprites.Bricks[b], 12*j, 12*i, WHITE)
                     | _ ->
                         ()
-            for i = 0 to state.U95Data.Sprites.Fishes.Length-1 do
-                DrawTexture(state.U95Data.Sprites.Fishes[i].LeftDirection[i], 60*i, 60*i, WHITE)
 
             for i = 0 to map.Length-1 do
                 for j = 0 to map[i].Length-1 do
@@ -64,4 +62,6 @@ type PlayScene = {
                     | _ ->
                         ()
             for i = 0 to state.U95Data.Sprites.Fishes.Length-1 do
-                DrawTexture(state.U95Data.Sprites.Fishes[i].LeftDirection[i], 60*i, 60*i, WHITE)
+                let fish = state.U95Data.Sprites.Fishes[i]
+                let frameNumber = state.Game.FrameNumber % fish.LeftDirection.Length
+                DrawTexture(fish.LeftDirection[frameNumber], 60*i, 60*i, WHITE)

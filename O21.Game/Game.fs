@@ -14,6 +14,7 @@ type Game(config: Config, content: LocalContent, data: U95Data) =
         U95Data = data
         SoundsToStartPlaying = Set.empty
         Language = DefaultLanguage
+        Game = GameEngine.Start { Total = GetTime(); Delta = GetFrameTime() }
     }
 
     member _.Update(musicPlayer: MusicPlayer) =
