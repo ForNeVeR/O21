@@ -1,5 +1,6 @@
 namespace O21.Game
 
+open O21.Game.Engine
 open type Raylib_CsLo.Raylib
 
 open O21.Game.Localization.Translations

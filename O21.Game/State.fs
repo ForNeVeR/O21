@@ -1,5 +1,6 @@
 namespace O21.Game
 
+open O21.Game.Engine
 open O21.Game.Localization.Translations
 open O21.Game.U95
 
