@@ -9,4 +9,4 @@ type LoadingScene(config: Config) =
 
     inherit LoadingSceneBase<U95Data>(config)
 
-    override _.Load controller = U95Data.Load controller config.U95DataDirectory
+    override _.Load(lt, controller) = U95Data.Load lt controller config.U95DataDirectory

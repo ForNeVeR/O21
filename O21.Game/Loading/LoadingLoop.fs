@@ -4,6 +4,7 @@ open System
 open System.Collections.Concurrent
 open System.Threading
 
+open JetBrains.Lifetimes
 open type Raylib_CsLo.Raylib
 
 open O21.Game
@@ -47,7 +48,7 @@ with
         | Error e -> Error e
         | Cancel -> Cancel
 
-let private processWithPumping(scene: ILoadingScene<_, _>, input) =
+let private processWithPumping(lt, scene: ILoadingScene<_, _>, input) =
     let queue = ConcurrentQueue()
     use context = new CustomSynchronizationContext(queue)
     let prevContext = SynchronizationContext.Current
@@ -57,7 +58,7 @@ let private processWithPumping(scene: ILoadingScene<_, _>, input) =
         scene.Init input
 
         let controller = LoadController()
-        let task = scene.Load controller
+        let task = scene.Load(lt, controller)
 
         let mutable result = None
         while Option.isNone result do
@@ -84,19 +85,19 @@ let private processWithPumping(scene: ILoadingScene<_, _>, input) =
     finally
         SynchronizationContext.SetSynchronizationContext prevContext
 
-let Run(config: Config): Option<LocalContent * U95Data> =
+let Run(resourceLifetime: Lifetime, config: Config): Option<LocalContent * U95Data> =
     let result =
-        processWithPumping(PreloadingScene(), ())
+        processWithPumping(resourceLifetime, PreloadingScene(), ())
         |> Result<_>.Bind(fun content ->
-            processWithPumping(DisclaimerScene config, content)
+            processWithPumping(resourceLifetime, DisclaimerScene config, content)
             |> Result<_>.Map(fun _ -> content)
         )
         |> Result<_>.Bind(fun content ->
-            processWithPumping(DownloadScene config, content)
+            processWithPumping(resourceLifetime, DownloadScene config, content)
             |> Result<_>.Map(fun _ -> content)
         )
         |> Result<_>.Bind(fun content ->
-            processWithPumping(LoadingScene config, content)
+            processWithPumping(resourceLifetime, LoadingScene config, content)
             |> Result<_>.Map(fun data -> content, data)
         )
     match result with

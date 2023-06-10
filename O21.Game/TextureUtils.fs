@@ -1,5 +1,6 @@
 module O21.Game.TextureUtils
 
+open JetBrains.Lifetimes
 open Microsoft.FSharp.NativeInterop
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
@@ -11,7 +12,7 @@ let private isColor(struct(r1, g1, b1), struct(r2, g2, b2)) =
 
 #nowarn "9"
 
-let CreateTransparentSprite (colors: Dib) (transparency: Dib): Texture =
+let CreateTransparentSprite (lifetime: Lifetime) (colors: Dib) (transparency: Dib): Texture =
     let width = colors.Width
     let height = colors.Height
     let colors = Array.init (width * height) (fun i ->
@@ -32,10 +33,9 @@ let CreateTransparentSprite (colors: Dib) (transparency: Dib): Texture =
         format = int PixelFormat.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
         mipmaps = 1
     )
-    let texture = LoadTextureFromImage(image)
-    texture
+    RaylibUtils.LoadTextureFromImage lifetime image
 
-let CreateSprite(colors: Dib): Texture =
+let CreateSprite (lifetime: Lifetime) (colors: Dib): Texture =
     let width = colors.Width
     let height = colors.Height
     let colors = Array.init (width * height) (fun i ->
@@ -52,5 +52,4 @@ let CreateSprite(colors: Dib): Texture =
         format = int PixelFormat.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
         mipmaps = 1
     )
-    let texture = LoadTextureFromImage(image)
-    texture
+    RaylibUtils.LoadTextureFromImage lifetime image

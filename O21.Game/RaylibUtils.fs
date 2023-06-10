@@ -1,16 +1,39 @@
 module O21.Game.RaylibUtils
 
+open JetBrains.Lifetimes
 open Microsoft.FSharp.NativeInterop
 open Raylib_CsLo
 
 #nowarn "9"
 
-let LoadFontFromMemory (fileType: string) (data: byte[]) (fontSize: int) (fontChars: int[]): Font =
+let LoadFontFromMemory (lifetime: Lifetime)
+                       (fileType: string)
+                       (data: byte[])
+                       (fontSize: int)
+                       (fontChars: int[]): Font =
     use dataPtr = fixed data
     use fontCharsPtr = fixed fontChars
-    Raylib.LoadFontFromMemory(fileType, dataPtr, data.Length, fontSize, fontCharsPtr, fontChars.Length)
+    lifetime.Bracket(
+        (fun () ->
+            Raylib.LoadFontFromMemory(
+                fileType,
+                dataPtr,
+                data.Length,
+                fontSize,
+                fontCharsPtr,
+                fontChars.Length
+            )
+        ),
+        Raylib.UnloadFont
+    )
 
-let LoadTextureFromMemory (fileType: string) (data: byte[]): Texture =
+let LoadTextureFromImage (lifetime: Lifetime) (image: Image): Texture =
+    lifetime.Bracket(
+        (fun () -> Raylib.LoadTextureFromImage image),
+        Raylib.UnloadTexture
+    )
+
+let LoadTextureFromMemory (lifetime: Lifetime) (fileType: string) (data: byte[]): Texture =
     use dataPtr = fixed data
 
     let image = Raylib.LoadImageFromMemory(fileType, dataPtr, data.Length)
@@ -18,6 +41,6 @@ let LoadTextureFromMemory (fileType: string) (data: byte[]): Texture =
     then failwith $"Cannot load image of type {fileType} from {data.Length} bytes of data."
 
     try
-        Raylib.LoadTextureFromImage image
+        LoadTextureFromImage lifetime image
     finally
         Raylib.UnloadImage image

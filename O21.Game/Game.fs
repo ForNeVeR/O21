@@ -1,5 +1,6 @@
 namespace O21.Game
 
+open JetBrains.Lifetimes
 open O21.Game.Engine
 open type Raylib_CsLo.Raylib
 
@@ -40,9 +41,9 @@ type Game(config: Config, content: LocalContent, data: U95Data) =
         EndDrawing()
 
 module GameLoop =
-    let Run (config: Config) (content: LocalContent, data: U95Data): unit =
+    let Run (lifetime: Lifetime, config: Config) (content: LocalContent, data: U95Data): unit =
         let game = Game(config, content, data)
-        use musicPlayer = CreateMusicPlayer(content.SoundFontPath, data.MidiFilePath)
+        let musicPlayer = CreateMusicPlayer lifetime (content.SoundFontPath, data.MidiFilePath)
         musicPlayer.Initialize()
         while not (WindowShouldClose()) do
             game.Update musicPlayer

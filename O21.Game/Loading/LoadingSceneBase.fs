@@ -4,6 +4,7 @@ open System.Globalization
 open System.Numerics
 open System.Threading.Tasks
 
+open JetBrains.Lifetimes
 open type Raylib_CsLo.Raylib
 
 open O21.Game
@@ -47,11 +48,11 @@ type LoadingSceneBase<'Output>(config: Config) =
 
     let mutable content = Unchecked.defaultof<_>
 
-    abstract Load: LoadController -> Task<'Output>
+    abstract Load: Lifetime * LoadController -> Task<'Output>
 
     interface ILoadingScene<LocalContent, 'Output> with
         member _.Init loadedContent = content <- loadedContent
-        member this.Load controller = this.Load controller
+        member this.Load(lt, controller) = this.Load(lt, controller)
 
         member _.Draw() =
             ClearBackground(BLACK)

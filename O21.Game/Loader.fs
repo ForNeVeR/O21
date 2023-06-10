@@ -2,6 +2,8 @@ namespace O21.Game
 
 open System.Threading.Tasks
 
+open JetBrains.Lifetimes
+
 type ProgressReport = string * float
 
 type LoadController() =
@@ -23,6 +25,6 @@ type LoadController() =
 
 type ILoadingScene<'TInput, 'Output> =
     abstract Init: 'TInput -> unit
-    abstract Load: LoadController -> Task<'Output> // TODO[#103]: Support cancellation
+    abstract Load: Lifetime * LoadController -> Task<'Output> // TODO[#103]: Support cancellation
     abstract Update: O21.Game.Input * LoadController -> unit
     abstract Draw: unit -> unit

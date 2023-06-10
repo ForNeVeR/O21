@@ -11,7 +11,7 @@ type DownloadScene(config: Config) =
 
     let language = Translations.DefaultLanguage // TODO[#99]: Take from the current settings
 
-    override _.Load controller = task {
+    override _.Load(_, controller) = task {
         controller.ReportProgress((Translations.Translation language).Preparing, 0.0)
         let! result = Downloader.DownloadData controller config.U95DataDirectory language
         if not result then failwith "Unable to download the game data"

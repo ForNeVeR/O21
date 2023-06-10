@@ -101,7 +101,7 @@ type DisclaimerScene(config: Config) =
                 acceptButton.Draw()
                 rejectButton.Draw()
 
-        member this.Load _ = disclaimerAccepted.Task
+        member this.Load(_, _) = disclaimerAccepted.Task
         member this.Update(input, _) =
             match areFilesOnDisk with
             | None -> if onDiskChecker.IsCompleted then areFilesOnDisk <- Some onDiskChecker.Result

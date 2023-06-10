@@ -2,25 +2,26 @@ module O21.Game.Help.MarkdownHelp
 
 open System
 open System.IO
-
 open System.Text
+
 open FSharp.Formatting.Markdown
+open JetBrains.Lifetimes
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
 open O21.Game
 
-let private loadTextureFromData (readFile: string -> byte[]) (address: string): Texture =
+let private LoadTextureFromData lifetime (readFile: string -> byte[]) (address: string): Texture =
     let fileName = $"|{address}"
     readFile fileName
     |> HlpFile.ExtractDibImageFromMrb
-    |> TextureUtils.CreateSprite
+    |> TextureUtils.CreateSprite lifetime
 
-let private parseParagraph readFile paragraph =
+let private parseParagraph lifetime readFile paragraph =
     let parseSpans(spans, isHeading) =
         let getImage(link: Uri) =
             match link.Scheme with
-            | "data" -> DocumentFragment.Image <| loadTextureFromData readFile link.Authority
+            | "data" -> DocumentFragment.Image <| LoadTextureFromData lifetime readFile link.Authority
             | _ -> failwith $"Unsupported image URI in help file: {link}"
 
         seq {
@@ -39,7 +40,7 @@ let private parseParagraph readFile paragraph =
         | HorizontalRule _ -> [| DocumentFragment.Text(Style.Normal, "____________________________________________"); DocumentFragment.NewParagraph  |]
         | _ -> [||]
 
-let Load (hlpFilePath: string) (markdownFilePath: string): DocumentFragment[] =
+let Load (lifetime: Lifetime) (hlpFilePath: string) (markdownFilePath: string): DocumentFragment[] =
     use hlpFileStream = new FileStream(hlpFilePath, FileMode.Open, FileAccess.Read)
     use reader = new BinaryReader(hlpFileStream, Encoding.UTF8, leaveOpen = true)
     let hlpFile, hfs = HlpFile.ReadMainData reader
@@ -51,5 +52,5 @@ let Load (hlpFilePath: string) (markdownFilePath: string): DocumentFragment[] =
     let fragments = ResizeArray<DocumentFragment> 0
     let parsed = Markdown.Parse(markdown)
     for paragraph in parsed.Paragraphs do
-            paragraph |> parseParagraph readFile |> fragments.AddRange
+            paragraph |> parseParagraph lifetime readFile |> fragments.AddRange
     fragments.ToArray()

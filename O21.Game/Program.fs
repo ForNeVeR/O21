@@ -2,6 +2,7 @@ open System
 open System.IO
 open System.Text
 
+open JetBrains.Lifetimes
 open Oddities.Resources
 open Oddities.WinHelp
 open Oddities.WinHelp.Fonts
@@ -97,9 +98,11 @@ let main(args: string[]): int =
             U95DataDirectory = dataDir
         }
 
+        use gameLifetime = new LifetimeDefinition()
+        let lt = gameLifetime.Lifetime
         RaylibEnvironment.Run(config, fun () ->
-            LoadingLoop.Run config
-            |> Option.iter(GameLoop.Run config)
+            LoadingLoop.Run(lt, config)
+            |> Option.iter(GameLoop.Run(lt, config))
         )
 
     | _ -> printfn "Usage:\nexport <inputFile> <outDir>: export resources\n<dataDir>: start the game"

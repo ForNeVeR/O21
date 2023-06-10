@@ -24,12 +24,12 @@
 
     <ItemGroup>
         <Compile Include="Localization\Translations.fs" />
+        <Compile Include="RaylibUtils.fs" />
         <Compile Include="TextureUtils.fs" />
 
         <Compile Include="Help\DocumentFragments.fs" />
         <Compile Include="Help\HlpFile.fs" />
         <Compile Include="Help\MarkdownHelp.fs" />
-        <Compile Include="RaylibUtils.fs" />
         <Compile Include="LocalContent.fs" />
         <Compile Include="GeometryUtils.fs" />
         <Compile Include="Input.fs" />
@@ -85,6 +85,7 @@
         <PackageReference Include="FVNever.Oddities.MRB" Version="1.0.0" />
         <PackageReference Include="FVNever.Oddities.NE" Version="1.0.0" />
         <PackageReference Include="FVNever.Oddities.WinHelp" Version="1.0.0" />
+        <PackageReference Include="JetBrains.Lifetimes" Version="2023.2.1" />
         <PackageReference Include="MeltySynth" Version="2.4.1" />
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
         <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />

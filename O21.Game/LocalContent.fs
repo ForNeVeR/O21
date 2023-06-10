@@ -4,6 +4,7 @@ open System
 open System.IO
 open System.Threading.Tasks
 
+open JetBrains.Lifetimes
 open Raylib_CsLo
 
 /// The game content that's always available locally, even if the main game resources haven't been downloaded, yet.
@@ -13,7 +14,7 @@ type LocalContent = {
     LoadingTexture: Texture
     SoundFontPath: string
 } with
-    static member Load(): Task<LocalContent> = task {
+    static member Load(lifetime: Lifetime): Task<LocalContent> = task {
         let binDir = Path.GetDirectoryName(Environment.ProcessPath)
         let pathToResource fileName =
             Path.Combine(binDir, "Resources", fileName)
@@ -26,12 +27,12 @@ type LocalContent = {
 
         let loadFont path = task {
             let! data = File.ReadAllBytesAsync(path)
-            return RaylibUtils.LoadFontFromMemory (Path.GetExtension path) data fontSize fontChars
+            return RaylibUtils.LoadFontFromMemory lifetime (Path.GetExtension path) data fontSize fontChars
         }
 
         let loadTexture path = task {
             let! data = File.ReadAllBytesAsync(path)
-            return RaylibUtils.LoadTextureFromMemory (Path.GetExtension path) data
+            return RaylibUtils.LoadTextureFromMemory lifetime (Path.GetExtension path) data
         }
 
         let! regular = loadFont <| pathToResource "Fonts/Inter-Regular.otf"

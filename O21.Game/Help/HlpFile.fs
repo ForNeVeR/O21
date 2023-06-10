@@ -3,6 +3,7 @@ module O21.Game.Help.HlpFile
 open System.IO
 open System.Text
 
+open JetBrains.Lifetimes
 open Oddities.MRB
 open Oddities.Resources
 open Oddities.WinHelp
@@ -83,7 +84,7 @@ let ReadMainData(input: BinaryReader): WinHelpFile * Map<string, DirectoryIndexE
         |> Map.ofSeq
     helpFile, files
 
-let Load (helpFile: string): DocumentFragment[] =
+let Load (lifetime: Lifetime) (helpFile: string): DocumentFragment[] =
     use input = new FileStream(helpFile, FileMode.Open, FileAccess.Read)
     use reader = new BinaryReader(input, Encoding.UTF8, leaveOpen = true)
     let helpFile, files = ReadMainData reader
@@ -96,7 +97,7 @@ let Load (helpFile: string): DocumentFragment[] =
         let name = $"|bm{string index}"
         let file = files[name]
         let dib = ExtractDibImageFromMrb <| helpFile.ReadFile file
-        CreateSprite dib
+        CreateSprite lifetime dib
 
     let contentEncoding = Encoding.GetEncoding 1251 // TODO[#57]: Extract from config
     helpFile.ReadFile files["|TOPIC"]
