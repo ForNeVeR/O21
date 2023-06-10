@@ -41,10 +41,10 @@ type PlayScene = {
     }
 
     static member private DrawPlayer player sprites =
-        // TODO: Properly center the player sprite
-        // TODO: Player animation
-        // TODO: Generalize player and enemies animations
-        // TODO: Stopped state handling (separate images?)
+        // TODO[#121]: Properly center the player sprite
+        // TODO[#122]: Player animation
+        // TODO[#123]: Generalize player and enemies animations
+        // TODO[#122]: Stopped state handling (separate images?)
         let (Point(x, y)) = player.Position
         DrawTexture(sprites.Right[0], x, y, WHITE)
     

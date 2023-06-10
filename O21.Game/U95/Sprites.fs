@@ -49,7 +49,7 @@ type Sprites = {
                 for t in this.Background do
                     UnloadTexture(t)
                 UnloadTexture this.TitleScreenBackground
-                // TODO: Dispose Fishes
+                // TODO[#120]: Dispose Fishes
                 (this.Player :> IDisposable).Dispose()
                 for t in this.Background do
                     UnloadTexture(t)
