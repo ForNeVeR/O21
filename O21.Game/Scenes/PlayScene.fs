@@ -50,7 +50,7 @@ type PlayScene = {
     
     interface IScene with
         member this.Update(input, time, state) =
-            let wantShot = input.Pressed |> List.contains Key.Fire
+            let wantShot = input.Pressed |> Set.contains Key.Fire
 
             let allowedShot =
                 match this.LastShotTime with
