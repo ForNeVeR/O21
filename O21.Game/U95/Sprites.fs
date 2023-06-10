@@ -12,11 +12,32 @@ open O21.Game
 open O21.Game.U95.Fish
 open O21.Game.TextureUtils
 
+type PlayerSprites =
+    {
+        Left: Texture[]
+        Right: Texture[]
+    }
+
+    static member Load(images: Dib[]): PlayerSprites =
+        let loadImageByIndex i =
+            CreateTransparentSprite images[i] images[i + 24]
+        let right = seq { 6; yield! [| 17..23 |] } |> Seq.map loadImageByIndex |> Seq.toArray
+        let left = seq { yield! [| 7..13 |]; 24 } |> Seq.map loadImageByIndex |> Seq.toArray
+        { Left = left; Right = right }
+
+    interface IDisposable with
+        member this.Dispose() =
+            for t in this.Left do
+                UnloadTexture t
+            for t in this.Right do
+                UnloadTexture t
+
 type Sprites = {
     Bricks: Map<int, Texture>
     Background: Texture[]
     TitleScreenBackground: Texture
     Fishes: Fish[]
+    Player: PlayerSprites
     HUD: HUDSprites
     Bonuses: BonusSprites
 }
@@ -27,6 +48,13 @@ type Sprites = {
                     UnloadTexture(t)
                 for t in this.Background do
                     UnloadTexture(t)
+                UnloadTexture this.TitleScreenBackground
+                // TODO: Dispose Fishes
+                (this.Player :> IDisposable).Dispose()
+                for t in this.Background do
+                    UnloadTexture(t)
+                (this.HUD :> IDisposable).Dispose()
+                (this.Bonuses :> IDisposable).Dispose()
 
 module Sprites =
 
@@ -105,16 +133,16 @@ module Sprites =
 
     let LoadFrom (directory: string): Task<Sprites> = task {
         let! brickResources = NeExeFile.LoadResources(Path.Combine(directory, "U95_BRIC.DLL"))
-        let! fishes = NeExeFile.LoadResources(Path.Combine(directory, "U95_PIC.DLL"))
-        let! exeSprites = NeExeFile.LoadResources(Path.Combine(directory, "U95.EXE"))
         let! backgrounds = Background.LoadBackgrounds(directory)
         let! titleScreen = Background.LoadBackground(Path.Combine(directory, "U95_T.SCR"))
-        
+        let! fishes = NeExeFile.LoadResources(Path.Combine(directory, "U95_PIC.DLL"))
+        let! exeSprites = NeExeFile.LoadResources(Path.Combine(directory, "U95.EXE"))
         return {
             Bricks = loadBricks brickResources
             Background = loadBackgrounds backgrounds
-            TitleScreenBackground = CreateSprite titleScreen 
+            TitleScreenBackground = CreateSprite titleScreen
             Fishes = loadFishes fishes
+            Player = PlayerSprites.Load exeSprites
             HUD = loadHUD exeSprites
             Bonuses = loadBonuses exeSprites
         }
