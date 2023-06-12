@@ -3,7 +3,7 @@ module O21.Game.Engine.GameRules
 open System
 
 [<Literal>]
-let ShotCooldownSec = 1.0
+let NormalShotCooldownTicks = 100 // TODO: Compare with the original
 
 [<Literal>]
 let GameWidth = 600

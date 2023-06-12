@@ -10,21 +10,62 @@ let private frameUp time =
         let newTime = { Total = currentTime.Total + 0.1; Delta = 0.1f }
         gameEngine.Update newTime
 
+let private frameUpN time n gameEnging =
+    let mutable gameEngine = gameEnging
+    for i in 1..n do
+        gameEngine <- frameUp time gameEngine
+    gameEngine
+
 let private timeZero = { Total = 0.0; Delta = 0.0f }
 
-[<Fact>]
-let ``GameEngine increments frame``(): unit =
-    let frameUp = frameUp timeZero
-    let gameEngine = GameEngine.Start timeZero
-    Assert.Equal(0, gameEngine.Tick)
-    let gameEngine = gameEngine |> frameUp
-    Assert.Equal(1, gameEngine.Tick)
+module Ticks =
 
-[<Fact>]
-let ``GameEngine reacts to the speed change``(): unit =
-    let gameEngine = GameEngine.Start timeZero
-    let frameUp = frameUp timeZero
-    Assert.Equal(Point(0, 0), gameEngine.Player.Position)
-    let gameEngine = gameEngine.ApplyCommand <| VelocityDelta(Vector(1, 0))
-    let gameEngine = frameUp gameEngine
-    Assert.Equal(Point(1, 0), gameEngine.Player.Position)
+    [<Fact>]
+    let ``GameEngine increments frame``(): unit =
+        let frameUp = frameUp timeZero
+        let gameEngine = GameEngine.Start timeZero
+        Assert.Equal(0, gameEngine.Tick)
+        let gameEngine = gameEngine |> frameUp
+        Assert.Equal(1, gameEngine.Tick)
+
+module Movement =
+
+    [<Fact>]
+    let ``GameEngine reacts to the speed change``(): unit =
+        let gameEngine = GameEngine.Start timeZero
+        let frameUp = frameUp timeZero
+        Assert.Equal(Point(0, 0), gameEngine.Player.Position)
+        let gameEngine = gameEngine.ApplyCommand <| VelocityDelta(Vector(1, 0))
+        let gameEngine = frameUp gameEngine
+        Assert.Equal(Point(1, 0), gameEngine.Player.Position)
+
+module Shooting =
+
+    [<Fact>]
+    let ``GameEngine reacts to a shoot``(): unit =
+        let gameEngine = GameEngine.Start timeZero
+        let frameUp = frameUp timeZero
+        let gameEngine, sounds = gameEngine.ApplyCommand Shoot
+        Assert.Single sounds |> ignore
+        Assert.Single gameEngine.Bullets |> ignore
+
+    [<Fact>]
+    let ``GameEngine disallows to shoot faster``(): unit =
+        let gameEngine = GameEngine.Start timeZero
+        let frameUp = frameUp timeZero
+        let gameEngine = gameEngine.ApplyCommand Shoot
+        let gameEngine = frameUp gameEngine
+        let gameEngine = gameEngine.ApplyCommand Shoot
+        Assert.Single gameEngine.Bullets |> ignore
+
+    [<Fact>]
+    let ``GameEngine allows to shoot after a cooldown``(): unit =
+        let gameEngine = GameEngine.Start timeZero
+        let gameEngine = gameEngine.ApplyCommand Shoot
+        Assert.Single gameEngine.Bullets |> ignore
+        let gameEngine = frameUpN timeZero GameRules.ShotCooldownTicks gameEngine
+         // Don't hardcode the bullet count because I've no idea if the cooldown is more or less than the bullet lifetime,
+         // and the test should not care either. Just verify that a new bullet has been added.
+        let bulletCount = gameEngine.Bullets.Length
+        let gameEngine = gameEngine.ApplyCommand Shoot
+        Assert.Equal(bulletCount + 1, gameEngine.Bullets.Count)
