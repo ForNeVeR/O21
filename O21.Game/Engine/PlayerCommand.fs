@@ -1,5 +1,6 @@
 namespace O21.Game.Engine
 
 [<Struct>]
-type Command =
-    VelocityDelta of Vector
+type PlayerCommand =
+    | VelocityDelta of Vector
+    | Shoot

@@ -35,7 +35,7 @@ module Movement =
         let gameEngine = GameEngine.Start timeZero
         let frameUp = frameUp timeZero
         Assert.Equal(Point(0, 0), gameEngine.Player.Position)
-        let gameEngine = gameEngine.ApplyCommand <| VelocityDelta(Vector(1, 0))
+        let gameEngine, _ = gameEngine.ApplyCommand <| VelocityDelta(Vector(1, 0))
         let gameEngine = frameUp gameEngine
         Assert.Equal(Point(1, 0), gameEngine.Player.Position)
 
@@ -53,7 +53,7 @@ module Shooting =
     let ``GameEngine disallows to shoot faster``(): unit =
         let gameEngine = GameEngine.Start timeZero
         let frameUp = frameUp timeZero
-        let gameEngine = gameEngine.ApplyCommand Shoot
+        let gameEngine, _ = gameEngine.ApplyCommand Shoot
         let gameEngine = frameUp gameEngine
         let gameEngine = gameEngine.ApplyCommand Shoot
         Assert.Single gameEngine.Bullets |> ignore
@@ -61,11 +61,11 @@ module Shooting =
     [<Fact>]
     let ``GameEngine allows to shoot after a cooldown``(): unit =
         let gameEngine = GameEngine.Start timeZero
-        let gameEngine = gameEngine.ApplyCommand Shoot
+        let gameEngine, _ = gameEngine.ApplyCommand Shoot
         Assert.Single gameEngine.Bullets |> ignore
         let gameEngine = frameUpN timeZero GameRules.ShotCooldownTicks gameEngine
          // Don't hardcode the bullet count because I've no idea if the cooldown is more or less than the bullet lifetime,
          // and the test should not care either. Just verify that a new bullet has been added.
         let bulletCount = gameEngine.Bullets.Length
-        let gameEngine = gameEngine.ApplyCommand Shoot
+        let gameEngine, _ = gameEngine.ApplyCommand Shoot
         Assert.Equal(bulletCount + 1, gameEngine.Bullets.Count)

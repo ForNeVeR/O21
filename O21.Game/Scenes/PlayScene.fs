@@ -55,15 +55,18 @@ type PlayScene = {
             let allowedShot =
                 match this.LastShotTime with
                 | None -> true
-                | Some lastShot -> time.Total - float lastShot > GameRules.ShotCooldownSec
+                | Some lastShot -> time.Total - float lastShot > (float GameRules.NormalShotCooldownTicks * GameRules.TicksPerSecond)
 
-            let game = state.Game |> InputProcessor.ProcessKeys input.Pressed
-            
+            let game, effects = state.Game |> InputProcessor.ProcessKeys input.Pressed
+
             let state = { state with Game = game.Update time }
             if wantShot && allowedShot then
+                let sounds =
+                    state.SoundsToStartPlaying +
+                    (effects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
                 { state with 
                     Scene = { this with LastShotTime = Some time.Total }
-                    SoundsToStartPlaying = state.SoundsToStartPlaying |> Set.add SoundType.Shot
+                    SoundsToStartPlaying = sounds
                 }
             elif this.HUD.Lives < 0 then
                 { state with Scene = GameOverWindow.Init(this.Content, this, this.MainMenu, state.Language) }  

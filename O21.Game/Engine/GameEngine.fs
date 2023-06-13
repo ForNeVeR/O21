@@ -1,5 +1,8 @@
 namespace O21.Game.Engine
 
+open System.Collections.Generic
+
+
 type Time = {
     Total: float
     Delta: float32
@@ -26,7 +29,7 @@ type GameEngine = {
             Player = this.Player.Update(newTick - this.Tick)
         }
 
-    member this.ApplyCommand(command: Command): GameEngine =
+    member this.ApplyCommand(command: PlayerCommand): GameEngine * IList<ExternalEffect> =
         match command with
         | VelocityDelta(delta) ->
             { this with
@@ -34,4 +37,6 @@ type GameEngine = {
                     { this.Player with
                         Velocity = GameRules.ClampVelocity(this.Player.Velocity + delta)
                     }
-            }
+            }, Array.empty
+
+        | Shoot -> failwith "todo"
