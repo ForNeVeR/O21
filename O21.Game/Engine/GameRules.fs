@@ -6,10 +6,10 @@ open System
 let NormalShotCooldownTicks = 100 // TODO: Compare with the original
 
 [<Literal>]
-let GameWidth = 600
+let LevelWidth = 600
 
 [<Literal>]
-let GameHeight = 400
+let LevelHeight = 400
 
 [<Literal>]
 let TicksPerSecond = 10.0
@@ -20,3 +20,6 @@ let ClampVelocity(Vector(x, y)): Vector =
        Math.Clamp(x, -MaxPlayerVelocity, MaxPlayerVelocity),
        Math.Clamp(y, -MaxPlayerVelocity, MaxPlayerVelocity)
    )
+
+[<Literal>]
+let BulletVelocity = 5 // TODO: Compare with the original

@@ -22,7 +22,13 @@ module private InputProcessor =
         
     let ProcessKeys input (game: GameEngine) =
         let delta = ProcessDirectionKeys input
-        game.ApplyCommand(VelocityDelta delta)
+        let mutable game, effects = game.ApplyCommand(VelocityDelta delta)
+        if Set.contains Key.Fire input then
+            let game', effects' = game.ApplyCommand Shoot
+            game <- game'
+            effects <- Array.append effects effects'
+        game, effects
+
 
 type PlayScene = {
     CurrentLevel: Level
@@ -40,14 +46,19 @@ type PlayScene = {
         MainMenu = mainMenu
     }
 
-    static member private DrawPlayer player sprites =
+    static member private DrawSprite sprite (Point(x, y)) =
+        DrawTexture(sprite, x, y, WHITE)
+
+    static member private DrawPlayer sprites (player: Player) =
         // TODO[#121]: Properly center the player sprite
         // TODO[#122]: Player animation
         // TODO[#123]: Generalize player and enemies animations
         // TODO[#122]: Stopped state handling (separate images?)
-        let (Point(x, y)) = player.Position
-        DrawTexture(sprites.Right[0], x, y, WHITE)
-    
+        PlayScene.DrawSprite sprites.Right[0] player.Position
+
+    static member private DrawBullet sprite (bullet: Bullet) =
+        PlayScene.DrawSprite sprite bullet.Position
+
     interface IScene with
         member this.Update(input, time, state) =
             let wantShot = input.Pressed |> Set.contains Key.Fire
@@ -96,7 +107,8 @@ type PlayScene = {
                     | _ ->
                         ()
 
-            PlayScene.DrawPlayer game.Player sprites.Player
+            PlayScene.DrawPlayer sprites.Player game.Player
+            game.Bullets |> Seq.iter(PlayScene.DrawBullet sprites.Bullet)
 
             for i = 0 to sprites.Fishes.Length-1 do
                 let fish = sprites.Fishes[i]

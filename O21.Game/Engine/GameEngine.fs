@@ -1,7 +1,6 @@
 namespace O21.Game.Engine
 
-open System.Collections.Generic
-
+open O21.Game.U95
 
 type Time = {
     Total: float
@@ -12,6 +11,7 @@ type GameEngine = {
     StartTime: Time
     Tick: int
     Player: Player
+    Bullets: Bullet[]
 } with
     static member Start(time: Time): GameEngine = {
         StartTime = time
@@ -20,6 +20,7 @@ type GameEngine = {
             Position = Point(0, 0)
             Velocity = Vector(0, 0)
         }
+        Bullets = Array.empty
     }
 
     member this.Update(time: Time): GameEngine =
@@ -27,9 +28,10 @@ type GameEngine = {
         { this with
             Tick = newTick
             Player = this.Player.Update(newTick - this.Tick)
+            Bullets = this.Bullets |> Array.choose(fun bullet -> bullet.Update(newTick - this.Tick))
         }
 
-    member this.ApplyCommand(command: PlayerCommand): GameEngine * IList<ExternalEffect> =
+    member this.ApplyCommand(command: PlayerCommand): GameEngine * ExternalEffect[] =
         match command with
         | VelocityDelta(delta) ->
             { this with
@@ -39,4 +41,13 @@ type GameEngine = {
                     }
             }, Array.empty
 
-        | Shoot -> failwith "todo"
+        | Shoot ->
+            // TODO: The rules when it's allowed to shoot and when it isn't
+            // TODO: Proper bullet position
+            let newBullet = {
+                Position = this.Player.Position
+                Direction = this.Player.Direction
+            }
+            { this with
+                Bullets = Array.append this.Bullets [| newBullet |] // TODO: Make more efficient (persistent vector?)
+            }, [| PlaySound SoundType.Shot |]

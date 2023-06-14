@@ -50,7 +50,7 @@
         <Compile Include="HUD.fs" />
         <Compile Include="Engine\GameField.fs" />
         <Compile Include="Engine\GameRules.fs" />
-        <Compile Include="Engine\Player.fs" />
+        <Compile Include="Engine\Entities.fs" />
         <Compile Include="Engine\PlayerCommand.fs" />
         <Compile Include="Engine\ExternalEffect.fs" />
         <Compile Include="Engine\GameEngine.fs" />

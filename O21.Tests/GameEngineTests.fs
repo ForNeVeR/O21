@@ -10,8 +10,8 @@ let private frameUp time =
         let newTime = { Total = currentTime.Total + 0.1; Delta = 0.1f }
         gameEngine.Update newTime
 
-let private frameUpN time n gameEnging =
-    let mutable gameEngine = gameEnging
+let private frameUpN time n gameEngine =
+    let mutable gameEngine = gameEngine
     for i in 1..n do
         gameEngine <- frameUp time gameEngine
     gameEngine
@@ -55,7 +55,7 @@ module Shooting =
         let frameUp = frameUp timeZero
         let gameEngine, _ = gameEngine.ApplyCommand Shoot
         let gameEngine = frameUp gameEngine
-        let gameEngine = gameEngine.ApplyCommand Shoot
+        let gameEngine, _ = gameEngine.ApplyCommand Shoot
         Assert.Single gameEngine.Bullets |> ignore
 
     [<Fact>]
@@ -63,9 +63,9 @@ module Shooting =
         let gameEngine = GameEngine.Start timeZero
         let gameEngine, _ = gameEngine.ApplyCommand Shoot
         Assert.Single gameEngine.Bullets |> ignore
-        let gameEngine = frameUpN timeZero GameRules.ShotCooldownTicks gameEngine
+        let gameEngine = frameUpN timeZero GameRules.NormalShotCooldownTicks gameEngine
          // Don't hardcode the bullet count because I've no idea if the cooldown is more or less than the bullet lifetime,
          // and the test should not care either. Just verify that a new bullet has been added.
         let bulletCount = gameEngine.Bullets.Length
         let gameEngine, _ = gameEngine.ApplyCommand Shoot
-        Assert.Equal(bulletCount + 1, gameEngine.Bullets.Count)
+        Assert.Equal(bulletCount + 1, gameEngine.Bullets.Length)

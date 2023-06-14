@@ -31,6 +31,7 @@ type Sprites = {
     TitleScreenBackground: Texture
     Fishes: Fish[]
     Player: PlayerSprites
+    Bullet: Texture
     HUD: HUDSprites
     Bonuses: BonusSprites
 }
@@ -122,6 +123,7 @@ module Sprites =
             TitleScreenBackground = CreateSprite lifetime titleScreen
             Fishes = loadFishes lifetime fishes
             Player = PlayerSprites.Load lifetime exeSprites
+            Bullet = CreateTransparentSprite lifetime exeSprites[1] exeSprites[2]
             HUD = loadHUD lifetime exeSprites
             Bonuses = loadBonuses lifetime exeSprites
         }
