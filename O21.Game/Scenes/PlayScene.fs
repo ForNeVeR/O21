@@ -32,7 +32,6 @@ module private InputProcessor =
 
 type PlayScene = {
     CurrentLevel: Level
-    LastShotTime: float option
     HUD: HUD
     Content: LocalContent
     MainMenu: IScene
@@ -40,7 +39,6 @@ type PlayScene = {
 
     static member Init(level: Level, content: LocalContent, mainMenu: IScene): PlayScene = {
         CurrentLevel = level
-        LastShotTime = None
         HUD = HUD.Init()
         Content = content
         MainMenu = mainMenu
@@ -61,28 +59,17 @@ type PlayScene = {
 
     interface IScene with
         member this.Update(input, time, state) =
-            let wantShot = input.Pressed |> Set.contains Key.Fire
-
-            let allowedShot =
-                match this.LastShotTime with
-                | None -> true
-                | Some lastShot -> time.Total - float lastShot > (float GameRules.NormalShotCooldownTicks * GameRules.TicksPerSecond)
-
             let game, effects = state.Game |> InputProcessor.ProcessKeys input.Pressed
 
             let state = { state with Game = game.Update time }
-            if wantShot && allowedShot then
-                let sounds =
-                    state.SoundsToStartPlaying +
-                    (effects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
-                { state with 
-                    Scene = { this with LastShotTime = Some time.Total }
-                    SoundsToStartPlaying = sounds
-                }
-            elif this.HUD.Lives < 0 then
+            let sounds =
+                state.SoundsToStartPlaying +
+                (effects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
+            if this.HUD.Lives < 0 then
+                // TODO: Should be handled by the game engine
                 { state with Scene = GameOverWindow.Init(this.Content, this, this.MainMenu, state.Language) }  
             else
-                state
+                { state with SoundsToStartPlaying = sounds }
  
         member this.Draw(state: State) =
             let game = state.Game

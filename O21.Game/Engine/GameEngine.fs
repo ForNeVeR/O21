@@ -19,12 +19,14 @@ type GameEngine = {
         Player = {
             Position = Point(0, 0)
             Velocity = Vector(0, 0)
+            ShotCooldown = 0
         }
         Bullets = Array.empty
     }
 
     member this.Update(time: Time): GameEngine =
         let newTick = int <| (time.Total - this.StartTime.Total) * GameRules.TicksPerSecond
+        // TODO: Bullet collisions
         { this with
             Tick = newTick
             Player = this.Player.Update(newTick - this.Tick)
@@ -42,12 +44,15 @@ type GameEngine = {
             }, Array.empty
 
         | Shoot ->
-            // TODO: The rules when it's allowed to shoot and when it isn't
-            // TODO: Proper bullet position
-            let newBullet = {
-                Position = this.Player.Position
-                Direction = this.Player.Direction
-            }
-            { this with
-                Bullets = Array.append this.Bullets [| newBullet |] // TODO: Make more efficient (persistent vector?)
-            }, [| PlaySound SoundType.Shot |]
+            let player = this.Player
+            if player.IsAllowedToShoot then
+                // TODO: Proper bullet position
+                let newBullet = {
+                    Position = this.Player.Position
+                    Direction = this.Player.Direction
+                }
+                { this with
+                    Player = { player with ShotCooldown = GameRules.ShotCooldownTicks }
+                    Bullets = Array.append this.Bullets [| newBullet |] // TODO: Make more efficient (persistent vector?)
+                }, [| PlaySound SoundType.Shot |]
+            else this, Array.empty

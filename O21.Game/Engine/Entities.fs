@@ -12,6 +12,7 @@ type HorizontalDirection =
 type Player = {
     Position: Point
     Velocity: Vector
+    ShotCooldown: int
 } with
     member this.Direction: HorizontalDirection =
         // TODO: Properly process zero velocity: should be possible to preserve the direction
@@ -19,8 +20,13 @@ type Player = {
             HorizontalDirection.Left
         else
             HorizontalDirection.Right
+
+    member this.IsAllowedToShoot = this.ShotCooldown = 0
+
     member this.Update(timeDelta: int): Player =
-        { this with Position = this.Position + this.Velocity * timeDelta  }
+        { this with
+            Position = this.Position + this.Velocity * timeDelta
+            ShotCooldown = max (this.ShotCooldown - timeDelta) 0 }
 
 type Bullet = {
     Position: Point
