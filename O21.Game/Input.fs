@@ -33,7 +33,7 @@ type Input with
 
         let mouse = Raylib.GetMousePosition()
 
-        { Pressed = keys |> Seq.map (fun k -> Input.keyBindings[k]) |> Set.ofSeq
+        { Pressed = keys |> Seq.choose (fun k -> Map.tryFind k Input.keyBindings) |> Set.ofSeq
           MouseCoords = Vector2(mouse.X, mouse.Y)
           MouseButtonPressed = Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT)
           MouseWheelMove = Raylib.GetMouseWheelMove() }
