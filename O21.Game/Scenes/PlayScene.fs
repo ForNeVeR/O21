@@ -64,7 +64,7 @@ type PlayScene = {
                 state.SoundsToStartPlaying +
                 (effects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
             if this.HUD.Lives < 0 then
-                // TODO: Should be handled by the game engine
+                // TODO[#32]: Should be handled by the game engine
                 { state with Scene = GameOverWindow.Init(this.Content, this, this.MainMenu, state.Language) }  
             else
                 { state with SoundsToStartPlaying = sounds }

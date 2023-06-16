@@ -22,7 +22,7 @@ let ClampVelocity(Vector(x, y)): Vector =
    )
 
 [<Literal>]
-let BulletVelocity = 5 // TODO: Compare with the original
+let BulletVelocity = 5 // TODO[#131]: Compare with the original
 
 let PlayerSize = Vector(46, 27)
 let BulletSize = Vector(6, 6)

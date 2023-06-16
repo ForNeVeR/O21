@@ -9,7 +9,7 @@ type Player = {
     member this.TopRight = this.TopLeft + Vector(GameRules.PlayerSize.X, 0)
 
     member this.Direction: HorizontalDirection =
-        // TODO: Properly process zero velocity: should be possible to preserve the direction
+        // TODO[#129]: Properly process zero velocity: should be possible to preserve the direction
         if this.Velocity.X < 0 then
             HorizontalDirection.Left
         else

@@ -26,7 +26,7 @@ type GameEngine = {
 
     member this.Update(time: Time): GameEngine =
         let newTick = int <| (time.Total - this.StartTime.Total) * GameRules.TicksPerSecond
-        // TODO: Bullet collisions
+        // TODO[#26]: Bullet collisions
         { this with
             Tick = newTick
             Player = this.Player.Update(newTick - this.Tick)
@@ -52,6 +52,6 @@ type GameEngine = {
                 }
                 { this with
                     Player = { player with ShotCooldown = GameRules.ShotCooldownTicks }
-                    Bullets = Array.append this.Bullets [| newBullet |] // TODO: Make more efficient (persistent vector?)
+                    Bullets = Array.append this.Bullets [| newBullet |] // TODO[#130]: Make more efficient (persistent vector?)
                 }, [| PlaySound SoundType.Shot |]
             else this, Array.empty
