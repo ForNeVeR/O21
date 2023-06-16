@@ -1,9 +1,9 @@
 namespace O21.Game.Scenes
 
-open O21.Game.Engine
 open type Raylib_CsLo.Raylib
 
 open O21.Game
+open O21.Game.Engine
 open O21.Game.U95
 open O21.Game.U95.Parser
 
@@ -28,7 +28,6 @@ module private InputProcessor =
             game <- game'
             effects <- Array.append effects effects'
         game, effects
-
 
 type PlayScene = {
     CurrentLevel: Level
