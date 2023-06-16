@@ -36,10 +36,10 @@ module Movement =
     let ``GameEngine reacts to the speed change``(): unit =
         let gameEngine = GameEngine.Start timeZero
         let frameUp = frameUp timeZero
-        Assert.Equal(Point(0, 0), gameEngine.Player.Position)
+        Assert.Equal(Point(0, 0), gameEngine.Player.TopLeft)
         let gameEngine, _ = gameEngine.ApplyCommand <| VelocityDelta(Vector(1, 0))
         let gameEngine = frameUp gameEngine
-        Assert.Equal(Point(1, 0), gameEngine.Player.Position)
+        Assert.Equal(Point(1, 0), gameEngine.Player.TopLeft)
 
 module Shooting =
 

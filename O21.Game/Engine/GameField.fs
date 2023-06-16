@@ -17,3 +17,12 @@ and [<Struct>] Vector =
 
     member this.X: int = let (Vector(x, _)) = this in x
     member this.Y: int = let (Vector(_, y)) = this in y
+
+[<Struct>]
+type HorizontalDirection =
+    | Left
+    | Right
+    static member (*) (direction: HorizontalDirection, value: int) =
+        match direction with
+        | Left -> -value
+        | Right -> value

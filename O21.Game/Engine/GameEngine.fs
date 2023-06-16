@@ -17,7 +17,7 @@ type GameEngine = {
         StartTime = time
         Tick = 0
         Player = {
-            Position = Point(0, 0)
+            TopLeft = Point(0, 0)
             Velocity = Vector(0, 0)
             ShotCooldown = 0
         }
@@ -46,10 +46,9 @@ type GameEngine = {
         | Shoot ->
             let player = this.Player
             if player.IsAllowedToShoot then
-                // TODO: Proper bullet position
                 let newBullet = {
-                    Position = this.Player.Position
-                    Direction = this.Player.Direction
+                    Position = GameRules.NewBulletPosition(player.TopForward, player.Direction)
+                    Direction = player.Direction
                 }
                 { this with
                     Player = { player with ShotCooldown = GameRules.ShotCooldownTicks }

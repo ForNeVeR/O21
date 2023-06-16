@@ -48,11 +48,10 @@ type PlayScene = {
         DrawTexture(sprite, x, y, WHITE)
 
     static member private DrawPlayer sprites (player: Player) =
-        // TODO[#121]: Properly center the player sprite
         // TODO[#122]: Player animation
         // TODO[#123]: Generalize player and enemies animations
         // TODO[#122]: Stopped state handling (separate images?)
-        PlayScene.DrawSprite sprites.Right[0] player.Position
+        PlayScene.DrawSprite sprites.Right[0] player.TopLeft
 
     static member private DrawBullet sprite (bullet: Bullet) =
         PlayScene.DrawSprite sprite bullet.Position
