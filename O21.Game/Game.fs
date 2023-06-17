@@ -22,7 +22,22 @@ type Game(config: Config, content: LocalContent, data: U95Data) =
     member _.Update(musicPlayer: MusicPlayer) =
         let input = Input.Handle()
         let time = { Total = GetTime(); Delta = GetFrameTime() }
-        state <- state.Scene.Update(input, time, state)
+        let updatedState, event = state.Scene.Update(input, time, state)
+        
+        state <- updatedState
+        
+        let scene: IScene =
+            match event with
+            | Some (NavigateTo Scene.MainMenu) -> MainMenuScene.Init(config, content, data)
+            | Some (NavigateTo Scene.Play) -> PlayScene.Init(state.U95Data.Levels[0], content)
+            | Some (NavigateTo Scene.GameOver) -> GameOverScene.Init(content, state.Language)
+            | Some (NavigateTo Scene.Help) ->
+                let loadedHelp = (state.Language |> state.U95Data.Help)
+                HelpScene.Init(content, loadedHelp, state.Language)
+            | None ->
+                state.Scene
+        
+        state <- { state with Scene = scene }
 
         for sound in state.SoundsToStartPlaying do
             let effect = state.U95Data.Sounds[sound]

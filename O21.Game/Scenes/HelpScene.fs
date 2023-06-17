@@ -11,18 +11,16 @@ open O21.Game.Localization.Translations
 
 type HelpScene = {
     Content: LocalContent
-    Previous: IScene
     BackButton: Button
     OffsetY: float32
     TotalHeight: float32
     HelpDocument: DocumentFragment[]
 } with        
 
-    static member Init(content: LocalContent, previous: IScene, helpDocument: DocumentFragment[], language: Language): HelpScene = 
+    static member Init(content: LocalContent, helpDocument: DocumentFragment[], language: Language): HelpScene = 
         {
             Content = content
             BackButton = Button.Create(content.UiFontRegular, (fun language -> (Translation language).BackLabel), Vector2(200f, 00f), language)
-            Previous = previous
             OffsetY = 0f
             TotalHeight = HelpScene.GetFragmentsHeight content helpDocument
             HelpDocument = helpDocument
@@ -86,10 +84,10 @@ type HelpScene = {
                     BackButton = this.BackButton.Update(input, state.Language)
                     OffsetY = offsetY
             }
-            let scene: IScene =
-                if scene.BackButton.State.InteractionState = ButtonInteractionState.Clicked then this.Previous
-                else scene
-            { state with Scene = scene }
+            let navigationEvent =
+                if scene.BackButton.State.InteractionState = ButtonInteractionState.Clicked then Some (NavigateTo Scene.MainMenu)
+                else None
+            { state with Scene = scene }, navigationEvent
 
         member this.Draw(_) =
             let mutable y = -this.OffsetY

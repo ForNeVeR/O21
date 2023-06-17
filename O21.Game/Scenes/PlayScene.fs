@@ -33,14 +33,12 @@ type PlayScene = {
     CurrentLevel: Level
     HUD: HUD
     Content: LocalContent
-    MainMenu: IScene
 } with
 
-    static member Init(level: Level, content: LocalContent, mainMenu: IScene): PlayScene = {
+    static member Init(level: Level, content: LocalContent): PlayScene = {
         CurrentLevel = level
         HUD = HUD.Init()
-        Content = content
-        MainMenu = mainMenu
+        Content = content 
     }
 
     static member private DrawSprite sprite (Point(x, y)) =
@@ -63,11 +61,14 @@ type PlayScene = {
             let sounds =
                 state.SoundsToStartPlaying +
                 (effects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
-            if this.HUD.Lives < 0 then
-                // TODO[#32]: Should be handled by the game engine
-                { state with Scene = GameOverWindow.Init(this.Content, this, this.MainMenu, state.Language) }  
-            else
-                { state with SoundsToStartPlaying = sounds }
+            let navigationEvent =
+                if this.HUD.Lives < 0 then
+                    // TODO[#32]: Should be handled by the game engine
+                    Some (NavigateTo Scene.GameOver)
+                else
+                    None
+
+            { state with SoundsToStartPlaying = sounds }, navigationEvent
  
         member this.Draw(state: State) =
             let game = state.Game

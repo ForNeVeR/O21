@@ -15,8 +15,17 @@ type Config = {
     U95DataDirectory: string
 }
 
+[<RequireQualifiedAccess>]
+type Scene =
+    | MainMenu
+    | Play
+    | GameOver
+    | Help
+    
+type SceneEvent = NavigateTo of Scene
+
 type IScene =
-    abstract member Update: Input * Time * State -> State
+    abstract member Update: Input * Time * State -> State * SceneEvent option
     abstract member Draw: State -> unit
 
 and State = {

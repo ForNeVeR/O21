@@ -60,7 +60,7 @@
         <Compile Include="Scenes\Button.fs" />
         <Compile Include="Scenes\MinimizeButton.fs" />
         <Compile Include="Scenes\WindowRenderer.fs" />
-        <Compile Include="Scenes\GameOverWindow.fs" />
+        <Compile Include="Scenes\GameOverScene.fs" />
         <Compile Include="Scenes\PlayScene.fs" />
         <Compile Include="Scenes\HelpScene.fs" />
         <Compile Include="Scenes\MainMenuScene.fs" />

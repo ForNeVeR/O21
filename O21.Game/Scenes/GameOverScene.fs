@@ -7,27 +7,23 @@ open type Raylib_CsLo.Raylib
 open O21.Game
 open O21.Game.Localization.Translations
 
-type GameOverWindow =
+type GameOverScene =
     {
         OkButton: Button
         Content: LocalContent
         MinimizeButton: MinimizeButton
-        PlayScene: IScene
-        MainMenuScene: IScene
     }
     
     with
-        static member Init(content: LocalContent, playScene: IScene, mainMenu: IScene, language: Language) =
+        static member Init(content: LocalContent, language: Language) =
             {
                 OkButton = Button.Create (content.UiFontRegular, (fun _ -> "Ok"), Vector2(288f, 229f), language)
                 Content = content
                 MinimizeButton = MinimizeButton.Create(Vector2(193f, 134f), language)
-                PlayScene = playScene
-                MainMenuScene = mainMenu 
             }
             
         interface IScene with
-            member this.Draw(state:State) =
+            member this.Draw(state) =
                 let x,y = 188, 129
                 
                 WindowRenderer.render(x, y)
@@ -42,17 +38,14 @@ type GameOverWindow =
                     0f,
                     BLACK)
                                 
-            member this.Update(input, time, state) =
+            member this.Update(input, _, state) =
                 let scene =
                     { this with
                         OkButton = this.OkButton.Update(input, state.Language)
                         MinimizeButton = this.MinimizeButton.Update input 
                     }
-                let scene: IScene =
-                    if this.OkButton.State.InteractionState = ButtonInteractionState.Clicked then this.MainMenuScene
-                    elif this.MinimizeButton.State.InteractionState = ButtonInteractionState.Clicked then this.PlayScene
-                    else scene
-                {
-                    state with Scene = scene 
-                }
-                
+                let navigationEvent =
+                    if this.OkButton.State.InteractionState = ButtonInteractionState.Clicked then Some (NavigateTo Scene.MainMenu)
+                    elif this.MinimizeButton.State.InteractionState = ButtonInteractionState.Clicked then Some (NavigateTo Scene.Play)
+                    else None
+                { state with Scene = scene }, navigationEvent

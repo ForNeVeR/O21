@@ -78,25 +78,30 @@ type MainMenuScene = {
                         GameOverButton = this.GameOverButton.Update(input, state.Language) 
                         LanguageButton = this.LanguageButton.Update(input, state.Language) 
                     }
-                if scene.LanguageButton.State.InteractionState = ButtonInteractionState.Clicked then
-                    let languagesWithIndex = (Seq.mapi (fun i -> fun v -> (i, v)) AvailableLanguages)
-                    let numberOfLanguages = AvailableLanguages.Count()
-                    let (currentLanguageIndex, _) = languagesWithIndex |> (Seq.map (fun (index, lang) -> (index, lang = state.Language))) |> Seq.filter (fun (index, isCurrentLanguage) -> isCurrentLanguage) |> Enumerable.First
-                    let (_, newLanguage) = match currentLanguageIndex with
-                                                | index when index = (numberOfLanguages - 1) -> languagesWithIndex.First()
-                                                | index -> (Seq.filter (fun (languageIndex, _) -> languageIndex = (index + 1)) languagesWithIndex).First()
-                    { state with Language = newLanguage }
-                else 
-                    let scene: IScene =
-                        if scene.PlayButton.State.InteractionState = ButtonInteractionState.Clicked then
-                            PlayScene.Init(state.U95Data.Levels[0], this.Content, this)
-                        elif scene.HelpButton.State.InteractionState = ButtonInteractionState.Clicked then
-                            let loadedHelp = (state.Language |> state.U95Data.Help)
-                            HelpScene.Init(this.Content, this, loadedHelp, state.Language)
-                        elif scene.GameOverButton.State.InteractionState = ButtonInteractionState.Clicked then
-                            GameOverWindow.Init(this.Content, PlayScene.Init (state.U95Data.Levels[0], this.Content, this), this, state.Language)
-                        else scene
-                    { state with Scene = scene }
+                
+                let language =
+                    if scene.LanguageButton.State.InteractionState = ButtonInteractionState.Clicked then
+                        let languagesWithIndex = (Seq.mapi (fun i -> fun v -> (i, v)) AvailableLanguages)
+                        let numberOfLanguages = AvailableLanguages.Count()
+                        let (currentLanguageIndex, _) = languagesWithIndex |> (Seq.map (fun (index, lang) -> (index, lang = state.Language))) |> Seq.filter (fun (index, isCurrentLanguage) -> isCurrentLanguage) |> Enumerable.First
+                        let (_, newLanguage) = match currentLanguageIndex with
+                                                    | index when index = (numberOfLanguages - 1) -> languagesWithIndex.First()
+                                                    | index -> (Seq.filter (fun (languageIndex, _) -> languageIndex = (index + 1)) languagesWithIndex).First()
+                        newLanguage
+                    else
+                        state.Language
+
+                let navigationEvent =
+                    if scene.PlayButton.State.InteractionState = ButtonInteractionState.Clicked then
+                        Some (NavigateTo Scene.Play)
+                    elif scene.HelpButton.State.InteractionState = ButtonInteractionState.Clicked then
+                        Some (NavigateTo Scene.Help)
+                    elif scene.GameOverButton.State.InteractionState = ButtonInteractionState.Clicked then
+                        Some (NavigateTo Scene.GameOver)
+                    else
+                        None
+                    
+                { state with Scene = scene; Language = language }, navigationEvent
 
             member this.Draw _ =
                 this.DrawBackground()
