@@ -102,7 +102,7 @@ let main(args: string[]): int =
         let lt = gameLifetime.Lifetime
         RaylibEnvironment.Run(config, fun () ->
             LoadingLoop.Run(lt, config)
-            |> Option.iter(GameLoop.Run(lt, config))
+            |> Option.iter(GameLoop.Run(lt))
         )
 
     | _ -> printfn "Usage:\nexport <inputFile> <outDir>: export resources\n<dataDir>: start the game"

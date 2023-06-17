@@ -13,14 +13,14 @@ module private MainMenuLayout =
     let private MarginPx = 10f
     let private DistanceBetweenButtonsPx = 30f 
     
-    let CreateButtons config font language labels =
+    let CreateButtons font language labels =
         let buttons = 
             labels
             |> Array.map(fun label ->
                 Button.Create(font, (fun lang -> label (Translation lang)), Vector2(0f, 0f), language)
             )
         
-        let mutable y = float32 config.ScreenHeight - MarginPx
+        let mutable y = float32 (Raylib.GetScreenHeight()) - MarginPx
         for i, b in buttons |> Seq.indexed |> Seq.rev  do
             let rect = b.Measure language
             y <- y - rect.height - DistanceBetweenButtonsPx
@@ -30,7 +30,6 @@ module private MainMenuLayout =
 #nowarn "25" // to destructure the call result into an array 
 
 type MainMenuScene = {
-    Config: Config
     Content: LocalContent
     Data: U95Data
     PlayButton: Button
@@ -39,16 +38,15 @@ type MainMenuScene = {
     LanguageButton: Button
 }
     with
-        static member Init(config: Config, content: LocalContent, data: U95Data): MainMenuScene =
+        static member Init(content: LocalContent, data: U95Data): MainMenuScene =
             let [| play; help; gameOver; changeLanguage |] =
-                MainMenuLayout.CreateButtons config content.UiFontRegular DefaultLanguage [|
+                MainMenuLayout.CreateButtons content.UiFontRegular DefaultLanguage [|
                     (fun t -> t.PlayLabel)
                     (fun t -> t.HelpLabel)
                     (fun t -> t.OverLabel)
                     (fun t -> t.LanguageLabel)
                 |] 
             {
-                Config = config
                 Content = content
                 Data = data
                 PlayButton = play
@@ -58,12 +56,11 @@ type MainMenuScene = {
             }
             
         member this.DrawBackground() =
-            let config = this.Config
             let texture = this.Data.Sprites.TitleScreenBackground
             Raylib.DrawTexturePro(
                 texture,
                 Rectangle(0f, 0f, float32 texture.width, float32 texture.height),
-                Rectangle(0f, 0f, float32 config.ScreenWidth, float32 config.ScreenHeight),
+                Rectangle(0f, 0f, float32 (Raylib.GetScreenWidth()), float32 (Raylib.GetScreenHeight())),
                 Vector2(0f, 0f),
                 0f,
                 Raylib.WHITE
