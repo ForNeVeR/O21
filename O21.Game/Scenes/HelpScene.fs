@@ -85,7 +85,7 @@ type HelpScene = {
                     OffsetY = offsetY
             }
             let navigationEvent =
-                if scene.BackButton.State.InteractionState = ButtonInteractionState.Clicked then Some (NavigateTo Scene.MainMenu)
+                if scene.BackButton.IsClicked then Some (NavigateTo Scene.MainMenu)
                 else None
             { state with Scene = scene }, navigationEvent
 

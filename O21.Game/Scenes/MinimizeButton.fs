@@ -28,6 +28,8 @@ type MinimizeButton =
                 Size = 18f
             }
         
+        member this.IsClicked = this.State.InteractionState = ButtonInteractionState.Clicked
+        
         member this.Render() =
             let x = int this.Position.X
             let y = int this.Position.Y

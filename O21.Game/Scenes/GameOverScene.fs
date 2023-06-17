@@ -45,7 +45,7 @@ type GameOverScene =
                         MinimizeButton = this.MinimizeButton.Update input 
                     }
                 let navigationEvent =
-                    if this.OkButton.State.InteractionState = ButtonInteractionState.Clicked then Some (NavigateTo Scene.MainMenu)
-                    elif this.MinimizeButton.State.InteractionState = ButtonInteractionState.Clicked then Some (NavigateTo Scene.Play)
+                    if this.OkButton.IsClicked then Some (NavigateTo Scene.MainMenu)
+                    elif this.MinimizeButton.IsClicked then Some (NavigateTo Scene.Play)
                     else None
                 { state with Scene = scene }, navigationEvent

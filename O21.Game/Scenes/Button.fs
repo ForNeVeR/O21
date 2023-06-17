@@ -34,6 +34,8 @@ type Button = {
         }
     }
 
+    member this.IsClicked = this.State.InteractionState = ButtonInteractionState.Clicked        
+    
     member this.Measure(language: Language) =
         let size = Raylib.MeasureTextEx(this.Font, language |> this.Text, float32 this.Font.baseSize, 1.0f)
         Rectangle(this.Position.X, this.Position.Y, size.X + 22f, size.Y + 5f)

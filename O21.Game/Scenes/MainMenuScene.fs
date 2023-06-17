@@ -77,7 +77,7 @@ type MainMenuScene = {
                     }
                 
                 let language =
-                    if scene.LanguageButton.State.InteractionState = ButtonInteractionState.Clicked then
+                    if scene.LanguageButton.IsClicked then
                         let languagesWithIndex = (Seq.mapi (fun i -> fun v -> (i, v)) AvailableLanguages)
                         let numberOfLanguages = AvailableLanguages.Count()
                         let (currentLanguageIndex, _) = languagesWithIndex |> (Seq.map (fun (index, lang) -> (index, lang = state.Language))) |> Seq.filter (fun (index, isCurrentLanguage) -> isCurrentLanguage) |> Enumerable.First
@@ -89,11 +89,11 @@ type MainMenuScene = {
                         state.Language
 
                 let navigationEvent =
-                    if scene.PlayButton.State.InteractionState = ButtonInteractionState.Clicked then
+                    if scene.PlayButton.IsClicked then
                         Some (NavigateTo Scene.Play)
-                    elif scene.HelpButton.State.InteractionState = ButtonInteractionState.Clicked then
+                    elif scene.HelpButton.IsClicked then
                         Some (NavigateTo Scene.Help)
-                    elif scene.GameOverButton.State.InteractionState = ButtonInteractionState.Clicked then
+                    elif scene.GameOverButton.IsClicked then
                         Some (NavigateTo Scene.GameOver)
                     else
                         None
