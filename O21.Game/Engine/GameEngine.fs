@@ -19,7 +19,7 @@ type GameEngine = {
     Bullets: Bullet[]
     ParticlesSource: ParticlesSource
 } with
-    static member Start(time: Time, level: Level): GameEngine = {
+    static member Create(time: Time, level: Level): GameEngine = {
         StartTime = time
         Tick = 0
         CurrentLevel = level

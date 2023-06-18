@@ -51,14 +51,12 @@ module private InputProcessor =
         game, effects
 
 type PlayScene = {
-    CurrentLevel: Level
     HUD: HUD
     Content: LocalContent
     mutable Camera: Camera2D
 } with
 
-    static member Init(level: Level, content: LocalContent): PlayScene = {
-        CurrentLevel = level
+    static member Init(content: LocalContent): PlayScene = {
         HUD = HUD.Init()
         Content = content 
         Camera = Camera2D(zoom = 1f)
@@ -107,7 +105,7 @@ type PlayScene = {
             
             DrawTexture(sprites.Background[1], 0, 0, WHITE)
             this.HUD.Render(sprites.HUD)
-            let map = this.CurrentLevel.LevelMap
+            let map = game.CurrentLevel.LevelMap
             for i = 0 to map.Length-1 do
                 for j = 0 to map[i].Length-1 do
                     match map[i][j] with

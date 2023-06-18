@@ -6,6 +6,7 @@ namespace O21.Game.U95
 
 open System.IO
 open System.Threading.Tasks
+
 open O21.Game.U95.Parser
 
 [<Struct>]

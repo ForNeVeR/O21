@@ -30,7 +30,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         U95Data = data
         SoundsToStartPlaying = Set.empty
         Language = DefaultLanguage
-        Game = GameEngine.Start({ Total = GetTime(); Delta = GetFrameTime() }, Unchecked.defaultof<_>)
+        Game = GameEngine.Create({ Total = GetTime(); Delta = GetFrameTime() }, data.Levels[GameRules.StartingLevel])
         MusicPlayer = None
     }
 
@@ -64,7 +64,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         let scene: IScene =
             match event with
             | Some (NavigateTo Scene.MainMenu) -> MainMenuScene.Init(window, content, data)
-            | Some (NavigateTo Scene.Play) -> PlayScene.Init(state.U95Data.Levels[LevelCoordinates(1, 1)], content)
+            | Some (NavigateTo Scene.Play) -> PlayScene.Init content
             | Some (NavigateTo Scene.GameOver) -> GameOverScene.Init(window, content, state.Language)
             | Some (NavigateTo Scene.Help) ->
                 let loadedHelp = (state.Language |> state.U95Data.Help)

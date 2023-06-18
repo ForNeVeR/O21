@@ -5,6 +5,7 @@
 module O21.Game.Engine.GameRules
 
 open System
+open O21.Game.U95
 
 [<Literal>]
 let ShotCooldownTicks = 15
@@ -46,6 +47,9 @@ let NewBulletPosition(playerTopForwardCorner: Point, playerDirection: Horizontal
     match playerDirection with
     | HorizontalDirection.Left -> playerTopForwardCorner + Vector(-4 - BulletSize.X, 14)
     | HorizontalDirection.Right -> playerTopForwardCorner + Vector(4, 14)
+
+let StartingLevel = LevelCoordinates(1, 1)
+let LevelSizeInTiles = Vector(50, 25)
 
 let NewParticlePosition(playerTopForwardCorner: Point, playerDirection: HorizontalDirection) =
     match playerDirection with
