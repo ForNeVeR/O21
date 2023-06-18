@@ -18,7 +18,7 @@ type U95Data private(sprites: Sprites,
                      sounds: Map<SoundType, Sound>,
                      midiFilePath: string,
                      help: Language -> DocumentFragment[],
-                     levels: Level[]) =
+                     levels: Map<LevelCoordinates, Level>) =
 
     let mutable helpCache = Map.empty
 
@@ -61,8 +61,8 @@ type U95Data private(sprites: Sprites,
             let midiFilePath = Path.Combine(directory, "U95.MID")
 
             loadController.ReportProgress(translation.LoadingData, 0.8)
-            let! level = Level.Load directory 1 2
+            let! levels = Level.LoadAll directory
 
             loadController.ReportProgress(translation.CatchingUp, 1.0)
-            return U95Data(sprites, sounds, midiFilePath, help, [| level |])
+            return U95Data(sprites, sounds, midiFilePath, help, levels)
         }
