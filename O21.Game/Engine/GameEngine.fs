@@ -10,12 +10,14 @@ type Time = {
 type GameEngine = {
     StartTime: Time
     Tick: int
+    CurrentLevel: Level
     Player: Player
     Bullets: Bullet[]
 } with
-    static member Start(time: Time): GameEngine = {
+    static member Start(time: Time, level: Level): GameEngine = {
         StartTime = time
         Tick = 0
+        CurrentLevel = level
         Player = {
             TopLeft = Point(0, 0)
             Velocity = Vector(0, 0)
