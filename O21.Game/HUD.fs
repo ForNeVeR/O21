@@ -1,7 +1,7 @@
 ﻿namespace O21.Game
 
 open type Raylib_CsLo.Raylib
-
+    
 type HUD =
     {
         Score: int
@@ -9,6 +9,7 @@ type HUD =
         Oxy: float32
         Lives: int
         Abilities: bool[]
+        Controls: Controls
     }
     with
         static member Init() =
@@ -17,7 +18,8 @@ type HUD =
                 Level = 1
                 Oxy = 0f
                 Lives = 5
-                Abilities = Array.init 5 (fun _ -> false ) 
+                Abilities = Array.init 5 (fun _ -> false )
+                Controls =  Controls.Init()
             }
             
         member private this.renderBonusLine(textures: HUDSprites)  =
@@ -69,7 +71,5 @@ type HUD =
             this.renderScoreLine textures
             this.renderLives textures
             this.renderLevel textures
-            
-            
-            
+            this.Controls.Render(textures)
             

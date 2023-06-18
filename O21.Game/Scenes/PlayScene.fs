@@ -19,11 +19,27 @@ module private InputProcessor =
             | _ -> ()
             
         direction
+    
+    let ProcessHUDKeys (input: Input, hud:HUD) =
+         let mutable direction = Vector(0, 0)
+         hud.Controls.GetPressedControl input
+         |> Array.iter (fun x -> 
+            match x.Type with
+            | ControlType.Up -> direction <- direction + Vector(0, -1)
+            | ControlType.Down -> direction <- direction + Vector(0, 1)
+            | ControlType.Left -> direction <- direction + Vector(-1, 0)
+            | ControlType.Right -> direction <- direction + Vector(1, 0)
+            | _ -> ()
+         )
+         direction
         
-    let ProcessKeys input (game: GameEngine) =
-        let delta = ProcessDirectionKeys input
+    let ProcessKeys (input:Input) (hud:HUD) (game: GameEngine) =
+        let mutable delta = ProcessDirectionKeys input.Pressed
+        let mutable deltaFromHUD = ProcessHUDKeys (input, hud)
+        if delta.X = 0 && delta.Y = 0 then
+            delta <- deltaFromHUD
         let mutable game, effects = game.ApplyCommand(VelocityDelta delta)
-        if Set.contains Key.Fire input then
+        if Set.contains Key.Fire input.Pressed || hud.Controls.Fire.IsClicked(input) then
             let game', effects' = game.ApplyCommand Shoot
             game <- game'
             effects <- Array.append effects effects'
@@ -55,7 +71,7 @@ type PlayScene = {
 
     interface IScene with
         member this.Update(input, time, state) =
-            let game, effects = state.Game |> InputProcessor.ProcessKeys input.Pressed
+            let game, effects = state.Game |> InputProcessor.ProcessKeys input this.HUD
 
             let state = { state with Game = game.Update time }
             let sounds =

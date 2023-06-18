@@ -45,15 +45,15 @@
         <Compile Include="U95\Parser.fs" />
         <Compile Include="U95\Level.fs" />
         <Compile Include="U95\U95Data.fs" />
-        
-        <Compile Include="HUDRenderer.fs" />
-        <Compile Include="HUD.fs" />
         <Compile Include="Engine\GameField.fs" />
         <Compile Include="Engine\GameRules.fs" />
         <Compile Include="Engine\Entities.fs" />
         <Compile Include="Engine\PlayerCommand.fs" />
         <Compile Include="Engine\ExternalEffect.fs" />
         <Compile Include="Engine\GameEngine.fs" />
+        <Compile Include="HUDRenderer.fs" />
+        <Compile Include="Controls.fs" />
+        <Compile Include="HUD.fs" />
         <Compile Include="State.fs" />
         <Compile Include="Music.fs" />
 

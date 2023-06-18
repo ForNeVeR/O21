@@ -53,16 +53,11 @@ module HUDRenderer =
     
         let private renderFourthBlock (x: int) (y: int) =
             DrawRectangle(x, y + 10, 94, 80, palette[0])
-            drawBlockFrame x (y + 10) 94 80 
-            DrawTexture(sprites.Controls[2], x + 10, y + 38, WHITE)
+            drawBlockFrame x (y + 10) 94 80
             drawBlockFrame (x + 10) (y + 38) 23 23
-            DrawTexture(sprites.Controls[1], x + 33, y + 38, WHITE)
             drawBlockFrame (x + 33) (y + 38) 23 23
-            DrawTexture(sprites.Controls[3], x + 56, y + 38, WHITE)
             drawBlockFrame (x + 56) 338 23 23
-            DrawTexture(sprites.Controls[4], x + 33, y + 14, WHITE)
             drawBlockFrame (x + 33) 315 23 23
-            DrawTexture(sprites.Controls[0], x + 33, y + 61, WHITE)
             drawBlockFrame (x + 33) (y + 61) 23 23
     
         let private renderFifthBlock (x: int) (y: int) =
