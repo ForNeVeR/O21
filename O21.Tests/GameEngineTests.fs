@@ -1,5 +1,7 @@
 module O21.Tests.GameEngineTests
 
+open O21.Game.U95
+open O21.Game.U95.Parser
 open Xunit
 
 open O21.Game.Engine
@@ -20,12 +22,20 @@ let private frameUpN time n gameEngine =
 
 let private timeZero = { Total = 0.0; Delta = 0.0f }
 
+let private emptyLevel = {
+    LevelMap = Array.init GameRules.LevelSizeInTiles.X (fun _ ->
+        Array.init GameRules.LevelSizeInTiles.Y (fun _ -> MapOfLevel.Empty)
+    )
+}
+
+let private newEngine = GameEngine.Create(timeZero, emptyLevel)
+
 module Ticks =
 
     [<Fact>]
     let ``GameEngine increments frame``(): unit =
         let frameUp = frameUp timeZero
-        let gameEngine = GameEngine.Start timeZero
+        let gameEngine = newEngine
         Assert.Equal(0, gameEngine.Tick)
         let gameEngine = gameEngine |> frameUp
         Assert.Equal(1, gameEngine.Tick)
@@ -34,7 +44,7 @@ module Movement =
 
     [<Fact>]
     let ``GameEngine reacts to the speed change``(): unit =
-        let gameEngine = GameEngine.Start timeZero
+        let gameEngine = newEngine
         let frameUp = frameUp timeZero
         Assert.Equal(Point(0, 0), gameEngine.Player.TopLeft)
         let gameEngine, _ = gameEngine.ApplyCommand <| VelocityDelta(Vector(1, 0))
@@ -45,14 +55,14 @@ module Shooting =
 
     [<Fact>]
     let ``GameEngine reacts to a shoot``(): unit =
-        let gameEngine = GameEngine.Start timeZero
+        let gameEngine = newEngine
         let gameEngine, sounds = gameEngine.ApplyCommand Shoot
         Assert.Single sounds |> ignore
         Assert.Single gameEngine.Bullets |> ignore
 
     [<Fact>]
     let ``GameEngine disallows to shoot faster``(): unit =
-        let gameEngine = GameEngine.Start timeZero
+        let gameEngine = newEngine
         let frameUp = frameUp timeZero
         let gameEngine, _ = gameEngine.ApplyCommand Shoot
         let gameEngine = frameUp gameEngine
@@ -61,7 +71,7 @@ module Shooting =
 
     [<Fact>]
     let ``GameEngine allows to shoot after a cooldown``(): unit =
-        let gameEngine = GameEngine.Start timeZero
+        let gameEngine = newEngine
         let gameEngine, _ = gameEngine.ApplyCommand Shoot
         Assert.Single gameEngine.Bullets |> ignore
         let gameEngine = frameUpN timeZero GameRules.ShotCooldownTicks gameEngine
