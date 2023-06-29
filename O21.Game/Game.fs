@@ -2,6 +2,7 @@ namespace O21.Game
 
 open JetBrains.Lifetimes
 open O21.Game.Engine
+open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
 open O21.Game.Localization.Translations
@@ -10,6 +11,7 @@ open O21.Game.Scenes
 open O21.Game.U95
 
 type Game(content: LocalContent, data: U95Data) =
+    let mutable camera = Camera2D() 
     let mutable state = {
         Scene = MainMenuScene.Init(content, data)
         Settings = { SoundVolume = 0.1f }
@@ -20,7 +22,7 @@ type Game(content: LocalContent, data: U95Data) =
     }
 
     member _.Update(musicPlayer: MusicPlayer) =
-        let input = Input.Handle()
+        let input = Input.Handle(camera)
         let time = { Total = GetTime(); Delta = GetFrameTime() }
         let updatedState, event = state.Scene.Update(input, time, state)
         
@@ -49,10 +51,12 @@ type Game(content: LocalContent, data: U95Data) =
 
         state <- { state with SoundsToStartPlaying = Set.empty }
 
-    member _.Draw() =        
+    member _.Draw() =       
         BeginDrawing()
         ClearBackground(WHITE)
+        BeginMode2D(camera)
         state.Scene.Draw(state)
+        EndMode2D()
         EndDrawing()
 
 module GameLoop =
