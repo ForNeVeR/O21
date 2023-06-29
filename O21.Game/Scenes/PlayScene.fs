@@ -1,6 +1,7 @@
 namespace O21.Game.Scenes
 
 open type Raylib_CsLo.Raylib
+open Raylib_CsLo
 
 open O21.Game
 open O21.Game.Engine
@@ -49,12 +50,14 @@ type PlayScene = {
     CurrentLevel: Level
     HUD: HUD
     Content: LocalContent
+    mutable Camera: Camera2D
 } with
 
     static member Init(level: Level, content: LocalContent): PlayScene = {
         CurrentLevel = level
         HUD = HUD.Init()
         Content = content 
+        Camera = Camera2D(zoom = 1f)
     }
 
     static member private DrawSprite sprite (Point(x, y)) =
@@ -70,7 +73,11 @@ type PlayScene = {
         PlayScene.DrawSprite sprite bullet.Position
 
     interface IScene with
+        member this.Camera: Camera2D = this.Camera
         member this.Update(input, time, state) =
+            this.Camera.zoom <- (GetScreenHeight() |> float32) / (GameRules.LevelHeight |> float32)
+            let x = ((GetScreenWidth() |> float32) - (GameRules.LevelWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            this.Camera.target <- System.Numerics.Vector2(x, 0f)
             let game, effects = state.Game |> InputProcessor.ProcessKeys input this.HUD
 
             let state = { state with Game = game.Update time }

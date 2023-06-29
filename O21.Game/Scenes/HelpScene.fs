@@ -15,6 +15,8 @@ type HelpScene = {
     OffsetY: float32
     TotalHeight: float32
     HelpDocument: DocumentFragment[]
+    mutable Camera: Camera2D
+
 } with        
 
     static member Init(content: LocalContent, helpDocument: DocumentFragment[], language: Language): HelpScene = 
@@ -24,6 +26,7 @@ type HelpScene = {
             OffsetY = 0f
             TotalHeight = HelpScene.GetFragmentsHeight content helpDocument
             HelpDocument = helpDocument
+            Camera = Camera2D(zoom = 1f)
         }
 
     static member private GetScrollMomentum(input: Input) =
@@ -68,6 +71,8 @@ type HelpScene = {
         fragmentsHeight
 
     interface IScene with               
+        member this.Camera: Camera2D = this.Camera
+
         member this.Update(input, _, state) =
             let mutable fragmentsHeight = this.TotalHeight
             let renderHeight = GetRenderHeight() / 2 |> float32

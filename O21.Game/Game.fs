@@ -11,7 +11,6 @@ open O21.Game.Scenes
 open O21.Game.U95
 
 type Game(content: LocalContent, data: U95Data) =
-    let mutable camera = Camera2D() 
     let mutable state = {
         Scene = MainMenuScene.Init(content, data)
         Settings = { SoundVolume = 0.1f }
@@ -22,7 +21,7 @@ type Game(content: LocalContent, data: U95Data) =
     }
 
     member _.Update(musicPlayer: MusicPlayer) =
-        let input = Input.Handle(camera)
+        let input = Input.Handle(state.Scene.Camera)
         let time = { Total = GetTime(); Delta = GetFrameTime() }
         let updatedState, event = state.Scene.Update(input, time, state)
         
@@ -54,7 +53,7 @@ type Game(content: LocalContent, data: U95Data) =
     member _.Draw() =       
         BeginDrawing()
         ClearBackground(WHITE)
-        BeginMode2D(camera)
+        BeginMode2D(state.Scene.Camera)
         state.Scene.Draw(state)
         EndMode2D()
         EndDrawing()

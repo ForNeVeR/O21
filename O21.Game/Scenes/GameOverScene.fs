@@ -6,12 +6,15 @@ open type Raylib_CsLo.Raylib
 
 open O21.Game
 open O21.Game.Localization.Translations
+open Raylib_CsLo
 
 type GameOverScene =
     {
         OkButton: Button
         Content: LocalContent
         MinimizeButton: MinimizeButton
+        mutable Camera: Camera2D
+
     }
     
     with
@@ -20,9 +23,12 @@ type GameOverScene =
                 OkButton = Button.Create (content.UiFontRegular, (fun _ -> "Ok"), Vector2(288f, 229f), language)
                 Content = content
                 MinimizeButton = MinimizeButton.Create(Vector2(193f, 134f), language)
+                Camera = Camera2D(zoom = 1f)
             }
             
         interface IScene with
+            member this.Camera: Camera2D = this.Camera
+
             member this.Draw(state) =
                 let x,y = 188, 129
                 

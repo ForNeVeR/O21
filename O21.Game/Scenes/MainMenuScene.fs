@@ -36,6 +36,7 @@ type MainMenuScene = {
     HelpButton: Button
     GameOverButton: Button
     LanguageButton: Button
+    mutable Camera: Camera2D
 }
     with
         static member Init(content: LocalContent, data: U95Data): MainMenuScene =
@@ -53,6 +54,7 @@ type MainMenuScene = {
                 HelpButton = help
                 GameOverButton = gameOver 
                 LanguageButton = changeLanguage 
+                Camera = Camera2D(zoom = 1f)
             }
             
         member this.DrawBackground() =
@@ -67,6 +69,8 @@ type MainMenuScene = {
             )
 
         interface IScene with
+            member this.Camera: Camera2D = this.Camera
+
             member this.Update(input, _, state) =
                 let scene = { 
                     this with
