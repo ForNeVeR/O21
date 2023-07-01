@@ -76,8 +76,8 @@ type PlayScene = {
         member this.Camera: Camera2D = this.Camera
         member this.Update(input, time, state) =
             this.Camera.zoom <- (GetScreenHeight() |> float32) / (GameRules.LevelHeight |> float32)
-            let x = ((GetScreenWidth() |> float32) - (GameRules.LevelWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
-            this.Camera.target <- System.Numerics.Vector2(x, 0f)
+            let cameraTargetX = ((GetScreenWidth() |> float32) - (GameRules.LevelWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            this.Camera.target <- System.Numerics.Vector2(cameraTargetX, 0f)
             let game, effects = state.Game |> InputProcessor.ProcessKeys input this.HUD
 
             let state = { state with Game = game.Update time }
