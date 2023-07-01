@@ -8,6 +8,7 @@ open type Raylib_CsLo.Raylib
 open O21.Game
 open O21.Game.Help
 open O21.Game.Localization.Translations
+open O21.Game.Engine
 
 type HelpScene = {
     Content: LocalContent
@@ -98,6 +99,13 @@ type HelpScene = {
             let mutable y = -this.OffsetY
             let mutable x = 0f
             let mutable currentLineHeight = 0f
+
+            let cameraTargetX = ((Raylib.GetScreenWidth() |> float32) - (GameRules.Config.ScreenWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let cameraTargetY = ((Raylib.GetScreenHeight() |> float32) - (GameRules.Config.ScreenHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            
+            this.Camera.target <- System.Numerics.Vector2(cameraTargetX, cameraTargetY)
+            this.Camera.zoom <- min ((Raylib.GetScreenHeight() |> float32) / (GameRules.Config.ScreenHeight |> float32)) ((Raylib.GetScreenWidth() |> float32) / (GameRules.Config.ScreenWidth |> float32))
+
 
             for fragment in this.HelpDocument do
                 match fragment with
