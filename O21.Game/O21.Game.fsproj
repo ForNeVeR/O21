@@ -23,6 +23,8 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Include="Config.fs" />
+        
         <Compile Include="Localization\Translations.fs" />
         <Compile Include="RaylibUtils.fs" />
         <Compile Include="TextureUtils.fs" />

@@ -8,13 +8,6 @@ type Settings = {
     SoundVolume: float32
 }
 
-type Config = {
-    Title: string
-    ScreenWidth: int
-    ScreenHeight: int
-    U95DataDirectory: string
-}
-
 [<RequireQualifiedAccess>]
 type Scene =
     | MainMenu
