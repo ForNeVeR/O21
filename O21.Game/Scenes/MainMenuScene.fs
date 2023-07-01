@@ -8,6 +8,7 @@ open Raylib_CsLo
 open O21.Game
 open O21.Game.Localization.Translations
 open O21.Game.U95
+open O21.Game.Engine
 
 module private MainMenuLayout =
     let private MarginPx = 10f
@@ -59,10 +60,17 @@ type MainMenuScene = {
             
         member this.DrawBackground() =
             let texture = this.Data.Sprites.TitleScreenBackground
+            
+            let cameraTargetX = ((Raylib.GetScreenWidth() |> float32) - (GameRules.Config.ScreenWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let cameraTargetY = ((Raylib.GetScreenHeight() |> float32) - (GameRules.Config.ScreenHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            
+            this.Camera.target <- System.Numerics.Vector2(cameraTargetX, cameraTargetY)
+            this.Camera.zoom <- min ((Raylib.GetScreenHeight() |> float32) / (GameRules.Config.ScreenHeight |> float32)) ((Raylib.GetScreenWidth() |> float32) / (GameRules.Config.ScreenWidth |> float32))
+
             Raylib.DrawTexturePro(
                 texture,
                 Rectangle(0f, 0f, float32 texture.width, float32 texture.height),
-                Rectangle(0f, 0f, float32 (Raylib.GetScreenWidth()), float32 (Raylib.GetScreenHeight())),
+                Rectangle(0f, 0f, float32 (GameRules.Config.ScreenWidth), float32 (GameRules.Config.ScreenHeight)),
                 Vector2(0f, 0f),
                 0f,
                 Raylib.WHITE
