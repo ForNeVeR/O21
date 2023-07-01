@@ -18,8 +18,8 @@ let TicksPerSecond = 10.0
 let mutable Config : Config =
     {
             Title = "O21"
-            ScreenWidth = 900
-            ScreenHeight = 600
+            ScreenWidth = 1200
+            ScreenHeight = 800
             U95DataDirectory = "U95/"
     }
 
