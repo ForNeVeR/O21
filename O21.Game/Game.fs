@@ -59,7 +59,8 @@ type Game(content: LocalContent, data: U95Data) =
         EndDrawing()
 
 module GameLoop =
-    let Run (lifetime: Lifetime) (content: LocalContent, data: U95Data): unit =
+    let Run (lifetime: Lifetime) (config : Config) (content: LocalContent, data: U95Data): unit =
+        GameRules.Config <- config
         let game = Game(content, data)
         let musicPlayer = CreateMusicPlayer lifetime (content.SoundFontPath, data.MidiFilePath)
         musicPlayer.Initialize()

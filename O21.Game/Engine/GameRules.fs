@@ -1,6 +1,7 @@
 module O21.Game.Engine.GameRules
 
 open System
+open O21.Game
 
 [<Literal>]
 let ShotCooldownTicks = 15
@@ -13,6 +14,14 @@ let LevelHeight = 400
 
 [<Literal>]
 let TicksPerSecond = 10.0
+
+let mutable Config : Config =
+    {
+            Title = "O21"
+            ScreenWidth = 900
+            ScreenHeight = 600
+            U95DataDirectory = "U95/"
+    }
 
 let MaxPlayerVelocity = 3
 let ClampVelocity(Vector(x, y)): Vector =
