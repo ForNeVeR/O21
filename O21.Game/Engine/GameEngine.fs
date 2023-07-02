@@ -20,6 +20,7 @@ type GameEngine = {
             TopLeft = Point(0, 0)
             Velocity = Vector(0, 0)
             ShotCooldown = 0
+            PrevDirection = Left
         }
         Bullets = Array.empty
     }
@@ -40,6 +41,7 @@ type GameEngine = {
                 Player =
                     { this.Player with
                         Velocity = GameRules.ClampVelocity(this.Player.Velocity + delta)
+
                     }
             }, Array.empty
 
