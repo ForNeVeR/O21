@@ -20,6 +20,14 @@ let private exportImagesAsBmp outDir (images: Dib seq) =
         let filePath = Path.Combine(outDir, $"{string i}.bmp")
         File.WriteAllBytes(filePath, data)
 
+let private runGame config =
+    use gameLifetime = new LifetimeDefinition()
+    let lt = gameLifetime.Lifetime
+    RaylibEnvironment.Run(config, fun () ->
+        LoadingLoop.Run(lt, config)
+        |> Option.iter(GameLoop.Run lt config)
+    )
+
 [<EntryPoint>]
 let main(args: string[]): int =
     Encoding.RegisterProvider CodePagesEncodingProvider.Instance
@@ -97,13 +105,20 @@ let main(args: string[]): int =
             ScreenHeight = 800
             U95DataDirectory = dataDir
         }
-
-        use gameLifetime = new LifetimeDefinition()
-        let lt = gameLifetime.Lifetime
-        RaylibEnvironment.Run(config, fun () ->
-            LoadingLoop.Run(lt, config)
-            |> Option.iter(GameLoop.Run lt config)
-        )
+        runGame config
+        
+    | [| dataDir; width; height |] ->
+        let config = {
+            Title = "O21"
+            ScreenWidth = match width |> System.Int32.TryParse with
+                          | true, value -> value
+                          | _ -> Engine.GameRules.DefaultConfig.ScreenWidth
+            ScreenHeight = match height |> System.Int32.TryParse with
+                          | true, value -> value
+                          | _ -> Engine.GameRules.DefaultConfig.ScreenHeight
+            U95DataDirectory = dataDir
+        }
+        runGame config
 
     | _ -> printfn "Usage:\nexport <inputFile> <outDir>: export resources\n<dataDir>: start the game"
 
