@@ -95,16 +95,16 @@ type HelpScene = {
                 else None
             { state with Scene = scene }, navigationEvent
 
-        member this.Draw(_) =
+        member this.Draw(state) =
             let mutable y = -this.OffsetY
             let mutable x = 0f
             let mutable currentLineHeight = 0f
 
-            let cameraTargetX = ((Raylib.GetScreenWidth() |> float32) - (GameRules.Config.ScreenWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
-            let cameraTargetY = ((Raylib.GetScreenHeight() |> float32) - (GameRules.Config.ScreenHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let cameraTargetX = ((Raylib.GetScreenWidth() |> float32) - (state.Config.ScreenWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let cameraTargetY = ((Raylib.GetScreenHeight() |> float32) - (state.Config.ScreenHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
             
             this.Camera.target <- System.Numerics.Vector2(cameraTargetX, cameraTargetY)
-            this.Camera.zoom <- min ((Raylib.GetScreenHeight() |> float32) / (GameRules.Config.ScreenHeight |> float32)) ((Raylib.GetScreenWidth() |> float32) / (GameRules.Config.ScreenWidth |> float32))
+            this.Camera.zoom <- min ((Raylib.GetScreenHeight() |> float32) / (state.Config.ScreenHeight |> float32)) ((Raylib.GetScreenWidth() |> float32) / (state.Config.ScreenWidth |> float32))
 
 
             for fragment in this.HelpDocument do

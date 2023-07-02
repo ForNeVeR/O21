@@ -29,4 +29,5 @@ and State = {
     SoundsToStartPlaying: Set<SoundType>
     Language: Language
     Game: GameEngine
+    Config: Config
 }

@@ -58,19 +58,19 @@ type MainMenuScene = {
                 Camera = Camera2D(zoom = 1f)
             }
             
-        member this.DrawBackground() =
+        member this.DrawBackground(state) =
             let texture = this.Data.Sprites.TitleScreenBackground
             
-            let cameraTargetX = ((Raylib.GetScreenWidth() |> float32) - (GameRules.Config.ScreenWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
-            let cameraTargetY = ((Raylib.GetScreenHeight() |> float32) - (GameRules.Config.ScreenHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let cameraTargetX = ((Raylib.GetScreenWidth() |> float32) - (state.Config.ScreenWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let cameraTargetY = ((Raylib.GetScreenHeight() |> float32) - (state.Config.ScreenHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
             
             this.Camera.target <- System.Numerics.Vector2(cameraTargetX, cameraTargetY)
-            this.Camera.zoom <- min ((Raylib.GetScreenHeight() |> float32) / (GameRules.Config.ScreenHeight |> float32)) ((Raylib.GetScreenWidth() |> float32) / (GameRules.Config.ScreenWidth |> float32))
+            this.Camera.zoom <- min ((Raylib.GetScreenHeight() |> float32) / (state.Config.ScreenHeight |> float32)) ((Raylib.GetScreenWidth() |> float32) / (state.Config.ScreenWidth |> float32))
 
             Raylib.DrawTexturePro(
                 texture,
                 Rectangle(0f, 0f, float32 texture.width, float32 texture.height),
-                Rectangle(0f, 0f, float32 (GameRules.Config.ScreenWidth), float32 (GameRules.Config.ScreenHeight)),
+                Rectangle(0f, 0f, float32 (state.Config.ScreenWidth), float32 (state.Config.ScreenHeight)),
                 Vector2(0f, 0f),
                 0f,
                 Raylib.WHITE
@@ -112,8 +112,8 @@ type MainMenuScene = {
                     
                 { state with Scene = scene; Language = language }, navigationEvent
 
-            member this.Draw _ =
-                this.DrawBackground()
+            member this.Draw state =
+                this.DrawBackground(state)
                 this.PlayButton.Draw()
                 this.HelpButton.Draw()
                 this.GameOverButton.Draw()

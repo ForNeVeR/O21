@@ -10,7 +10,7 @@ open O21.Game.Music
 open O21.Game.Scenes
 open O21.Game.U95
 
-type Game(content: LocalContent, data: U95Data) =
+type Game(content: LocalContent, data: U95Data, config: Config) =
     let mutable state = {
         Scene = MainMenuScene.Init(content, data)
         Settings = { SoundVolume = 0.1f }
@@ -18,6 +18,7 @@ type Game(content: LocalContent, data: U95Data) =
         SoundsToStartPlaying = Set.empty
         Language = DefaultLanguage
         Game = GameEngine.Start { Total = GetTime(); Delta = GetFrameTime() }
+        Config = config
     }
 
     member _.Update(musicPlayer: MusicPlayer) =
@@ -60,8 +61,7 @@ type Game(content: LocalContent, data: U95Data) =
 
 module GameLoop =
     let Run (lifetime: Lifetime) (config : Config) (content: LocalContent, data: U95Data): unit =
-        GameRules.Config <- config
-        let game = Game(content, data)
+        let game = Game(content, data, config)
         let musicPlayer = CreateMusicPlayer lifetime (content.SoundFontPath, data.MidiFilePath)
         musicPlayer.Initialize()
         while not (WindowShouldClose()) do
