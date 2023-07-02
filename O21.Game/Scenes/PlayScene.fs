@@ -67,7 +67,8 @@ type PlayScene = {
         // TODO[#122]: Player animation
         // TODO[#123]: Generalize player and enemies animations
         // TODO[#122]: Stopped state handling (separate images?)
-        PlayScene.DrawSprite sprites.Right[0] player.TopLeft
+        let spirte = if player.Direction = Right then sprites.Right[0] else sprites.Left[0]           
+        PlayScene.DrawSprite spirte player.TopLeft
 
     static member private DrawBullet sprite (bullet: Bullet) =
         PlayScene.DrawSprite sprite bullet.Position
