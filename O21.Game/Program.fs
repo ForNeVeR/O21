@@ -101,8 +101,8 @@ let main(args: string[]): int =
     | [| dataDir |] ->
         let config = {
             Title = "O21"
-            ScreenWidth = 1200
-            ScreenHeight = 800
+            ScreenWidth = min (Raylib_CsLo.Raylib.GetScreenWidth()) Engine.GameRules.DefaultConfig.ScreenWidth
+            ScreenHeight = min (Raylib_CsLo.Raylib.GetScreenHeight()) Engine.GameRules.DefaultConfig.ScreenHeight
             U95DataDirectory = dataDir
         }
         runGame config
