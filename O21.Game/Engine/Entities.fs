@@ -3,20 +3,11 @@ namespace O21.Game.Engine
 type Player = {
     TopLeft: Point
     Velocity: Vector
-    PrevDirection: HorizontalDirection
+    Direction: HorizontalDirection
     ShotCooldown: int
 } with
 
     member this.TopRight = this.TopLeft + Vector(GameRules.PlayerSize.X, 0)
-
-    member this.Direction: HorizontalDirection =
-        // TODO[#129]: Properly process zero velocity: should be possible to preserve the 
-            if this.Velocity.X < 0 then
-                HorizontalDirection.Left
-            else if this.Velocity.X > 0 then
-                HorizontalDirection.Right
-            else
-                this.PrevDirection
 
     member this.IsAllowedToShoot = this.ShotCooldown = 0
 
@@ -30,7 +21,6 @@ type Player = {
         { this with
             TopLeft = this.TopLeft + this.Velocity * timeDelta
             ShotCooldown = max (this.ShotCooldown - timeDelta) 0
-            PrevDirection = this.Direction
         }
 
 type Bullet = {
