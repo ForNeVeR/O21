@@ -15,17 +15,23 @@ type HelpScene = {
     OffsetY: float32
     TotalHeight: float32
     HelpDocument: DocumentFragment[]
+    Window: WindowParameters
     mutable Camera: Camera2D
 
 } with        
 
-    static member Init(content: LocalContent, helpDocument: DocumentFragment[], language: Language): HelpScene = 
+    static member Init(
+        window: WindowParameters,
+        content: LocalContent,
+        helpDocument: DocumentFragment[],
+        language: Language): HelpScene =
         {
             Content = content
-            BackButton = Button.Create(content.UiFontRegular, (fun language -> (Translation language).BackLabel), Vector2(200f, 00f), language)
+            BackButton = Button.Create(window, content.UiFontRegular, (fun language -> (Translation language).BackLabel), Vector2(200f, 00f), language)
             OffsetY = 0f
             TotalHeight = HelpScene.GetFragmentsHeight content helpDocument
             HelpDocument = helpDocument
+            Window = window
             Camera = Camera2D(zoom = 1f)
         }
 
@@ -99,12 +105,15 @@ type HelpScene = {
             let mutable x = 0f
             let mutable currentLineHeight = 0f
 
-            let cameraTargetX = ((GetScreenWidth() |> float32) - (WindowParameters.DefaultWindowWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
-            let cameraTargetY = ((GetScreenHeight() |> float32) - (WindowParameters.DefaultWindowHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let struct (windowWidth, windowHeight) = this.Window.WindowSizePx
+            let struct (renderTargetWidth, renderTargetHeight) = this.Window.RenderTargetSize
+
+            let cameraTargetX = ((windowWidth |> float32) - (renderTargetWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let cameraTargetY = ((windowHeight |> float32) - (renderTargetHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
             
             this.Camera.target <- Vector2(cameraTargetX, cameraTargetY)
-            this.Camera.zoom <- min ((GetScreenHeight() |> float32) / (WindowParameters.DefaultWindowHeight |> float32))
-                                    ((GetScreenWidth() |> float32) / (WindowParameters.DefaultWindowWidth |> float32))
+            this.Camera.zoom <- min ((windowHeight |> float32) / (renderTargetHeight |> float32))
+                                    ((windowWidth |> float32) / (renderTargetWidth |> float32))
 
 
             for fragment in this.HelpDocument do

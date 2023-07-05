@@ -14,7 +14,7 @@ type LocalContent = {
     LoadingTexture: Texture
     SoundFontPath: string
 } with
-    static member Load(lifetime: Lifetime): Task<LocalContent> = task {
+    static member Load(lifetime: Lifetime, window: WindowParameters): Task<LocalContent> = task {
         let binDir = Path.GetDirectoryName(Environment.ProcessPath)
         let pathToResource fileName =
             Path.Combine(binDir, "Resources", fileName)
@@ -23,7 +23,7 @@ type LocalContent = {
             for i in 0..255 -> 0x400 + i // Cyrillic characters
             yield int '…'
         |]
-        let fontSize = 18
+        let fontSize = int(window.Scale 16f)
 
         let loadFont path = task {
             let! data = File.ReadAllBytesAsync(path)

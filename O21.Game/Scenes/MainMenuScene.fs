@@ -10,21 +10,24 @@ open O21.Game.Localization.Translations
 open O21.Game.U95
 
 module private MainMenuLayout =
-    let private MarginPx = 10f
-    let private DistanceBetweenButtonsPx = 30f 
+    let private MarginUnits = 10f
+    let private DistanceBetweenButtonsUnits = 20f
     
-    let CreateButtons font language labels =
+    let CreateButtons window font language labels =
         let buttons = 
             labels
             |> Array.map(fun label ->
-                Button.Create(font, (fun lang -> label (Translation lang)), Vector2(0f, 0f), language)
+                Button.Create(window, font, (fun lang -> label (Translation lang)), Vector2(0f, 0f), language)
             )
         
-        let mutable y = float32 (WindowParameters.DefaultWindowHeight) - MarginPx
+        let struct (_, renderTargetHeight) = window.RenderTargetSize
+        let marginPx = window.Scale MarginUnits
+        let distanceBetweenButtonsPx = window.Scale DistanceBetweenButtonsUnits
+        let mutable y = float32 renderTargetHeight - marginPx
         for i, b in buttons |> Seq.indexed |> Seq.rev  do
             let rect = b.Measure language
-            y <- y - rect.height - DistanceBetweenButtonsPx
-            buttons[i] <- { b with Position = Vector2(MarginPx, y) }
+            y <- y - rect.height - distanceBetweenButtonsPx
+            buttons[i] <- { b with Position = Vector2(marginPx, y) }
         buttons
         
 #nowarn "25" // to destructure the call result into an array 
@@ -36,12 +39,13 @@ type MainMenuScene = {
     HelpButton: Button
     GameOverButton: Button
     LanguageButton: Button
+    Window: WindowParameters
     mutable Camera: Camera2D
 }
     with
-        static member Init(content: LocalContent, data: U95Data): MainMenuScene =
+        static member Init(window: WindowParameters, content: LocalContent, data: U95Data): MainMenuScene =
             let [| play; help; gameOver; changeLanguage |] =
-                MainMenuLayout.CreateButtons content.UiFontRegular DefaultLanguage [|
+                MainMenuLayout.CreateButtons window content.UiFontRegular DefaultLanguage [|
                     (fun t -> t.PlayLabel)
                     (fun t -> t.HelpLabel)
                     (fun t -> t.OverLabel)
@@ -53,23 +57,27 @@ type MainMenuScene = {
                 PlayButton = play
                 HelpButton = help
                 GameOverButton = gameOver 
-                LanguageButton = changeLanguage 
+                LanguageButton = changeLanguage
+                Window = window
                 Camera = Camera2D(zoom = 1f)
             }
             
-        member this.DrawBackground _ =
+        member this.DrawBackground() =
             let texture = this.Data.Sprites.TitleScreenBackground
             
-            let cameraTargetX = ((Raylib.GetScreenWidth() |> float32) - (WindowParameters.DefaultWindowWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
-            let cameraTargetY = ((Raylib.GetScreenHeight() |> float32) - (WindowParameters.DefaultWindowHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let struct (windowWidth, windowHeight) = this.Window.WindowSizePx
+            let struct (renderTargetWidth, renderTargetHeight) = this.Window.RenderTargetSize
+            
+            let cameraTargetX = ((windowWidth |> float32) - (renderTargetWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let cameraTargetY = ((windowHeight |> float32) - (renderTargetHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
             
             this.Camera.target <- Vector2(cameraTargetX, cameraTargetY)
-            this.Camera.zoom <- min ((Raylib.GetScreenHeight() |> float32) / (WindowParameters.DefaultWindowHeight |> float32)) ((Raylib.GetScreenWidth() |> float32) / (WindowParameters.DefaultWindowWidth |> float32))
+            this.Camera.zoom <- min ((windowHeight |> float32) / (renderTargetHeight |> float32)) ((windowWidth |> float32) / (renderTargetWidth |> float32))
 
             Raylib.DrawTexturePro(
                 texture,
                 Rectangle(0f, 0f, float32 texture.width, float32 texture.height),
-                Rectangle(0f, 0f, float32 (WindowParameters.DefaultWindowWidth), float32 (WindowParameters.DefaultWindowHeight)),
+                Rectangle(0f, 0f, float32 renderTargetWidth, float32 renderTargetHeight),
                 Vector2(0f, 0f),
                 0f,
                 Raylib.WHITE
@@ -111,8 +119,8 @@ type MainMenuScene = {
                     
                 { state with Scene = scene; Language = language }, navigationEvent
 
-            member this.Draw state =
-                this.DrawBackground(state)
+            member this.Draw _ =
+                this.DrawBackground()
                 this.PlayButton.Draw()
                 this.HelpButton.Draw()
                 this.GameOverButton.Draw()

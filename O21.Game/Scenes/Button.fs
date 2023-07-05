@@ -19,12 +19,19 @@ type Button = {
     Text: Language -> string
     Position: Vector2
     State: ButtonState
+    Window: WindowParameters
 } with
     static member DefaultColor = BLACK
     static member HoverColor = DARKGRAY
     static member ClickedColor = BLACK
 
-    static member Create(font: Font, text: Language -> string, position: Vector2, language: Language): Button = {
+    static member Create(
+        window: WindowParameters,
+        font: Font,
+        text: Language -> string,
+        position: Vector2,
+        language: Language
+    ): Button = {
         Font = font
         Text = text
         Position = position
@@ -32,6 +39,7 @@ type Button = {
             InteractionState = ButtonInteractionState.Default
             Language = language 
         }
+        Window = window
     }
 
     member this.IsClicked = this.State.InteractionState = ButtonInteractionState.Clicked        

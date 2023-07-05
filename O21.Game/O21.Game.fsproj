@@ -31,6 +31,7 @@
         <Compile Include="Help\DocumentFragments.fs" />
         <Compile Include="Help\HlpFile.fs" />
         <Compile Include="Help\MarkdownHelp.fs" />
+        <Compile Include="WindowParameters.fs" />
         <Compile Include="LocalContent.fs" />
         <Compile Include="GeometryUtils.fs" />
         <Compile Include="Input.fs" />
@@ -57,7 +58,6 @@
         <Compile Include="HUD.fs" />
         <Compile Include="State.fs" />
         <Compile Include="Music.fs" />
-        <Compile Include="WindowParameters.fs" />
 
         <Compile Include="Scenes\Button.fs" />
         <Compile Include="Scenes\MinimizeButton.fs" />

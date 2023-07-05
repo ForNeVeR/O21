@@ -48,7 +48,7 @@ with
         | Error e -> Error e
         | Cancel -> Cancel
 
-let private processWithPumping(lt, scene: ILoadingScene<_, _>, input) =
+let private processWithPumping(lt, window: WindowParameters, scene: ILoadingScene<_, _>, input) =
     let queue = ConcurrentQueue()
     use context = new CustomSynchronizationContext(queue)
     let prevContext = SynchronizationContext.Current
@@ -77,6 +77,7 @@ let private processWithPumping(lt, scene: ILoadingScene<_, _>, input) =
 
                 BeginDrawing()
                 try
+                    window.Update()
                     scene.Draw()
                 finally
                     EndDrawing()
@@ -85,19 +86,19 @@ let private processWithPumping(lt, scene: ILoadingScene<_, _>, input) =
     finally
         SynchronizationContext.SetSynchronizationContext prevContext
 
-let Run(resourceLifetime: Lifetime, u95DataDirectory: string): Option<LocalContent * U95Data> =
+let Run(resourceLifetime: Lifetime, window: WindowParameters, u95DataDirectory: string): Option<LocalContent * U95Data> =
     let result =
-        processWithPumping(resourceLifetime, PreloadingScene(), ())
+        processWithPumping(resourceLifetime, window, PreloadingScene window, ())
         |> Result<_>.Bind(fun content ->
-            processWithPumping(resourceLifetime, DisclaimerScene u95DataDirectory, content)
+            processWithPumping(resourceLifetime, window, DisclaimerScene(u95DataDirectory, window), content)
             |> Result<_>.Map(fun _ -> content)
         )
         |> Result<_>.Bind(fun content ->
-            processWithPumping(resourceLifetime, DownloadScene u95DataDirectory, content)
+            processWithPumping(resourceLifetime, window, DownloadScene u95DataDirectory, content)
             |> Result<_>.Map(fun _ -> content)
         )
         |> Result<_>.Bind(fun content ->
-            processWithPumping(resourceLifetime, LoadingScene u95DataDirectory, content)
+            processWithPumping(resourceLifetime, window, LoadingScene u95DataDirectory, content)
             |> Result<_>.Map(fun data -> content, data)
         )
     match result with

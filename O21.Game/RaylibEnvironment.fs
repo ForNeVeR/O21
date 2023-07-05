@@ -18,23 +18,26 @@ let private InitializeWindow windowSize =
     let initialWidth, initialHeight =
         match windowSize with
         | Some(struct(w, h)) -> w, h
-        | None -> WindowParameters.DefaultWindowWidth, WindowParameters.DefaultWindowHeight
+        | None ->
+            let struct(w, h) = WindowParameters.DefaultWindowSizeWithoutScale
+            w, h
 
     InitWindow(initialWidth, initialHeight, "O21")
     if Option.isNone windowSize then
         AdjustWindowScale(initialWidth, initialHeight)
 
     AccommodateWindowSize(GetCurrentMonitor())
+    WindowParameters.Init()
 
-let Run(windowSize: Option<struct(int*int)>, play: unit -> unit): unit =
+let Run(windowSize: Option<struct(int*int)>, play: WindowParameters -> unit): unit =
     SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE)
-    InitializeWindow(windowSize)
+    let window = InitializeWindow windowSize
     InitAudioDevice()
     SetAudioStreamBufferSizeDefault Music.BufferSize
 
     SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT)
     try
-        play()
+        play window
     finally
         CloseAudioDevice()
         CloseWindow()

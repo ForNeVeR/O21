@@ -10,7 +10,7 @@ open O21.Game
 open O21.Game.Localization
 open O21.Game.Scenes
 
-type DisclaimerScene(u95DataDirectory: string) =
+type DisclaimerScene(u95DataDirectory: string, window: WindowParameters) =
     let onDiskChecker = task {
         let! contentConfig = Downloader.LoadContentConfiguration()
         return! Downloader.CheckIfAlreadyLoaded contentConfig u95DataDirectory
@@ -23,9 +23,9 @@ type DisclaimerScene(u95DataDirectory: string) =
 
     let mutable content = Unchecked.defaultof<_>
     let mutable disclaimerPosition = Vector2.Zero
-    let fontSizePx = 24f
-    let buttonTopMarginPx = 25f
-    let buttonBetweenPx = 100f
+    let fontSizeUnits = 24f
+    let buttonTopMarginUnits = 25f
+    let buttonBetweenUnits = 100f
     let mutable acceptButton = Unchecked.defaultof<Button>
     let mutable rejectButton = Unchecked.defaultof<Button>
 
@@ -35,31 +35,34 @@ type DisclaimerScene(u95DataDirectory: string) =
             content.UiFontRegular,
             disclaimerText lang,
             disclaimerPosition,
-            fontSizePx,
+            window.Scale fontSizeUnits,
             0f,
             WHITE
         )
 
     let doLayout() =
-        let screenWidth = float32 <| GetScreenWidth()
-        let screenHeight = float32 <| GetScreenHeight()
+        let struct (windowWidth, windowHeight) = window.WindowSizePx
+        let screenWidth = float32 windowWidth
+        let screenHeight = float32 windowHeight
 
         let disclaimerSize = MeasureTextEx(
             content.UiFontRegular,
             disclaimerText language,
-            float32 fontSizePx,
+            window.Scale fontSizeUnits,
             0f
         )
-        if disclaimerSize.X > screenWidth || disclaimerSize.Y > screenHeight then
-            failwith $"Disclaimer size ({disclaimerSize}) is too big to fit on the screen."
+        // if disclaimerSize.X > screenWidth || disclaimerSize.Y > screenHeight then
+            // failwith $"Disclaimer size ({disclaimerSize}) is too big to fit on the screen."
 
         acceptButton <- Button.Create(
+            window,
             content.UiFontRegular,
             (fun l -> (Translations.Translation l).Accept),
             Vector2.Zero,
             language
         )
         rejectButton <- Button.Create(
+            window,
             content.UiFontRegular,
             (fun l -> (Translations.Translation l).Reject),
             Vector2.Zero,
@@ -68,20 +71,26 @@ type DisclaimerScene(u95DataDirectory: string) =
 
         let acceptButtonSize = acceptButton.Measure language
         let acceptButtonWidth = acceptButtonSize.width
-        let buttonTotalWidth = acceptButtonWidth + buttonBetweenPx + (rejectButton.Measure language).width
+        let buttonTotalWidth =
+            acceptButtonWidth
+            + window.Scale buttonBetweenUnits
+            + (rejectButton.Measure language).width
 
         let totalWidth = max disclaimerSize.X buttonTotalWidth
-        let totalHeight = disclaimerSize.Y + buttonTopMarginPx + acceptButtonSize.height
+        let totalHeight = disclaimerSize.Y + window.Scale buttonTopMarginUnits + acceptButtonSize.height
 
         disclaimerPosition <- Vector2(screenWidth / 2f - totalWidth / 2f, screenHeight / 2f - totalHeight / 2f)
-        let buttonTopPx = disclaimerPosition.Y + disclaimerSize.Y + buttonTopMarginPx
+        let buttonTopPx = disclaimerPosition.Y + disclaimerSize.Y + window.Scale buttonTopMarginUnits
         acceptButton <- {
             acceptButton with
                 Position = Vector2(screenWidth / 2f - buttonTotalWidth / 2f, buttonTopPx)
         }
         rejectButton <- {
             rejectButton with
-                Position = Vector2(acceptButton.Position.X + acceptButtonWidth + buttonBetweenPx, buttonTopPx)
+                Position = Vector2(
+                    acceptButton.Position.X + acceptButtonWidth + window.Scale buttonBetweenUnits,
+                    buttonTopPx
+                )
         }
 
 

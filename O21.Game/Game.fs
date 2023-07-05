@@ -9,9 +9,9 @@ open O21.Game.Music
 open O21.Game.Scenes
 open O21.Game.U95
 
-type Game(content: LocalContent, data: U95Data) =
+type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
     let mutable state = {
-        Scene = MainMenuScene.Init(content, data)
+        Scene = MainMenuScene.Init(window, content, data)
         Settings = { SoundVolume = 0.1f }
         U95Data = data
         SoundsToStartPlaying = Set.empty
@@ -28,12 +28,12 @@ type Game(content: LocalContent, data: U95Data) =
         
         let scene: IScene =
             match event with
-            | Some (NavigateTo Scene.MainMenu) -> MainMenuScene.Init(content, data)
+            | Some (NavigateTo Scene.MainMenu) -> MainMenuScene.Init(window, content, data)
             | Some (NavigateTo Scene.Play) -> PlayScene.Init(state.U95Data.Levels[0], content)
-            | Some (NavigateTo Scene.GameOver) -> GameOverScene.Init(content, state.Language)
+            | Some (NavigateTo Scene.GameOver) -> GameOverScene.Init(window, content, state.Language)
             | Some (NavigateTo Scene.Help) ->
                 let loadedHelp = (state.Language |> state.U95Data.Help)
-                HelpScene.Init(content, loadedHelp, state.Language)
+                HelpScene.Init(window, content, loadedHelp, state.Language)
             | None ->
                 state.Scene
         
@@ -58,10 +58,11 @@ type Game(content: LocalContent, data: U95Data) =
         EndDrawing()
 
 module GameLoop =
-    let Run (lifetime: Lifetime) (content: LocalContent, data: U95Data): unit =
-        let game = Game(content, data)
+    let Run (lifetime: Lifetime, window: WindowParameters) (content: LocalContent, data: U95Data): unit =
+        let game = Game(window, content, data)
         let musicPlayer = CreateMusicPlayer lifetime (content.SoundFontPath, data.MidiFilePath)
         musicPlayer.Initialize()
         while not (WindowShouldClose()) do
             game.Update musicPlayer
+            window.Update()
             game.Draw()

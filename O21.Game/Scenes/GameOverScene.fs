@@ -18,9 +18,9 @@ type GameOverScene =
     }
     
     with
-        static member Init(content: LocalContent, language: Language) =
+        static member Init(window: WindowParameters, content: LocalContent, language: Language) =
             {
-                OkButton = Button.Create (content.UiFontRegular, (fun _ -> "Ok"), Vector2(288f, 229f), language)
+                OkButton = Button.Create(window, content.UiFontRegular, (fun _ -> "Ok"), Vector2(288f, 229f), language)
                 Content = content
                 MinimizeButton = MinimizeButton.Create(Vector2(193f, 134f), language)
                 Camera = Camera2D(zoom = 1f)

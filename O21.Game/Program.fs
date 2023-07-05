@@ -24,9 +24,9 @@ let private exportImagesAsBmp outDir (images: Dib seq) =
 let private runGame screenSize u95DataDirectory =
     use gameLifetime = new LifetimeDefinition()
     let lt = gameLifetime.Lifetime
-    RaylibEnvironment.Run(screenSize, fun () ->
-        LoadingLoop.Run(lt, u95DataDirectory)
-        |> Option.iter(GameLoop.Run lt)
+    RaylibEnvironment.Run(screenSize, fun window ->
+        LoadingLoop.Run(lt, window, u95DataDirectory)
+        |> Option.iter(GameLoop.Run(lt, window))
     )
 
 [<EntryPoint>]
