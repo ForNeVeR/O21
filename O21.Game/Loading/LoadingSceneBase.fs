@@ -34,13 +34,14 @@ type LoadingSceneBase<'Output>(window: WindowParameters) =
 
         let text = $"{loadingStatus} {progressString}%%"
         let textRect = MeasureTextEx(font, text, fontSize, 0f)
-        
+
+        let struct (windowWidth, windowHeight) = window.WindowSizePx
         DrawTextEx(
             font,
             text,
             Vector2(
-                (float32 <| GetScreenWidth()) / 2f - textRect.X / 2f,
-                (float32 <| GetScreenHeight()) / 2f
+                (float32 windowWidth) / 2f - textRect.X / 2f,
+                (float32 windowHeight) / 2f
                     + (float32 content.LoadingTexture.height) / 2f
                     + float32 paddingAfterImage
             ),
