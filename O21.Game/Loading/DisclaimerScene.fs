@@ -51,6 +51,7 @@ type DisclaimerScene(u95DataDirectory: string, window: WindowParameters) =
             window.Scale fontSizeUnits,
             0f
         )
+        // TODO: Uncomment this after we support proper scaling of this window, with camera/zoom and all the stuff.
         // if disclaimerSize.X > screenWidth || disclaimerSize.Y > screenHeight then
             // failwith $"Disclaimer size ({disclaimerSize}) is too big to fit on the screen."
 
