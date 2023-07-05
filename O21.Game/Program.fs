@@ -1,4 +1,5 @@
 open System
+open System.Globalization
 open System.IO
 open System.Text
 
@@ -20,12 +21,12 @@ let private exportImagesAsBmp outDir (images: Dib seq) =
         let filePath = Path.Combine(outDir, $"{string i}.bmp")
         File.WriteAllBytes(filePath, data)
 
-let private runGame config =
+let private runGame screenSize u95DataDirectory =
     use gameLifetime = new LifetimeDefinition()
     let lt = gameLifetime.Lifetime
-    RaylibEnvironment.Run(config, fun () ->
-        LoadingLoop.Run(lt, config)
-        |> Option.iter(GameLoop.Run lt config)
+    RaylibEnvironment.Run(screenSize, fun () ->
+        LoadingLoop.Run(lt, u95DataDirectory)
+        |> Option.iter(GameLoop.Run lt)
     )
 
 [<EntryPoint>]
@@ -99,27 +100,12 @@ let main(args: string[]): int =
         })
 
     | [| dataDir |] ->
-        let config = {
-            Title = "O21"
-            ScreenWidth = min (Raylib_CsLo.Raylib.GetMonitorWidth(Raylib_CsLo.Raylib.GetCurrentMonitor())) Engine.GameRules.DefaultConfig.ScreenWidth
-            ScreenHeight = min (Raylib_CsLo.Raylib.GetMonitorHeight(Raylib_CsLo.Raylib.GetCurrentMonitor())) Engine.GameRules.DefaultConfig.ScreenHeight
-            U95DataDirectory = dataDir
-        }
-        runGame config
+        runGame None dataDir
         
     | [| dataDir; width; height |] ->
-        let config = {
-            Title = "O21"
-            ScreenWidth = match width |> System.Int32.TryParse with
-                          | true, value -> value
-                          | _ -> Engine.GameRules.DefaultConfig.ScreenWidth
-            ScreenHeight = match height |> System.Int32.TryParse with
-                          | true, value -> value
-                          | _ -> Engine.GameRules.DefaultConfig.ScreenHeight
-            U95DataDirectory = dataDir
-        }
-        runGame config
+        let size = struct(Int32.Parse(width, CultureInfo.InvariantCulture), Int32.Parse(height, CultureInfo.InvariantCulture))
+        runGame (Some size) dataDir
 
-    | _ -> printfn "Usage:\nexport <inputFile> <outDir>: export resources\n<dataDir>: start the game"
+    | _ -> printfn "Usage:\nexport <inputFile> <outDir>: export resources\n<dataDir> [width height]: start the game"
 
     0

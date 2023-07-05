@@ -85,19 +85,19 @@ let private processWithPumping(lt, scene: ILoadingScene<_, _>, input) =
     finally
         SynchronizationContext.SetSynchronizationContext prevContext
 
-let Run(resourceLifetime: Lifetime, config: Config): Option<LocalContent * U95Data> =
+let Run(resourceLifetime: Lifetime, u95DataDirectory: string): Option<LocalContent * U95Data> =
     let result =
         processWithPumping(resourceLifetime, PreloadingScene(), ())
         |> Result<_>.Bind(fun content ->
-            processWithPumping(resourceLifetime, DisclaimerScene config, content)
+            processWithPumping(resourceLifetime, DisclaimerScene u95DataDirectory, content)
             |> Result<_>.Map(fun _ -> content)
         )
         |> Result<_>.Bind(fun content ->
-            processWithPumping(resourceLifetime, DownloadScene config, content)
+            processWithPumping(resourceLifetime, DownloadScene u95DataDirectory, content)
             |> Result<_>.Map(fun _ -> content)
         )
         |> Result<_>.Bind(fun content ->
-            processWithPumping(resourceLifetime, LoadingScene config, content)
+            processWithPumping(resourceLifetime, LoadingScene u95DataDirectory, content)
             |> Result<_>.Map(fun data -> content, data)
         )
     match result with

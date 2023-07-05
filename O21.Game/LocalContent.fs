@@ -23,7 +23,7 @@ type LocalContent = {
             for i in 0..255 -> 0x400 + i // Cyrillic characters
             yield int '…'
         |]
-        let fontSize = 24
+        let fontSize = 18
 
         let loadFont path = task {
             let! data = File.ReadAllBytesAsync(path)

@@ -2,7 +2,6 @@ namespace O21.Game
 
 open JetBrains.Lifetimes
 open O21.Game.Engine
-open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
 open O21.Game.Localization.Translations
@@ -10,7 +9,7 @@ open O21.Game.Music
 open O21.Game.Scenes
 open O21.Game.U95
 
-type Game(content: LocalContent, data: U95Data, config: Config) =
+type Game(content: LocalContent, data: U95Data) =
     let mutable state = {
         Scene = MainMenuScene.Init(content, data)
         Settings = { SoundVolume = 0.1f }
@@ -18,7 +17,6 @@ type Game(content: LocalContent, data: U95Data, config: Config) =
         SoundsToStartPlaying = Set.empty
         Language = DefaultLanguage
         Game = GameEngine.Start { Total = GetTime(); Delta = GetFrameTime() }
-        Config = config
     }
 
     member _.Update(musicPlayer: MusicPlayer) =
@@ -60,8 +58,8 @@ type Game(content: LocalContent, data: U95Data, config: Config) =
         EndDrawing()
 
 module GameLoop =
-    let Run (lifetime: Lifetime) (config : Config) (content: LocalContent, data: U95Data): unit =
-        let game = Game(content, data, config)
+    let Run (lifetime: Lifetime) (content: LocalContent, data: U95Data): unit =
+        let game = Game(content, data)
         let musicPlayer = CreateMusicPlayer lifetime (content.SoundFontPath, data.MidiFilePath)
         musicPlayer.Initialize()
         while not (WindowShouldClose()) do

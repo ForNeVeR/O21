@@ -8,7 +8,6 @@ open Raylib_CsLo
 open O21.Game
 open O21.Game.Localization.Translations
 open O21.Game.U95
-open O21.Game.Engine
 
 module private MainMenuLayout =
     let private MarginPx = 10f
@@ -21,7 +20,7 @@ module private MainMenuLayout =
                 Button.Create(font, (fun lang -> label (Translation lang)), Vector2(0f, 0f), language)
             )
         
-        let mutable y = float32 (Raylib.GetScreenHeight()) - MarginPx
+        let mutable y = float32 (WindowParameters.DefaultWindowHeight) - MarginPx
         for i, b in buttons |> Seq.indexed |> Seq.rev  do
             let rect = b.Measure language
             y <- y - rect.height - DistanceBetweenButtonsPx
@@ -58,19 +57,19 @@ type MainMenuScene = {
                 Camera = Camera2D(zoom = 1f)
             }
             
-        member this.DrawBackground(state) =
+        member this.DrawBackground _ =
             let texture = this.Data.Sprites.TitleScreenBackground
             
-            let cameraTargetX = ((Raylib.GetScreenWidth() |> float32) - (state.Config.ScreenWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
-            let cameraTargetY = ((Raylib.GetScreenHeight() |> float32) - (state.Config.ScreenHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let cameraTargetX = ((Raylib.GetScreenWidth() |> float32) - (WindowParameters.DefaultWindowWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            let cameraTargetY = ((Raylib.GetScreenHeight() |> float32) - (WindowParameters.DefaultWindowHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
             
-            this.Camera.target <- System.Numerics.Vector2(cameraTargetX, cameraTargetY)
-            this.Camera.zoom <- min ((Raylib.GetScreenHeight() |> float32) / (state.Config.ScreenHeight |> float32)) ((Raylib.GetScreenWidth() |> float32) / (state.Config.ScreenWidth |> float32))
+            this.Camera.target <- Vector2(cameraTargetX, cameraTargetY)
+            this.Camera.zoom <- min ((Raylib.GetScreenHeight() |> float32) / (WindowParameters.DefaultWindowHeight |> float32)) ((Raylib.GetScreenWidth() |> float32) / (WindowParameters.DefaultWindowWidth |> float32))
 
             Raylib.DrawTexturePro(
                 texture,
                 Rectangle(0f, 0f, float32 texture.width, float32 texture.height),
-                Rectangle(0f, 0f, float32 (state.Config.ScreenWidth), float32 (state.Config.ScreenHeight)),
+                Rectangle(0f, 0f, float32 (WindowParameters.DefaultWindowWidth), float32 (WindowParameters.DefaultWindowHeight)),
                 Vector2(0f, 0f),
                 0f,
                 Raylib.WHITE

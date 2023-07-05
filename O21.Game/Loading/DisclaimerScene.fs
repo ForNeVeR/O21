@@ -10,10 +10,10 @@ open O21.Game
 open O21.Game.Localization
 open O21.Game.Scenes
 
-type DisclaimerScene(config: Config) =
+type DisclaimerScene(u95DataDirectory: string) =
     let onDiskChecker = task {
         let! contentConfig = Downloader.LoadContentConfiguration()
-        return! Downloader.CheckIfAlreadyLoaded contentConfig config.U95DataDirectory
+        return! Downloader.CheckIfAlreadyLoaded contentConfig u95DataDirectory
     }
     let mutable areFilesOnDisk = None
 
@@ -41,8 +41,8 @@ type DisclaimerScene(config: Config) =
         )
 
     let doLayout() =
-        let screenWidth = float32 config.ScreenWidth
-        let screenHeight = float32 config.ScreenHeight
+        let screenWidth = float32 <| GetScreenWidth()
+        let screenHeight = float32 <| GetScreenHeight()
 
         let disclaimerSize = MeasureTextEx(
             content.UiFontRegular,

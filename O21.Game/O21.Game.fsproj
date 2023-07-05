@@ -23,7 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Include="Config.fs" />
         
         <Compile Include="Localization\Translations.fs" />
         <Compile Include="RaylibUtils.fs" />
@@ -58,6 +57,7 @@
         <Compile Include="HUD.fs" />
         <Compile Include="State.fs" />
         <Compile Include="Music.fs" />
+        <Compile Include="WindowParameters.fs" />
 
         <Compile Include="Scenes\Button.fs" />
         <Compile Include="Scenes\MinimizeButton.fs" />
