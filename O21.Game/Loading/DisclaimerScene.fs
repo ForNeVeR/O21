@@ -10,7 +10,7 @@ open O21.Game
 open O21.Game.Localization
 open O21.Game.Scenes
 
-type DisclaimerScene(u95DataDirectory: string, window: WindowParameters) =
+type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
     let onDiskChecker = task {
         let! contentConfig = Downloader.LoadContentConfiguration()
         return! Downloader.CheckIfAlreadyLoaded contentConfig u95DataDirectory

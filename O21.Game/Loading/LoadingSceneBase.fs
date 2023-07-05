@@ -11,14 +11,15 @@ open O21.Game
 open O21.Game.GeometryUtils
 
 [<AbstractClass>]
-type LoadingSceneBase<'Output>() =
+type LoadingSceneBase<'Output>(window: WindowParameters) =
     
     let mutable loadingProgress = 0.0
     let mutable loadingStatus = ""
     
     let renderImage content =
         let texture = content.LoadingTexture 
-        let center = Vector2(float32 <| GetScreenWidth() / 2, float32 <| GetScreenHeight() / 2)
+        let struct (windowWidth, windowHeight) = window.WindowSizePx
+        let center = Vector2(float32 <| windowWidth / 2, float32 <| windowHeight / 2)
         let texCoords = GenerateSquareSector loadingProgress
         let pixelCoords = texCoords |> Array.map(fun v -> Vector2((v.X - 0.5f) * float32 texture.width, (v.Y - 0.5f) * float32 texture.height))
         DrawTexturePoly(texture, center, pixelCoords, texCoords, texCoords.Length, WHITE)

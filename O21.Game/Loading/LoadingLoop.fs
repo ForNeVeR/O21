@@ -90,15 +90,15 @@ let Run(resourceLifetime: Lifetime, window: WindowParameters, u95DataDirectory: 
     let result =
         processWithPumping(resourceLifetime, window, PreloadingScene window, ())
         |> Result<_>.Bind(fun content ->
-            processWithPumping(resourceLifetime, window, DisclaimerScene(u95DataDirectory, window), content)
+            processWithPumping(resourceLifetime, window, DisclaimerScene(window, u95DataDirectory), content)
             |> Result<_>.Map(fun _ -> content)
         )
         |> Result<_>.Bind(fun content ->
-            processWithPumping(resourceLifetime, window, DownloadScene u95DataDirectory, content)
+            processWithPumping(resourceLifetime, window, DownloadScene(window, u95DataDirectory), content)
             |> Result<_>.Map(fun _ -> content)
         )
         |> Result<_>.Bind(fun content ->
-            processWithPumping(resourceLifetime, window, LoadingScene u95DataDirectory, content)
+            processWithPumping(resourceLifetime, window, LoadingScene(window, u95DataDirectory), content)
             |> Result<_>.Map(fun data -> content, data)
         )
     match result with

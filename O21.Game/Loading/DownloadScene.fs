@@ -5,9 +5,9 @@ open type Raylib_CsLo.Raylib
 open O21.Game
 open O21.Game.Localization
 
-type DownloadScene(u95DataDirectory: string) =
+type DownloadScene(window: WindowParameters, u95DataDirectory: string) =
 
-    inherit LoadingSceneBase<unit>()
+    inherit LoadingSceneBase<unit>(window)
 
     let language = Translations.DefaultLanguage // TODO[#99]: Take from the current settings
 
