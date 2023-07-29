@@ -9,6 +9,7 @@ open type Raylib_CsLo.Raylib
 open O21.Game
 open O21.Game.Localization
 open O21.Game.Scenes
+open Raylib_CsLo
 
 type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
     let onDiskChecker = task {
@@ -39,6 +40,7 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
             0f,
             WHITE
         )
+    let mutable camera : Camera2D = Camera2D(zoom = 1f)
 
     let doLayout() =
         let struct (windowWidth, windowHeight) = window.WindowSizePx
@@ -96,12 +98,27 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
 
 
     interface ILoadingScene<LocalContent, unit> with
+        
+        member this.Camera: Raylib_CsLo.Camera2D = camera
+            
         member _.Init newContent =
             content <- newContent
+            camera <- Camera2D(zoom = 1f)
+
             // TODO[#98]: Update this layout on language change
             doLayout()
 
         member this.Draw() =
+            let struct (windowWidth, windowHeight) = window.WindowSizePx
+            let struct (renderTargetWidth, renderTargetHeight) = window.RenderTargetSize
+
+            let cameraTargetX = ((windowWidth |> float32) - (renderTargetWidth |> float32) * camera.zoom) / -2f / camera.zoom
+            let cameraTargetY = ((windowHeight |> float32) - (renderTargetHeight |> float32) * camera.zoom) / -2f / camera.zoom
+            
+            camera.target <- Vector2(cameraTargetX, cameraTargetY)
+            camera.zoom <- min ((windowHeight |> float32) / (renderTargetHeight |> float32))
+                                    ((windowWidth |> float32) / (renderTargetWidth |> float32))
+
             ClearBackground(BLACK)
 
             match areFilesOnDisk with

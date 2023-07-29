@@ -7,6 +7,8 @@ open O21.Game
 type PreloadingScene(window: WindowParameters) =
 
     interface ILoadingScene<unit, LocalContent> with
+        member this.Camera: Raylib_CsLo.Camera2D = Raylib_CsLo.Camera2D(zoom = 1f)
+
         member this.Init _ = ()
         member this.Load(lt, _) = LocalContent.Load(lt, window)
 

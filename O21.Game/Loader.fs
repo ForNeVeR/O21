@@ -28,3 +28,4 @@ type ILoadingScene<'TInput, 'Output> =
     abstract Load: Lifetime * LoadController -> Task<'Output> // TODO[#103]: Support cancellation
     abstract Update: O21.Game.Input * LoadController -> unit
     abstract Draw: unit -> unit
+    abstract Camera: Raylib_CsLo.Camera2D with get

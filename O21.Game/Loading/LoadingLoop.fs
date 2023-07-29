@@ -76,11 +76,13 @@ let private processWithPumping(lt, window: WindowParameters, scene: ILoadingScen
                 scene.Update(Input.Handle(), controller)
 
                 BeginDrawing()
+                BeginMode2D(scene.Camera)
                 try
                     window.Update()
                     scene.Draw()
                 finally
                     EndDrawing()
+                    EndMode2D()
 
         Option.get result
     finally
