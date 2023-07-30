@@ -20,8 +20,8 @@ type LoadingSceneBase<'Output>(window: WindowParameters) =
 
     let renderImage content =
         let texture = content.LoadingTexture 
-        let struct (windowWidth, windowHeight) = window.RenderTargetSize
-        let center = Vector2(float32 <| windowWidth / 2, float32 <| windowHeight / 2)
+        let struct (renderTargetWidth, renderTargetHeight) = window.RenderTargetSize
+        let center = Vector2(float32 <| renderTargetWidth / 2, float32 <| renderTargetHeight / 2)
         let texCoords = GenerateSquareSector loadingProgress
         let pixelCoords = texCoords |> Array.map(fun v -> Vector2((v.X - 0.5f) * float32 texture.width, (v.Y - 0.5f) * float32 texture.height))
         DrawTexturePoly(texture, center, pixelCoords, texCoords, texCoords.Length, WHITE)
