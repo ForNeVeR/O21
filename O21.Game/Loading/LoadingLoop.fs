@@ -73,7 +73,7 @@ let private processWithPumping(lt, window: WindowParameters, scene: ILoadingScen
                 | true, action -> action()
                 | false, _ -> ()
 
-                scene.Update(Input.Handle(), controller)
+                scene.Update(Input.Handle(scene.Camera), controller)
 
                 BeginDrawing()
                 BeginMode2D(scene.Camera)

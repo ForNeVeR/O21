@@ -23,7 +23,7 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
     let disclaimerAccepted = TaskCompletionSource<unit>()
 
     let mutable content = Unchecked.defaultof<_>
-    let mutable disclaimerPosition = Vector2.Zero
+    let disclaimerPosition = Vector2.Zero
     let fontSizeUnits = 24f
     let buttonTopMarginUnits = 25f
     let buttonBetweenUnits = 100f
@@ -43,7 +43,7 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
     let mutable camera : Camera2D = Camera2D(zoom = 1f)
 
     let doLayout() =
-        let struct (windowWidth, windowHeight) = window.WindowSizePx
+        let struct (windowWidth, windowHeight) = window.RenderTargetSize
         let screenWidth = float32 windowWidth
         let screenHeight = float32 windowHeight
 
@@ -82,7 +82,7 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
         let totalWidth = max disclaimerSize.X buttonTotalWidth
         let totalHeight = disclaimerSize.Y + window.Scale buttonTopMarginUnits + acceptButtonSize.height
 
-        disclaimerPosition <- Vector2(screenWidth / 2f - totalWidth / 2f, screenHeight / 2f - totalHeight / 2f)
+        //disclaimerPosition <- Vector2(screenWidth / 2f - totalWidth / 2f, screenHeight / 2f - totalHeight / 2f)
         let buttonTopPx = disclaimerPosition.Y + disclaimerSize.Y + window.Scale buttonTopMarginUnits
         acceptButton <- {
             acceptButton with
