@@ -23,8 +23,8 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
     let disclaimerAccepted = TaskCompletionSource<unit>()
 
     let mutable content = Unchecked.defaultof<_>
-    let disclaimerPosition = Vector2.Zero
-    let fontSizeUnits = 24f
+    let mutable disclaimerPosition = Vector2.Zero
+    let fontSizeUnits = 16f
     let buttonTopMarginUnits = 25f
     let buttonBetweenUnits = 100f
     let mutable acceptButton = Unchecked.defaultof<Button>
@@ -53,9 +53,8 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
             window.Scale fontSizeUnits,
             0f
         )
-        // TODO[#145]: Uncomment this after we support proper scaling of this window, with camera/zoom and all the stuff.
-        // if disclaimerSize.X > screenWidth || disclaimerSize.Y > screenHeight then
-            // failwith $"Disclaimer size ({disclaimerSize}) is too big to fit on the screen."
+        if disclaimerSize.X > screenWidth || disclaimerSize.Y > screenHeight then
+            failwith $"Disclaimer size ({disclaimerSize}) is too big to fit on the screen."
 
         acceptButton <- Button.Create(
             window,
@@ -82,7 +81,7 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
         let totalWidth = max disclaimerSize.X buttonTotalWidth
         let totalHeight = disclaimerSize.Y + window.Scale buttonTopMarginUnits + acceptButtonSize.height
 
-        //disclaimerPosition <- Vector2(screenWidth / 2f - totalWidth / 2f, screenHeight / 2f - totalHeight / 2f)
+        disclaimerPosition <- Vector2(screenWidth / 2f - totalWidth / 2f, screenHeight / 2f - totalHeight / 2f)
         let buttonTopPx = disclaimerPosition.Y + disclaimerSize.Y + window.Scale buttonTopMarginUnits
         acceptButton <- {
             acceptButton with
@@ -99,7 +98,7 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
 
     interface ILoadingScene<LocalContent, unit> with
         
-        member this.Camera: Raylib_CsLo.Camera2D = camera
+        member this.Camera: Camera2D = camera
             
         member _.Init newContent =
             content <- newContent
