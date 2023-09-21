@@ -68,7 +68,6 @@ Acknowledgments
 
 [abandonware]: https://en.wikipedia.org/wiki/Abandonware
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier#status-enfer-
-[book.windows-undocumented-file-formats]: https://a.co/d/dq5fCoj
 [docs.code-of-conduct]: CODE_OF_CONDUCT.md
 [docs.contributing]: CONTRIBUTING.md
 [docs.inter-font-license]: O21.Game/Resources/Fonts/LICENSE.txt
