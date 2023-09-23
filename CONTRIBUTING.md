@@ -6,8 +6,6 @@ Development Prerequisites
 
 To develop O21, you'll need [.NET 7 SDK][dotnet] (or a later version).
 
-Note that for now, because [of tooling restrictions][svg-skia.164], a version of .NET Core 3.1 SDK is also required.
-
 Build the Project
 -----------------
 
@@ -48,4 +46,3 @@ This will create a bunch of `.bmp` files in the output directory containing the 
 [docs.resources]: docs/resources.md
 [dotnet]: https://dot.net/
 [play-mini-games.u95]: https://playminigames.net/game/u95
-[svg-skia.164]: https://github.com/wieslawsoltes/Svg.Skia/issues/164
