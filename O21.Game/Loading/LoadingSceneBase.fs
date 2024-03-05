@@ -63,15 +63,7 @@ type LoadingSceneBase<'Output>(window: WindowParameters) =
         member this.Load(lt, controller) = this.Load(lt, controller)
 
         member _.Draw() =
-            let struct (windowWidth, windowHeight) = window.WindowSizePx
-            let struct (renderTargetWidth, renderTargetHeight) = window.RenderTargetSize
-
-            let cameraTargetX = ((windowWidth |> float32) - (renderTargetWidth |> float32) * camera.zoom) / -2f / camera.zoom
-            let cameraTargetY = ((windowHeight |> float32) - (renderTargetHeight |> float32) * camera.zoom) / -2f / camera.zoom
-            
-            camera.target <- Vector2(cameraTargetX, cameraTargetY)
-            camera.zoom <- min ((windowHeight |> float32) / (renderTargetHeight |> float32))
-                                    ((windowWidth |> float32) / (renderTargetWidth |> float32))
+            DrawSceneHelper.configureCamera window &camera
 
             ClearBackground(BLACK)
             renderImage content

@@ -104,17 +104,8 @@ type HelpScene = {
             let mutable y = -this.OffsetY
             let mutable x = 0f
             let mutable currentLineHeight = 0f
-
-            let struct (windowWidth, windowHeight) = this.Window.WindowSizePx
-            let struct (renderTargetWidth, renderTargetHeight) = this.Window.RenderTargetSize
-
-            let cameraTargetX = ((windowWidth |> float32) - (renderTargetWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
-            let cameraTargetY = ((windowHeight |> float32) - (renderTargetHeight |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
             
-            this.Camera.target <- Vector2(cameraTargetX, cameraTargetY)
-            this.Camera.zoom <- min ((windowHeight |> float32) / (renderTargetHeight |> float32))
-                                    ((windowWidth |> float32) / (renderTargetWidth |> float32))
-
+            DrawSceneHelper.configureCamera this.Window &this.Camera
 
             for fragment in this.HelpDocument do
                 match fragment with

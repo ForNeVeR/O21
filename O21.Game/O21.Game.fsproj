@@ -58,6 +58,7 @@
         <Compile Include="HUD.fs" />
         <Compile Include="State.fs" />
         <Compile Include="Music.fs" />
+        <Compile Include="DrawSceneHelper.fs" />
 
         <Compile Include="Scenes\Button.fs" />
         <Compile Include="Scenes\MinimizeButton.fs" />
