@@ -60,7 +60,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
 module GameLoop =
     let Run (lifetime: Lifetime, window: WindowParameters) (content: LocalContent, data: U95Data): unit =
         let game = Game(window, content, data)
-        let musicPlayer = CreateMusicPlayer lifetime (content.SoundFontPath, data.MidiFilePath)
+        let musicPlayer = CreateMusicPlayerAsync lifetime (content.SoundFontPath, data.MidiFilePath) |> Async.RunSynchronously
         musicPlayer.Initialize()
         while not (WindowShouldClose()) do
             game.Update musicPlayer

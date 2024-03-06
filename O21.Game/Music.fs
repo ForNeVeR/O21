@@ -2,6 +2,7 @@ module O21.Game.Music
 
 open System
 
+open System.Threading.Tasks
 open JetBrains.Lifetimes
 open MeltySynth
 open Raylib_CsLo
@@ -25,19 +26,26 @@ type MusicPlayer =
         this.Sequencer.RenderInterleavedInt16(this.Buffer.AsSpan())
         Raylib.UpdateAudioStream(this.Stream, this.Buffer.AsSpan(), BufferSize)
 
-let CreateMusicPlayer (lifetime: Lifetime) (soundFontPath: string, midiFilePath: string): MusicPlayer =
-    let synthesizer = Synthesizer(soundFontPath, SampleRate) // TODO[#113]: Async sound font loading during content load stage
-    let sequencer = MidiFileSequencer synthesizer
-    let midiFile = MidiFile midiFilePath // TODO[#113]: Async MIDI file loading during the data load stage
-    sequencer.Play(midiFile, loop = true)
-
-    let audioStream = lifetime.Bracket(
-        (fun () -> Raylib.LoadAudioStream(uint SampleRate, 16u, 2u)),
-        fun stream ->
-            Raylib.StopAudioStream stream
-            Raylib.UnloadAudioStream stream
-    )
-
-    let buffer = Array.zeroCreate(BufferSize * 2)
-
-    new MusicPlayer(Buffer = buffer, Stream = audioStream, Sequencer = sequencer)
+let CreateMusicPlayerAsync (lifetime: Lifetime) (soundFontPath: string, midiFilePath: string) : Async<MusicPlayer> =
+    async {
+        let sequencerInitTask = Task<MidiFileSequencer>.Run(fun() ->
+            let synthesizer = Synthesizer(soundFontPath, SampleRate)
+            let sequencer = MidiFileSequencer synthesizer
+            sequencer)
+        let midiFileLoadTask = Task<MidiFile>.Run(fun() ->
+            let midiFile = MidiFile midiFilePath
+            midiFile)
+    
+        let! sequencer = Async.AwaitTask sequencerInitTask
+        let! midiFile = Async.AwaitTask midiFileLoadTask
+        
+        sequencer.Play(midiFile, loop = true)
+    
+        let audioStream = lifetime.Bracket(
+            (fun () -> Raylib.LoadAudioStream(uint SampleRate, 16u, 2u)),
+                fun stream ->
+                    Raylib.StopAudioStream stream
+                    Raylib.UnloadAudioStream stream)
+        let buffer = Array.zeroCreate(BufferSize * 2)
+        return MusicPlayer(Buffer = buffer, Stream = audioStream, Sequencer = sequencer)
+    }
