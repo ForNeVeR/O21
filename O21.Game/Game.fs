@@ -3,6 +3,7 @@ namespace O21.Game
 open System
 open System.Collections.Concurrent
 open System.Threading
+
 open JetBrains.Lifetimes
 open O21.Game.Engine
 open type Raylib_CsLo.Raylib
@@ -34,7 +35,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
             | true, action -> action()
             | false, _ -> ()
 
-    let initializeMusicPlayerAsync lt =
+    let launchMusicPlayer lt =
         task {
             let! player = CreateMusicPlayerAsync lt (content.SoundFontPath, data.MidiFilePath)
             player.Initialize()
@@ -42,7 +43,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         } |> ignore
 
     member _.Initialize(lifetime: Lifetime): unit =
-        initializeMusicPlayerAsync lifetime
+        launchMusicPlayer lifetime
 
     member _.Update() =
         let input = Input.Handle(state.Scene.Camera)
@@ -91,9 +92,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
             SynchronizationContext.SetSynchronizationContext prevContext
             (context :> IDisposable).Dispose()
 
-
 module GameLoop =
-
     let Run (lifetime: Lifetime, window: WindowParameters) (content: LocalContent, data: U95Data): unit =
         use game = new Game(window, content, data)
         game.Initialize lifetime

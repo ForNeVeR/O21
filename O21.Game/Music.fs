@@ -1,8 +1,8 @@
 module O21.Game.Music
 
 open System
-
 open System.Threading.Tasks
+
 open JetBrains.Lifetimes
 open MeltySynth
 open Raylib_CsLo
