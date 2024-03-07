@@ -28,19 +28,20 @@ type MusicPlayer =
 
 let CreateMusicPlayerAsync (lifetime: Lifetime) (soundFontPath: string, midiFilePath: string) : Task<MusicPlayer> =
     task {
-        let sequencerInitTask = Task<MidiFileSequencer>.Run(fun() ->
+        let sequencerInitTask = Task.Run(fun() ->
             let synthesizer = Synthesizer(soundFontPath, SampleRate)
             let sequencer = MidiFileSequencer synthesizer
-            sequencer)
-        let midiFileLoadTask = Task<MidiFile>.Run(fun() ->
-            let midiFile = MidiFile midiFilePath
-            midiFile)
+            sequencer
+        )
+        let midiFileLoadTask = Task.Run(fun() ->
+            MidiFile midiFilePath
+        )
     
-        let! sequencer = Async.AwaitTask sequencerInitTask
-        let! midiFile = Async.AwaitTask midiFileLoadTask
+        let! sequencer = sequencerInitTask
+        let! midiFile = midiFileLoadTask
         
         sequencer.Play(midiFile, loop = true)
-    
+
         let audioStream = lifetime.Bracket(
             (fun () -> Raylib.LoadAudioStream(uint SampleRate, 16u, 2u)),
                 fun stream ->
