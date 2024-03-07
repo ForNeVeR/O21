@@ -26,8 +26,8 @@ type MusicPlayer =
         this.Sequencer.RenderInterleavedInt16(this.Buffer.AsSpan())
         Raylib.UpdateAudioStream(this.Stream, this.Buffer.AsSpan(), BufferSize)
 
-let CreateMusicPlayerAsync (lifetime: Lifetime) (soundFontPath: string, midiFilePath: string) : Async<MusicPlayer> =
-    async {
+let CreateMusicPlayerAsync (lifetime: Lifetime) (soundFontPath: string, midiFilePath: string) : Task<MusicPlayer> =
+    task {
         let sequencerInitTask = Task<MidiFileSequencer>.Run(fun() ->
             let synthesizer = Synthesizer(soundFontPath, SampleRate)
             let sequencer = MidiFileSequencer synthesizer

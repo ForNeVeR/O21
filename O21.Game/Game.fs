@@ -1,5 +1,6 @@
 namespace O21.Game
 
+open System.Threading.Tasks
 open JetBrains.Lifetimes
 open O21.Game.Engine
 open type Raylib_CsLo.Raylib
@@ -58,11 +59,20 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         EndDrawing()
 
 module GameLoop =
+    let internal initMusicPlayerAsync (musicPlayerCreator:Task<MusicPlayer>) =
+        task {
+            let! musicPlayer = musicPlayerCreator
+            musicPlayer.Initialize()
+            return fun (game:Game) -> game.Update musicPlayer
+        }
+               
     let Run (lifetime: Lifetime, window: WindowParameters) (content: LocalContent, data: U95Data): unit =
         let game = Game(window, content, data)
-        let musicPlayer = CreateMusicPlayerAsync lifetime (content.SoundFontPath, data.MidiFilePath) |> Async.RunSynchronously
-        musicPlayer.Initialize()
+        let createMusicPlayerTask
+            = CreateMusicPlayerAsync lifetime (content.SoundFontPath, data.MidiFilePath)
+        let updateMusicTask = initMusicPlayerAsync createMusicPlayerTask
         while not (WindowShouldClose()) do
-            game.Update musicPlayer
+            if updateMusicTask.IsCompleted then
+                updateMusicTask.Result game
             window.Update()
             game.Draw()
