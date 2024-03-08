@@ -28,7 +28,7 @@ module Arguments =
             member this.outputDirectory: string = outputDirectory
     
     [<Verb("helpFile", HelpText = "?")>] // TODO: Define help text
-    type Help(inputFilePath:string, outputDirectory:string, showHelpInfo:bool) =
+    type HelpFile(inputFilePath:string, outputDirectory:string, showHelpInfo:bool) =
         inherit BaseCommand(showHelpInfo)
         [<Value(0, HelpText = "?")>] // TODO: Define help text
             member this.inputFilePath: string = inputFilePath

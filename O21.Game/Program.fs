@@ -50,7 +50,7 @@ let main(args: string[]): int =
             let! resources = Async.AwaitTask(NeExeFile.LoadResources exportCommand.inputFilePath)
             exportImagesAsBmp exportCommand.outputDirectory resources
         })
-        | :? Help as helpCommand ->
+        | :? HelpFile as helpCommand ->
             Console.OutputEncoding <- Encoding.UTF8
             
             use input = new FileStream(helpCommand.inputFilePath, FileMode.Open, FileAccess.Read)
