@@ -27,10 +27,10 @@ module Arguments =
         [<Option('o', "out", HelpText = "Directory where resources will be stored")>]
             member this.outputDirectory: string = outputDirectory
     
-    [<Verb("helpFile", HelpText = "?")>] // TODO: Define help text
+    [<Verb("helpFile", HelpText = "?")>] // TODO[#141]: Define help text
     type HelpFile(inputFilePath:string, outputDirectory:string, showHelpInfo:bool) =
         inherit BaseCommand(showHelpInfo)
-        [<Value(0, HelpText = "?")>] // TODO: Define help text
+        [<Value(0, HelpText = "?")>] // TODO[#141]: Define help text
             member this.inputFilePath: string = inputFilePath
-        [<Option('o', "out", HelpText = "?")>] // TODO: Define help text
+        [<Option('o', "out", HelpText = "?")>] // TODO[#141]: Define help text
             member this.outputDirectory: string = outputDirectory
