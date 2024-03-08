@@ -4,6 +4,8 @@ open System.IO
 open System.Text
 
 open JetBrains.Lifetimes
+open O21.CommandLine
+open O21.CommandLine.Arguments
 open Oddities.Resources
 open Oddities.WinHelp
 open Oddities.WinHelp.Fonts
@@ -32,80 +34,81 @@ let private runGame screenSize u95DataDirectory =
 [<EntryPoint>]
 let main(args: string[]): int =
     Encoding.RegisterProvider CodePagesEncodingProvider.Instance
+    
+    let reporter:CommandLineReporter = new CommandLineReporter()
+    
+    let matchArgs (command:BaseCommand) =
+        match command with
+        | :? StartGame as startCommand ->
+            if startCommand.screenSizes <> null then
+                let width, height = (startCommand.screenSizes[0], startCommand.screenSizes[1])
+                let size = struct(width, height)
+                runGame (Some size) startCommand.gameDirectory
+            else runGame None startCommand.gameDirectory
+        | :? ExportResources as exportCommand ->
+            Async.RunSynchronously(async {
+            let! resources = Async.AwaitTask(NeExeFile.LoadResources exportCommand.inputFilePath)
+            exportImagesAsBmp exportCommand.outputDirectory resources
+        })
+        | :? Help as helpCommand ->
+            Console.OutputEncoding <- Encoding.UTF8
+            
+            use input = new FileStream(helpCommand.inputFilePath, FileMode.Open, FileAccess.Read)
+            use reader = new BinaryReader(input, Encoding.UTF8, leaveOpen = true)
+            let file = WinHelpFile.Load reader
+            let dibs = ResizeArray()
+            for entry in file.GetFiles(Encoding.UTF8) do
+                printfn $"%s{entry.FileName}"
+                let fileName = entry.FileName.Replace("|", "_")
+                let outputName = Path.Combine(helpCommand.outputDirectory, fileName)
+                let bytes = file.ReadFile(entry)
+                File.WriteAllBytes(outputName, bytes)
+                match entry.FileName with
+                | x when x.StartsWith "|bm" ->
+                    let dib = HlpFile.ExtractDibImageFromMrb bytes
+                    dibs.Add dib
+                | "|SYSTEM" ->
+                    use stream = new MemoryStream(bytes)
+                    use streamReader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
+                    let header = SystemHeader.Load streamReader
+                    printfn " - SystemHeader ok."
+                | "|FONT" ->
+                    use stream = new MemoryStream(bytes)
+                    use streamReader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
+                    let fontFile = FontFile.Load streamReader
+                    printfn " - Font ok."
 
-    match args with
-    | [| "help"; inputFile; outDir |] ->
-        Console.OutputEncoding <- Encoding.UTF8
+                    for descriptor in fontFile.ReadDescriptors() do
+                        printfn $" - - Font descriptor: {descriptor.Attributes}"
+                | "|TOPIC" ->
+                    use stream = new MemoryStream(bytes)
+                    use streamReader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
+                    let topic = TopicFile.Load streamReader
+                    printfn " - Topic ok."
 
-        use input = new FileStream(inputFile, FileMode.Open, FileAccess.Read)
-        use reader = new BinaryReader(input, Encoding.UTF8, leaveOpen = true)
-        let file = WinHelpFile.Load reader
-        let dibs = ResizeArray()
-        for entry in file.GetFiles(Encoding.UTF8) do
-            printfn $"%s{entry.FileName}"
-            let fileName = entry.FileName.Replace("|", "_")
-            let outputName = Path.Combine(outDir, fileName)
-            let bytes = file.ReadFile(entry)
-            File.WriteAllBytes(outputName, bytes)
+                    let mutable i = 0
+                    for p in topic.ReadParagraphs() do
+                        printfn $" - Paragraph {p} ({p.DataLen1}, {p.DataLen2}) ok."
 
-            match entry.FileName with
-            | x when x.StartsWith "|bm" ->
-                let dib = HlpFile.ExtractDibImageFromMrb bytes
-                dibs.Add dib
-            | "|SYSTEM" ->
-                use stream = new MemoryStream(bytes)
-                use streamReader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
-                let header = SystemHeader.Load streamReader
-                printfn " - SystemHeader ok."
-            | "|FONT" ->
-                use stream = new MemoryStream(bytes)
-                use streamReader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
-                let fontFile = FontFile.Load streamReader
-                printfn " - Font ok."
+                        let out1 = outputName + $"{i}.1"
+                        printfn $" - - Paragraph data: {out1}"
+                        File.WriteAllBytes(out1, p.ReadData1())
 
-                for descriptor in fontFile.ReadDescriptors() do
-                    printfn $" - - Font descriptor: {descriptor.Attributes}"
-            | "|TOPIC" ->
-                use stream = new MemoryStream(bytes)
-                use streamReader = new BinaryReader(stream, Encoding.UTF8, leaveOpen = true)
-                let topic = TopicFile.Load streamReader
-                printfn " - Topic ok."
+                        let out2 = outputName + $"{i}.2"
+                        printfn $" - - Paragraph data: {out2}"
+                        File.WriteAllBytes(out2, p.ReadData2())
 
-                let mutable i = 0
-                for p in topic.ReadParagraphs() do
-                    printfn $" - Paragraph {p} ({p.DataLen1}, {p.DataLen2}) ok."
-
-                    let out1 = outputName + $"{i}.1"
-                    printfn $" - - Paragraph data: {out1}"
-                    File.WriteAllBytes(out1, p.ReadData1())
-
-                    let out2 = outputName + $"{i}.2"
-                    printfn $" - - Paragraph data: {out2}"
-                    File.WriteAllBytes(out2, p.ReadData2())
-
-                    if p.RecordType = ParagraphRecordType.TextRecord then
-                        let items = p.ReadItems(Encoding.GetEncoding 1251)
-                        printfn $"- - Items: {items.Settings}"
-                        for item in items.Items do
-                            printfn $"- - - {item}"
+                        if p.RecordType = ParagraphRecordType.TextRecord then
+                            let items = p.ReadItems(Encoding.GetEncoding 1251)
+                            printfn $"- - Items: {items.Settings}"
+                            for item in items.Items do
+                                printfn $"- - - {item}"
 
                     i <- i + 1
-            | _ -> ()
+                | _ -> ()
 
-            exportImagesAsBmp outDir dibs
-    | [| "export"; inputFile; outDir |] ->
-        Async.RunSynchronously(async {
-            let! resources = Async.AwaitTask(NeExeFile.LoadResources inputFile)
-            exportImagesAsBmp outDir resources
-        })
-
-    | [| dataDir |] ->
-        runGame None dataDir
-        
-    | [| dataDir; width; height |] ->
-        let size = struct(Int32.Parse(width, CultureInfo.InvariantCulture), Int32.Parse(height, CultureInfo.InvariantCulture))
-        runGame (Some size) dataDir
-
-    | _ -> printfn "Usage:\nexport <inputFile> <outDir>: export resources\n<dataDir> [width height]: start the game"
+                exportImagesAsBmp helpCommand.outputDirectory dibs
+        | _ -> ()
+    CommandLineParser.parseArguments args reporter matchArgs
 
     0
