@@ -39,6 +39,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{2CE7
 		Scripts\Verify-Translations.ps1 = Scripts\Verify-Translations.ps1
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "O21.CommandLine", "O21.CommandLine\O21.CommandLine.fsproj", "{82E5BCA2-7215-4BF1-9651-986505FF6054}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "O21.CommandLine.Tests", "O21.CommandLine.Tests\O21.CommandLine.Tests.fsproj", "{54E96E09-F46C-4B8A-8746-965E87C3F36B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +57,14 @@ Global
 		{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6EA3A68-E715-4762-BEBB-69F8E9FA8494}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82E5BCA2-7215-4BF1-9651-986505FF6054}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82E5BCA2-7215-4BF1-9651-986505FF6054}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82E5BCA2-7215-4BF1-9651-986505FF6054}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82E5BCA2-7215-4BF1-9651-986505FF6054}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54E96E09-F46C-4B8A-8746-965E87C3F36B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54E96E09-F46C-4B8A-8746-965E87C3F36B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54E96E09-F46C-4B8A-8746-965E87C3F36B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54E96E09-F46C-4B8A-8746-965E87C3F36B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

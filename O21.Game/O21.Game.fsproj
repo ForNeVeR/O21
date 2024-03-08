@@ -79,6 +79,8 @@
         <Compile Include="Game.fs" />
         
         <Compile Include="RaylibEnvironment.fs" />
+        
+        <Compile Include="CommandLineReporter.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 
@@ -93,6 +95,10 @@
         <PackageReference Include="MeltySynth" Version="2.4.1" />
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
         <PackageReference Include="Raylib-CsLo" Version="4.2.0.9" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\O21.CommandLine\O21.CommandLine.fsproj" />
     </ItemGroup>
 
     <Import Project="Svg.props" />
