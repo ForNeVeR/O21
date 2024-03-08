@@ -32,7 +32,7 @@ module CommandLineParser =
         | command ->
             let mutable success = true
             if (command.Value :?> BaseCommand).showHelpInfo then
-                reporter.ReportInfo("help info") // TODO: implement help info for command
+                reporter.ReportInfo("help info") // TODO[#141]: implement help info for command
             else
                 match command.Value with
                 | :? StartGame as startCommand ->
