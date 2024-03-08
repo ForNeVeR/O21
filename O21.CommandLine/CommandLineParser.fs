@@ -9,18 +9,9 @@ open O21.CommandLine.Arguments
 module CommandLineParser =
     let notParserMessage = "invalid command"
     let parsingSuccessMessage = "success"
-    
-    // Start command error messages
     let directoryPathNotDefined = "Directory path should be defined"
     let invalidScreenSizesOption = "The screen sizes can only accept 2 values (width and height)"
-    
-    // Export command error messages
-    let resourcesFileNotDefined = "File of resources should be defined"
-    let outDirectoryForImportNotDefined = "The outgoing directory for the import should be defined"
-    
-    // Help command error messages
     let inputFileNotDefined = "File should be defined"
-    let outDirectoryNotDefined = "The directory should be defined"
     
     let prepareHelpText (parserResult:ParserResult<obj>) : string =
         let helpText = HelpText.AutoBuild(parserResult, fun h ->
@@ -31,7 +22,7 @@ module CommandLineParser =
            
     let parseArguments (args:string[]) (reporter:IReporter) (worker:BaseCommand -> unit) =
         use parser = new Parser(fun cfg -> cfg.HelpWriter <- null)
-        let parserResult = parser.ParseArguments<StartGame, ExportResources, Help> args
+        let parserResult = parser.ParseArguments<StartGame, ExportResources, HelpFile> args
         
         match parserResult with
         | :? NotParsed<obj> as notParsed ->
@@ -53,17 +44,19 @@ module CommandLineParser =
                         success <- false
                 | :? ExportResources as exportCommand ->
                     if String.IsNullOrWhiteSpace exportCommand.inputFilePath then
-                        reporter.ReportError(resourcesFileNotDefined)
+                        reporter.ReportError(inputFileNotDefined)
                         success <- false
                     if String.IsNullOrWhiteSpace exportCommand.outputDirectory then
-                        reporter.ReportError(outDirectoryForImportNotDefined)
+                        reporter.ReportError(directoryPathNotDefined)
                         success <- false
-                | :? Help as helpCommand->
+                | :? HelpFile as helpCommand->
                     if String.IsNullOrWhiteSpace helpCommand.inputFilePath then
                         reporter.ReportError(inputFileNotDefined)
                         success <- false
                     if String.IsNullOrWhiteSpace helpCommand.outputDirectory then
-                        reporter.ReportError(outDirectoryNotDefined)
+                        reporter.ReportError(directoryPathNotDefined)
                         success <- false
                 | _ -> raise(ArgumentException("Undefined command", command.GetType().FullName))
-                if success then worker (command.Value :?> BaseCommand)
+                if success then
+                    reporter.ReportInfo(parsingSuccessMessage)
+                    worker (command.Value :?> BaseCommand)
