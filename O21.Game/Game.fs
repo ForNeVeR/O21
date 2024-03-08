@@ -1,6 +1,9 @@
 namespace O21.Game
 
-open System.Threading.Tasks
+open System
+open System.Collections.Concurrent
+open System.Threading
+
 open JetBrains.Lifetimes
 open O21.Game.Engine
 open type Raylib_CsLo.Raylib
@@ -11,6 +14,11 @@ open O21.Game.Scenes
 open O21.Game.U95
 
 type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
+    let eventQueue = ConcurrentQueue<unit -> unit>()
+    let context = new QueueSynchronizationContext(eventQueue)
+    let prevContext = SynchronizationContext.Current
+    do SynchronizationContext.SetSynchronizationContext(context)
+
     let mutable state = {
         Scene = MainMenuScene.Init(window, content, data)
         Settings = { SoundVolume = 0.1f }
@@ -18,11 +26,31 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         SoundsToStartPlaying = Set.empty
         Language = DefaultLanguage
         Game = GameEngine.Start { Total = GetTime(); Delta = GetFrameTime() }
+        MusicPlayer = None
     }
 
-    member _.Update(musicPlayer: MusicPlayer) =
+    let pumpQueue() =
+        while not eventQueue.IsEmpty do
+            match eventQueue.TryDequeue() with
+            | true, action -> action()
+            | false, _ -> ()
+
+    let launchMusicPlayer lt =
+        task {
+            let! player = CreateMusicPlayerAsync lt (content.SoundFontPath, data.MidiFilePath)
+            player.Initialize()
+            state <- { state with MusicPlayer = Some player }
+        } |> ignore
+
+    member _.Initialize(lifetime: Lifetime): unit =
+        launchMusicPlayer lifetime
+
+    member _.Update() =
         let input = Input.Handle(state.Scene.Camera)
         let time = { Total = GetTime(); Delta = GetFrameTime() }
+
+        pumpQueue()
+
         let updatedState, event = state.Scene.Update(input, time, state)
         
         state <- updatedState
@@ -45,8 +73,9 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
             SetSoundVolume(effect, state.Settings.SoundVolume)
             PlaySound(effect)
 
-        if musicPlayer.NeedsPlay() then
-            musicPlayer.Play()
+        match state.MusicPlayer with
+        | Some player when player.NeedsPlay() -> player.Play()
+        | _ -> ()
 
         state <- { state with SoundsToStartPlaying = Set.empty }
 
@@ -58,21 +87,16 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         EndMode2D()
         EndDrawing()
 
+    interface IDisposable with
+        member _.Dispose() =
+            SynchronizationContext.SetSynchronizationContext prevContext
+            (context :> IDisposable).Dispose()
+
 module GameLoop =
-    let internal initMusicPlayerAsync (musicPlayerCreator:Task<MusicPlayer>) =
-        task {
-            let! musicPlayer = musicPlayerCreator
-            musicPlayer.Initialize()
-            return fun (game:Game) -> game.Update musicPlayer
-        }
-               
     let Run (lifetime: Lifetime, window: WindowParameters) (content: LocalContent, data: U95Data): unit =
-        let game = Game(window, content, data)
-        let createMusicPlayerTask
-            = CreateMusicPlayerAsync lifetime (content.SoundFontPath, data.MidiFilePath)
-        let updateMusicTask = initMusicPlayerAsync createMusicPlayerTask
+        use game = new Game(window, content, data)
+        game.Initialize lifetime
         while not (WindowShouldClose()) do
-            if updateMusicTask.IsCompleted then
-                updateMusicTask.Result game
+            game.Update()
             window.Update()
             game.Draw()

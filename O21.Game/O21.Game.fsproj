@@ -56,8 +56,8 @@
         <Compile Include="HUDRenderer.fs" />
         <Compile Include="Controls.fs" />
         <Compile Include="HUD.fs" />
-        <Compile Include="State.fs" />
         <Compile Include="Music.fs" />
+        <Compile Include="State.fs" />
         <Compile Include="DrawSceneHelper.fs" />
 
         <Compile Include="Scenes\Button.fs" />
@@ -68,6 +68,7 @@
         <Compile Include="Scenes\HelpScene.fs" />
         <Compile Include="Scenes\MainMenuScene.fs" />
         <Compile Include="Downloader.fs" />
+        <Compile Include="QueueSynchronizationContext.fs" />
 
         <Compile Include="Loading\PreloadingScene.fs" />
         <Compile Include="Loading\DisclaimerScene.fs" />

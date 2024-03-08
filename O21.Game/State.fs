@@ -2,6 +2,7 @@ namespace O21.Game
 
 open O21.Game.Engine
 open O21.Game.Localization.Translations
+open O21.Game.Music
 open O21.Game.U95
 
 type Settings = { 
@@ -29,4 +30,5 @@ and State = {
     SoundsToStartPlaying: Set<SoundType>
     Language: Language
     Game: GameEngine
+    MusicPlayer: MusicPlayer option
 }
