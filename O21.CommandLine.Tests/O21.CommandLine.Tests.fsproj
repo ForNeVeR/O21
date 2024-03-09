@@ -4,14 +4,12 @@
         <TargetFramework>net7.0</TargetFramework>
 
         <IsPackable>false</IsPackable>
-        <GenerateProgramFile>false</GenerateProgramFile>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="MockReporter.fs" />
+        <Compile Include="MockConsole.fs" />
         <Compile Include="Tests.fs"/>
-        <Compile Include="Program.fs"/>
     </ItemGroup>
 
     <ItemGroup>

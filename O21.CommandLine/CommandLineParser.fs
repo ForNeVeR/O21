@@ -2,39 +2,48 @@ namespace O21.CommandLine
 
 open System
 open System.Reflection
+open System.Linq
 open CommandLine
 open CommandLine.Text
 open O21.CommandLine.Arguments
 
 module CommandLineParser =
-    let notParserMessage = "invalid command"
+    let notParsedMessage = "invalid command"
     let parsingSuccessMessage = "success"
     let directoryPathNotDefined = "Directory path should be defined"
     let invalidScreenSizesOption = "The screen sizes can only accept 2 values (width and height)"
     let inputFileNotDefined = "File should be defined"
     
-    let prepareHelpText (parserResult:ParserResult<obj>) : string =
+    let bannerMessage = $"O21 v{Assembly.GetExecutingAssembly().GetName().Version}"
+    
+    let private prepareHelpText (parserResult:ParserResult<obj>) : string =
         let helpText = HelpText.AutoBuild(parserResult, fun h ->
             h.AdditionalNewLineAfterOption <- false
-            h.Heading <- $"O21 v{Assembly.GetExecutingAssembly().GetName().Version}"
+            h.Heading <- bannerMessage
             h)
         helpText.ToString()
+        
+    let private isHelpRequest(parserResult:NotParsed<obj>) =
+        parserResult.Errors.Any(fun e -> e.GetType() = typeof<HelpVerbRequestedError>
+                                      || e.GetType() = typeof<HelpRequestedError>)
            
-    let parseArguments (args:string[]) (reporter:IReporter) (worker:BaseCommand -> unit) =
-        use parser = new Parser(fun cfg -> cfg.HelpWriter <- null)
+    let parseArguments (args:string[]) (reporter:IConsole) (worker:BaseCommand -> unit) =
+        use parser = new Parser(fun cfg ->
+            cfg.HelpWriter <- null
+            cfg.CaseSensitive <- false)
         let parserResult = parser.ParseArguments<StartGame, ExportResources, HelpFile> args
         
         match parserResult with
         | :? NotParsed<obj> as notParsed ->
-            reporter.ReportError(notParserMessage)
             let helpText = prepareHelpText notParsed
+            if not (isHelpRequest notParsed) then
+                reporter.ReportError(notParsedMessage)        
             reporter.ReportError(helpText)
         | command ->
             let mutable success = true
-            if (command.Value :?> BaseCommand).showHelpInfo then
-                reporter.ReportInfo("help info") // TODO[#141]: implement help info for command
-            else
-                match command.Value with
+            if not (command.Value :?> BaseCommand).noLogo then
+                reporter.ReportInfo(bannerMessage)
+            match command.Value with
                 | :? StartGame as startCommand ->
                     if String.IsNullOrWhiteSpace startCommand.gameDirectory then
                         reporter.ReportError(directoryPathNotDefined)
@@ -57,6 +66,6 @@ module CommandLineParser =
                         reporter.ReportError(directoryPathNotDefined)
                         success <- false
                 | _ -> raise(ArgumentException("Undefined command", command.GetType().FullName))
-                if success then
-                    reporter.ReportInfo(parsingSuccessMessage)
-                    worker (command.Value :?> BaseCommand)
+            if success then
+               reporter.ReportInfo(parsingSuccessMessage)
+               worker (command.Value :?> BaseCommand)

@@ -5,13 +5,16 @@ open O21.CommandLine.Tests
 open O21.CommandLine.Arguments
 open Xunit
 
+let private AssertHasOnlyBannerMessage (reporter:MockConsole) =
+    Assert.Single(reporter.InfoItems, fun m -> m = CommandLineParser.bannerMessage)
+
 [<Theory>]
 [<InlineData("start C:\\O21 --screenSizes 1920 1080")>]
 [<InlineData("export C:\\O21\\file.bin -o C:\\O21\\ReserveFolder")>]
 [<InlineData("helpFile C:\\O21\\file.bin --out C:\\O21\\ReserveFolder")>]
 let ValidVerbFullArgsTest (argsString:string) =
     let args = argsString.Split()
-    let reporter = MockReporter()
+    let reporter = MockConsole()
     CommandLineParser.parseArguments args reporter (fun args ->
         match args with
         | :? StartGame as startCommand ->
@@ -26,13 +29,13 @@ let ValidVerbFullArgsTest (argsString:string) =
             Assert.Equal("C:\\O21\\ReserveFolder", helpCommand.outputDirectory)
         | _ -> Assert.Fail($"The type ({args.GetType().FullName}) must match {typeof<StartGame>}")
         )
-    Assert.Empty(reporter.ErrorList)
-    Assert.NotEmpty(reporter.InfoList)
+    Assert.Empty(reporter.ErrorItems)
+    Assert.NotEmpty(reporter.InfoItems)
 
 [<Fact>]
 let StartVerbWithoutScreenSizesTest () =
     let args = [|"start"; "C:\\O21";|]
-    let reporter = MockReporter()
+    let reporter = MockConsole()
     CommandLineParser.parseArguments args reporter (fun args ->
         match args with
         | :? StartGame as startCommand ->
@@ -40,30 +43,37 @@ let StartVerbWithoutScreenSizesTest () =
             Assert.Null(startCommand.screenSizes)
         | _ -> Assert.Fail($"The type ({args.GetType().FullName}) must match {typeof<StartGame>}")
         )
-    Assert.Empty(reporter.ErrorList)
-    Assert.NotEmpty(reporter.InfoList)
+    Assert.Empty(reporter.ErrorItems)
+    Assert.NotEmpty(reporter.InfoItems)
     
 [<Fact>]
 let StartVerbWithoutArgsTest () =
     let args = [|"start"|]
-    let reporter = MockReporter()
+    let reporter = MockConsole()
     CommandLineParser.parseArguments args reporter (fun _ -> Assert.Fail("Parsing process was failed, but function was called"))
-    Assert.Equivalent([|CommandLineParser.directoryPathNotDefined|], reporter.ErrorList)
-    Assert.Empty(reporter.InfoList)
+    Assert.Equivalent([|CommandLineParser.directoryPathNotDefined|], reporter.ErrorItems)
+    AssertHasOnlyBannerMessage reporter
     
 [<Fact>]
 let ExportVerbWithoutArgsTest () =
     let args = [|"export"|]
-    let reporter = MockReporter()
+    let reporter = MockConsole()
     CommandLineParser.parseArguments args reporter (fun _ -> Assert.Fail("Parsing process was failed, but function was called"))
-    Assert.Equivalent([|CommandLineParser.inputFileNotDefined; CommandLineParser.directoryPathNotDefined|], reporter.ErrorList)
-    Assert.Empty(reporter.InfoList)
+    Assert.Equivalent([|CommandLineParser.inputFileNotDefined; CommandLineParser.directoryPathNotDefined|], reporter.ErrorItems)
+    AssertHasOnlyBannerMessage reporter
+    
+[<Fact>]
+let HelpFileVerbWithoutArgsTest () =
+    let args = [|"helpFile"|]
+    let reporter = MockConsole()
+    CommandLineParser.parseArguments args reporter (fun _ -> Assert.Fail("Parsing process was failed, but function was called"))
+    Assert.Equivalent([|CommandLineParser.inputFileNotDefined; CommandLineParser.directoryPathNotDefined|], reporter.ErrorItems)
+    AssertHasOnlyBannerMessage reporter
     
 [<Fact>]
 let UndefinedVerbTest () =
     let args = [|"helloWorld"|]
-    let reporter = MockReporter()
+    let reporter = MockConsole()
     CommandLineParser.parseArguments args reporter (fun _ -> Assert.Fail("Parsing process was failed, but function was called"))
-    Assert.NotEmpty(reporter.ErrorList)
-    Assert.Empty(reporter.InfoList)
-    
+    Assert.NotEmpty(reporter.ErrorItems)
+    Assert.Empty(reporter.InfoItems)

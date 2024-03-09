@@ -81,7 +81,7 @@
         
         <Compile Include="RaylibEnvironment.fs" />
         
-        <Compile Include="CommandLineReporter.fs" />
+        <Compile Include="SystemConsole.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

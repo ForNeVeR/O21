@@ -35,7 +35,7 @@ let private runGame screenSize u95DataDirectory =
 let main(args: string[]): int =
     Encoding.RegisterProvider CodePagesEncodingProvider.Instance
     
-    let reporter:CommandLineReporter = new CommandLineReporter()
+    let reporter:SystemConsole = new SystemConsole()
     
     let matchArgs (command:BaseCommand) =
         match command with
@@ -50,9 +50,7 @@ let main(args: string[]): int =
             let! resources = Async.AwaitTask(NeExeFile.LoadResources exportCommand.inputFilePath)
             exportImagesAsBmp exportCommand.outputDirectory resources
         })
-        | :? HelpFile as helpCommand ->
-            Console.OutputEncoding <- Encoding.UTF8
-            
+        | :? HelpFile as helpCommand ->  
             use input = new FileStream(helpCommand.inputFilePath, FileMode.Open, FileAccess.Read)
             use reader = new BinaryReader(input, Encoding.UTF8, leaveOpen = true)
             let file = WinHelpFile.Load reader
