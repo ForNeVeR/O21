@@ -27,10 +27,10 @@ module Arguments =
         [<Option('o', "out", HelpText = "Directory where resources will be stored")>]
             member this.outputDirectory: string = outputDirectory
     
-    [<Verb("helpFile", HelpText = "?")>] // TODO[#141]: Define help text
+    [<Verb("helpFile", HelpText = "Parse a WinHelp file and extract all the information from it.")>]
     type HelpFile(inputFilePath:string, outputDirectory:string, showHelpInfo:bool) =
         inherit BaseCommand(showHelpInfo)
-        [<Value(0, HelpText = "?")>] // TODO[#141]: Define help text
+        [<Value(0, HelpText = "Path to the input .hlp file.")>]
             member this.inputFilePath: string = inputFilePath
-        [<Option('o', "out", HelpText = "?")>] // TODO[#141]: Define help text
+        [<Option('o', "out", HelpText = "Path to the output resource directory.")>]
             member this.outputDirectory: string = outputDirectory
