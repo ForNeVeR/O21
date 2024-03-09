@@ -7,7 +7,7 @@
 
     <ItemGroup>
         <Compile Include="Arguments.fs" />
-        <Compile Include="IReporter.fs" />
+        <Compile Include="IConsole.fs" />
         <Compile Include="CommandLineParser.fs" />
     </ItemGroup>
 
