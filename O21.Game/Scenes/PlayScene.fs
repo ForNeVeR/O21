@@ -109,14 +109,6 @@ type PlayScene = {
                     | _ ->
                         ()
 
-            for i = 0 to map.Length-1 do
-                for j = 0 to map[i].Length-1 do
-                    match map[i][j] with
-                    | Brick b ->
-                        DrawTexture(sprites.Bricks[b], 12*j, 12*i, WHITE)
-                    | _ ->
-                        ()
-
             PlayScene.DrawPlayer sprites.Player game.Player
             game.Bullets |> Seq.iter(PlayScene.DrawBullet sprites.Bullet)
 
