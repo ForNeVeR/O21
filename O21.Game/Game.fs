@@ -4,6 +4,7 @@ open System
 open System.Collections.Concurrent
 open System.Threading
 
+open System.Threading.Tasks
 open JetBrains.Lifetimes
 open O21.Game.Engine
 open type Raylib_CsLo.Raylib
@@ -40,6 +41,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
             let! player = CreateMusicPlayerAsync lt (content.SoundFontPath, data.MidiFilePath)
             player.Initialize()
             state <- { state with MusicPlayer = Some player }
+            Task.Run(fun() -> UpdateMusicPlayer lt &player) |> ignore
         } |> ignore
 
     member _.Initialize(lifetime: Lifetime): unit =
@@ -72,10 +74,6 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
             let effect = state.U95Data.Sounds[sound]
             SetSoundVolume(effect, state.Settings.SoundVolume)
             PlaySound(effect)
-
-        match state.MusicPlayer with
-        | Some player when player.NeedsPlay() -> player.Play()
-        | _ -> ()
 
         state <- { state with SoundsToStartPlaying = Set.empty }
 

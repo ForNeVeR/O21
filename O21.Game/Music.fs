@@ -50,3 +50,12 @@ let CreateMusicPlayerAsync (lifetime: Lifetime) (soundFontPath: string, midiFile
         let buffer = Array.zeroCreate(BufferSize * 2)
         return MusicPlayer(Buffer = buffer, Stream = audioStream, Sequencer = sequencer)
     }
+
+let UpdateMusicPlayer (lifetime: Lifetime) (player:inref<MusicPlayer>) =
+    try
+        while lifetime.IsAlive do
+            match player with
+            | player when player.NeedsPlay() -> player.Play()
+            | _ -> ()
+    with
+    | :? LifetimeCanceledException -> ()
