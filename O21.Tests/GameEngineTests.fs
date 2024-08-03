@@ -1,5 +1,7 @@
 module O21.Tests.GameEngineTests
 
+open System
+open System.Net.NetworkInformation
 open Xunit
 
 open O21.Game.Engine
@@ -70,3 +72,17 @@ module Shooting =
         let bulletCount = gameEngine.Bullets.Length
         let gameEngine, _ = gameEngine.ApplyCommand Shoot
         Assert.Equal(bulletCount + 1, gameEngine.Bullets.Length)
+
+module ParticleSystem =
+    
+    [<Fact>]
+    let ``Generator create particles by period``(): unit =
+        let gameEngine = GameEngine.Start timeZero
+        let gameEngine = { gameEngine with GameEngine.Player.TopLeft = Point(0, Int32.MaxValue) }
+        let frameUp = frameUp timeZero
+        let gameEngine = frameUp gameEngine
+        let period = gameEngine.ParticlesSource.Period
+        let gameEngine = frameUpN timeZero (period - gameEngine.ParticlesSource.TimeElapsed - 1) gameEngine
+        let particlesCount = gameEngine.ParticlesSource.Particles.Length
+        let gameEngine = frameUpN timeZero period gameEngine
+        Assert.Equal(particlesCount + 1, gameEngine.ParticlesSource.Particles.Length)

@@ -8,7 +8,7 @@ type Point =
 
     member this.X: int = let (Point(x, _)) = this in x
     member this.Y: int = let (Point(_, y)) = this in y
-
+    
 and [<Struct>] Vector =
     | Vector of int * int
 
@@ -26,3 +26,22 @@ type HorizontalDirection =
         match direction with
         | Left -> -value
         | Right -> value
+
+[<Struct>]
+type VerticalDirection =
+    | Up
+    | Down
+    static member (*) (direction: VerticalDirection, value: int) =
+        match direction with
+        | Up -> -value
+        | Down -> value
+    
+[<Struct>]  
+type ObliqueDirection = {
+    XDirection: HorizontalDirection
+    YDirection: VerticalDirection
+} with
+    static member (*) (direction: ObliqueDirection, xy_catheters: int * int) =
+        let x_value = direction.XDirection * fst xy_catheters
+        let y_value = direction.YDirection * snd xy_catheters
+        Point(x_value, y_value)

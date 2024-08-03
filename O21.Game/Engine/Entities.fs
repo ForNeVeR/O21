@@ -35,3 +35,16 @@ type Bullet = {
             None
         else
             Some { this with Position = newPosition }
+
+
+type Particle = {
+    Position: Point
+} with
+    member this.Update(timeDelta: int): Particle option =
+        let Point(_, y) as newPosition =
+            this.Position +
+            Vector(0, GameRules.PlayerParticlesDirection * GameRules.ParticleVelocity * timeDelta)
+        if y < 0 then
+            None
+        else
+            Some { Position = newPosition }
