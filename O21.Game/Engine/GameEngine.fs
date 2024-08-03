@@ -12,6 +12,7 @@ type GameEngine = {
     Tick: int
     Player: Player
     Bullets: Bullet[]
+    ParticlesSource: ParticlesSource
 } with
     static member Start(time: Time): GameEngine = {
         StartTime = time
@@ -23,15 +24,22 @@ type GameEngine = {
             Direction = Right
         }
         Bullets = Array.empty
+        ParticlesSource = {
+            TimeElapsed = 0
+            Particles = Array.empty
+            Period = 0
+        }
     }
 
     member this.Update(time: Time): GameEngine =
         let newTick = int <| (time.Total - this.StartTime.Total) * GameRules.TicksPerSecond
+        let timeDelta = newTick - this.Tick
         // TODO[#26]: Bullet collisions
         { this with
             Tick = newTick
-            Player = this.Player.Update(newTick - this.Tick)
-            Bullets = this.Bullets |> Array.choose(fun bullet -> bullet.Update(newTick - this.Tick))
+            Player = this.Player.Update(timeDelta)
+            Bullets = this.Bullets |> Array.choose(_.Update(timeDelta))
+            ParticlesSource = this.ParticlesSource.Update timeDelta this.Player
         }
 
     member this.ApplyCommand(command: PlayerCommand): GameEngine * ExternalEffect[] =
@@ -41,7 +49,6 @@ type GameEngine = {
                 Player =
                     { this.Player with
                         Velocity = GameRules.ClampVelocity(this.Player.Velocity + delta)
-
                     }
             }, Array.empty
 

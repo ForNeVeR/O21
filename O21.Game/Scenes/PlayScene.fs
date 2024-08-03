@@ -72,6 +72,9 @@ type PlayScene = {
 
     static member private DrawBullet sprite (bullet: Bullet) =
         PlayScene.DrawSprite sprite bullet.Position
+        
+    static member private DrawParticle sprite (particle: Particle) =
+        PlayScene.DrawSprite sprite particle.Position
 
     interface IScene with
         member this.Camera: Camera2D = this.Camera
@@ -111,6 +114,7 @@ type PlayScene = {
 
             PlayScene.DrawPlayer sprites.Player game.Player
             game.Bullets |> Seq.iter(PlayScene.DrawBullet sprites.Bullet)
+            game.ParticlesSource.Particles |> Seq.iter(PlayScene.DrawParticle sprites.BubbleParticle)
 
             for i = 0 to sprites.Fishes.Length-1 do
                 let fish = sprites.Fishes[i]
