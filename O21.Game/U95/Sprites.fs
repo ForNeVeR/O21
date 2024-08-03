@@ -34,6 +34,7 @@ type Sprites = {
     Bullet: Texture
     HUD: HUDSprites
     Bonuses: BonusSprites
+    BubbleParticle: Texture
 }
 
 module Sprites =
@@ -126,5 +127,6 @@ module Sprites =
             Bullet = CreateTransparentSprite lifetime exeSprites[1] exeSprites[2]
             HUD = loadHUD lifetime exeSprites
             Bonuses = loadBonuses lifetime exeSprites
+            BubbleParticle =  CreateTransparentSprite lifetime exeSprites[3] exeSprites[4]
         }
     }

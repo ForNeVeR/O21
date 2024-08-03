@@ -52,6 +52,7 @@
         <Compile Include="Engine\Entities.fs" />
         <Compile Include="Engine\PlayerCommand.fs" />
         <Compile Include="Engine\ExternalEffect.fs" />
+        <Compile Include="Engine\ParticlesSource.fs" />
         <Compile Include="Engine\GameEngine.fs" />
         <Compile Include="HUDRenderer.fs" />
         <Compile Include="Controls.fs" />
