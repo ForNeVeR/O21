@@ -1,4 +1,4 @@
-This directory contains microGM sound font by michael, originally [downloaded from musical-artifacts.com](https://musical-artifacts.com/artifacts/713).
+This directory contains microGM sound font by michael, originally [downloaded from musical-artifacts.com](https://musical-artifacts.com/artifacts/2529).
 
 The license for the sound font is WTFPL 2.0, reproduced below:
 
