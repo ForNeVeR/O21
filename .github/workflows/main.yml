@@ -56,3 +56,11 @@ jobs:
       - name: Verify translations
         shell: pwsh
         run: ./Scripts/Verify-Translations.ps1
+
+  licenses:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out the sources
+        uses: actions/checkout@v4
+      - name: REUSE license check
+        uses: fsfe/reuse-action@v4
