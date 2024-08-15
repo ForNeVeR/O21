@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "svg.skia.converter": {
-      "version": "1.0.0.2",
+      "version": "1.0.0.19",
       "commands": [
         "Svg.Skia.Converter"
       ]
