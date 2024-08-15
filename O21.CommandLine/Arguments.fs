@@ -1,4 +1,4 @@
-﻿namespace O21.CommandLine
+namespace O21.CommandLine
 
 open System.Collections.Generic
 open CommandLine

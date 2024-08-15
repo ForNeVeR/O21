@@ -1,4 +1,4 @@
-﻿namespace O21.Game.Scenes
+namespace O21.Game.Scenes
 
 open type Raylib_CsLo.Raylib
 

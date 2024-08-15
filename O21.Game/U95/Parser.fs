@@ -1,4 +1,4 @@
-﻿module O21.Game.U95.Parser
+module O21.Game.U95.Parser
 
 open System.IO
 

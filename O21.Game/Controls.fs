@@ -1,4 +1,4 @@
-﻿namespace O21.Game
+namespace O21.Game
 
 open O21.Game.Engine
 open Raylib_CsLo

@@ -1,4 +1,4 @@
-﻿namespace O21.Game.U95
+namespace O21.Game.U95
 
 open System.IO
 open System.Threading.Tasks

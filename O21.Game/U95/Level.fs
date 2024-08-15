@@ -1,4 +1,4 @@
-﻿namespace O21.Game.U95
+namespace O21.Game.U95
 
 open System.Threading.Tasks
 open O21.Game.U95.Parser
