@@ -75,4 +75,4 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify encoding
         shell: pwsh
-        run: scripts/Test-Encoding.ps1
+        run: Scripts/Test-Encoding.ps1
