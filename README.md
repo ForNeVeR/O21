@@ -33,9 +33,12 @@ Since the original game is probably named after a [German submarine U-95][wikipe
 License and Legal Disclaimers
 -----------------------------
 
-_This section is maintained by me, the O21 project lead, [Friedrich von Never][fornever]. The statements made in first person are all mine, do not hesitate to contact me if you have any comments._
+The project is distributed under the terms of [the MIT license][docs.license]
+(unless a particular file states otherwise).
 
-All the content and code in this program (except the `O21.Game/Translations` folder and the fonts, see below) is covered by the [MIT license][docs.license].
+The license indication in the project's sources is compliant with the [REUSE specification v3.2][reuse.spec].
+
+_The following section is maintained by me, the O21 project lead, [Friedrich von Never][fornever]. The statements made in first person are all mine, do not hesitate to contact me if you have any comments._
 
 This program is designed to use resources of the U-95 game by [NIKITA][nikita]. This project is not affiliated with or endorsed by NIKITA in any way. The project is non-commercial. The source code is available for free and always will be.
 
@@ -79,6 +82,7 @@ Acknowledgments
 [nikita]: https://en.wikipedia.org/wiki/Nikita_Online
 [old-games.u95]: https://www.old-games.ru/game/4676.html
 [open-sage]: https://github.com/OpenSAGE/OpenSAGE
+[reuse.spec]: https://reuse.software/spec-3.2/
 [status-enfer]: https://img.shields.io/badge/status-enfer-orange.svg
 [wikipedia.o21]: https://en.wikipedia.org/wiki/HNLMS_O_21
 [wikipedia.u-95]: https://en.wikipedia.org/wiki/German_submarine_U-95_(1940)
