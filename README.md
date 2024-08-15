@@ -61,8 +61,6 @@ Documentation
 
 - [Contributor Guide][docs.contributing]
   - [Original Game Resources][docs.resources]
-- [License (MIT)][docs.license]
-- [Inter Font License (SIL)][docs.inter-font-license]
 - [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
 
 Acknowledgments
@@ -75,12 +73,10 @@ Acknowledgments
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier#status-enfer-
 [docs.code-of-conduct]: CODE_OF_CONDUCT.md
 [docs.contributing]: CONTRIBUTING.md
-[docs.inter-font-license]: O21.Game/Resources/Fonts/LICENSE.txt
 [docs.license]: LICENSE.md
 [docs.resources]: docs/resources.md
 [fornever]: https://github.com/ForNeVeR/
 [issues]: https://github.com/ForNeVeR/O21/issues
-[microgm]: https://musical-artifacts.com/artifacts/2529
 [nikita]: https://en.wikipedia.org/wiki/Nikita_Online
 [old-games.u95]: https://www.old-games.ru/game/4676.html
 [open-sage]: https://github.com/OpenSAGE/OpenSAGE
