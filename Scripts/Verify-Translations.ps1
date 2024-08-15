@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+#
+# SPDX-License-Identifier: MIT
+
 param (
     $SolutionRoot = "$PSScriptRoot/..",
     $TranslationsDirectory = "$SolutionRoot/O21.Game/Localization/Translations",

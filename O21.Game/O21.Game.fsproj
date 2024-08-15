@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+
+SPDX-License-Identifier: MIT
+-->
+
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
@@ -6,13 +12,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Content Include="**\*.license" CopyToOutputDirectory="Always" />
+        <Content Include="..\LICENSES\*" CopyToOutputDirectory="Always" Visible="false" />
         <Content Include="Localization\Help\*.md" CopyToOutputDirectory="Always" />
         <Content Include="Localization\Translations\*.json" CopyToOutputDirectory="Always" />
         <Content Include="Resources\Fonts\Inter-Bold.otf" CopyToOutputDirectory="Always" />
         <Content Include="Resources\Fonts\Inter-Regular.otf" CopyToOutputDirectory="Always" />
-        <Content Include="Resources\Fonts\LICENSE.txt" CopyToOutputDirectory="Always" />
         <Content Include="Resources\Fonts\README.md" CopyToOutputDirectory="Always" />
-        <Content Include="Resources\SoundFont\README.md" CopyToOutputDirectory="Always" />
         <Content Include="Resources\SoundFont\microgm.sf2" CopyToOutputDirectory="Always" />
 
         <Content Include="content.json" CopyToOutputDirectory="Always" />

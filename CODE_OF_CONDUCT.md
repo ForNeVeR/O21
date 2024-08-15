@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: Organization for Ethical Source
+
+SPDX-License-Identifier: CC-BY-4.0
+-->
 
 # Contributor Covenant Code of Conduct
 

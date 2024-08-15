@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+
+SPDX-License-Identifier: MIT
+-->
+
 O21 Contributor Guide
 =====================
 

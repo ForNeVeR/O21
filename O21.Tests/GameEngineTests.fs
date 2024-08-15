@@ -1,7 +1,10 @@
+// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+//
+// SPDX-License-Identifier: MIT
+
 module O21.Tests.GameEngineTests
 
 open System
-open System.Net.NetworkInformation
 open Xunit
 
 open O21.Game.Engine

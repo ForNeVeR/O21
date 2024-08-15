@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+
+SPDX-License-Identifier: MIT
+-->
+
 O21 [![Status Enfer][status-enfer]][andivionian-status-classifier]
 ===
 
@@ -49,10 +55,6 @@ I believe this puts the project in the clear, legally speaking. If someone disag
 The distribution license of the original game is unknown, so the game has an unclear de jure status. De facto, it is [abandonware][] nowadays.
 
 No assets from the original game are included in this software (though it may allow the user to use any assets downloaded under the user's informed consent).
-
-This software bundles the Inter font, covered by the [SIL Open Font License][docs.inter-font-license].
-
-This software also bundles the [microGM sound font][microgm], published under the WTFPL 2.0 license.
 
 Documentation
 -------------

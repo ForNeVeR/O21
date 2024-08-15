@@ -44,6 +44,14 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "O21.CommandLine", "O21.Comm
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "O21.CommandLine.Tests", "O21.CommandLine.Tests\O21.CommandLine.Tests.fsproj", "{54E96E09-F46C-4B8A-8746-965E87C3F36B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LICENSES", "LICENSES", "{9A4A292D-A1CF-4848-BF4C-46CAE24BC601}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSES\CC-BY-4.0.txt = LICENSES\CC-BY-4.0.txt
+		LICENSES\MIT.txt = LICENSES\MIT.txt
+		LICENSES\OFL-1.1.txt = LICENSES\OFL-1.1.txt
+		LICENSES\WTFPL.txt = LICENSES\WTFPL.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

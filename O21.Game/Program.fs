@@ -1,5 +1,7 @@
-open System
-open System.Globalization
+// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+//
+// SPDX-License-Identifier: MIT
+
 open System.IO
 open System.Text
 
