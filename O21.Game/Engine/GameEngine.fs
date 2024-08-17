@@ -44,7 +44,7 @@ type GameEngine = {
         { this with
             Tick = newTick
             Player = this.Player.Update(timeDelta)
-            Bullets = this.Bullets |> Array.choose(_.Update(timeDelta))
+            Bullets = this.Bullets |> Array.choose(_.Update(this.CurrentLevel, timeDelta))
             ParticlesSource = this.ParticlesSource.Update timeDelta this.Player
         }
 
@@ -62,7 +62,7 @@ type GameEngine = {
             let player = this.Player
             if player.IsAllowedToShoot then
                 let newBullet = {
-                    Position = GameRules.NewBulletPosition(player.TopForward, player.Direction)
+                    TopLeft = GameRules.NewBulletPosition(player.TopForward, player.Direction)
                     Direction = player.Direction
                 }
                 { this with

@@ -23,6 +23,14 @@ and [<Struct>] Vector =
     member this.Y: int = let (Vector(_, y)) = this in y
 
 [<Struct>]
+type Box =
+    { TopLeft: Point; Size: Vector }
+    
+    member this.TopRight: Point = this.TopLeft + Vector(this.Size.X, 0)
+    member this.BottomLeft: Point = this.TopLeft + Vector(this.Size.Y, 0)
+    member this.BottomRight: Point = this.TopLeft + this.Size
+
+[<Struct>]
 type HorizontalDirection =
     | Left
     | Right
@@ -49,3 +57,9 @@ type ObliqueDirection = {
         let x_value = direction.XDirection * fst xy_catheters
         let y_value = direction.YDirection * snd xy_catheters
         Point(x_value, y_value)
+
+[<Struct; RequireQualifiedAccess>]
+type Collision =
+    | None
+    | OutOfBounds
+    | TouchesBrick

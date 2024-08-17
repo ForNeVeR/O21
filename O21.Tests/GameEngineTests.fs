@@ -99,3 +99,57 @@ module ParticleSystem =
         let particlesCount = gameEngine.ParticlesSource.Particles.Length
         let gameEngine = frameUpN timeZero period gameEngine
         Assert.Equal(particlesCount + 1, gameEngine.ParticlesSource.Particles.Length)
+
+module Bullets =
+    [<Fact>]
+    let ``Bullet is destroyed on a brick collision``(): unit =
+        let level = {
+            LevelMap = [|
+                [| Empty; Brick 0 |]
+            |]
+        }
+        let bullet = {
+            TopLeft = Point(0, 0)
+            Direction = HorizontalDirection.Right 
+        }
+        let ticksToMove = GameRules.BrickSize.X / GameRules.BulletVelocity
+        Assert.Equal(None, bullet.Update(level, ticksToMove))
+        
+    [<Fact>]    
+    let ``Bullet doesn't pierce through a brick``(): unit =
+        let level = {
+            LevelMap = [|
+                [| Empty; Brick 0 |]
+            |]
+        }
+        let bullet = {
+            TopLeft = Point(0, 0)
+            Direction = HorizontalDirection.Right 
+        }
+        let ticksToMove = GameRules.BrickSize.X * 3 / GameRules.BulletVelocity
+        Assert.Equal(None, bullet.Update(level, ticksToMove))
+
+module Geometry =
+    open O21.Game.Engine.Geometry
+    
+    [<Fact>]
+    let ``Out of bounds check``(): unit =
+        let level = { LevelMap = Array.empty }
+        let box1 = { TopLeft = Point(-1, -1); Size = Vector(1, 1) }
+        Assert.Equal(Collision.OutOfBounds, CheckCollision level box1)
+        
+        let box2 = { TopLeft = Point(GameRules.LevelWidth, 0); Size = Vector(1, 1) }
+        Assert.Equal(Collision.OutOfBounds, CheckCollision level box2)
+    
+    [<Fact>]
+    let ``Brick collision check``(): unit =
+        let level = {
+            LevelMap = [|
+                [| Empty; Brick 0 |]
+            |]
+        }
+        let box1 = { TopLeft = Point(0, 0); Size = Vector(1, 1) }
+        Assert.Equal(Collision.None, CheckCollision level box1)
+        
+        let box2 = { TopLeft = Point(GameRules.BrickSize.X, 0); Size = Vector(1, 1) }
+        Assert.Equal(Collision.TouchesBrick, CheckCollision level box2)

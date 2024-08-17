@@ -73,7 +73,7 @@ type PlayScene = {
         PlayScene.DrawSprite sprite player.TopLeft
 
     static member private DrawBullet sprite (bullet: Bullet) =
-        PlayScene.DrawSprite sprite bullet.Position
+        PlayScene.DrawSprite sprite bullet.TopLeft
         
     static member private DrawParticle sprite (particle: Particle) =
         PlayScene.DrawSprite sprite particle.Position
@@ -81,8 +81,8 @@ type PlayScene = {
     interface IScene with
         member this.Camera: Camera2D = this.Camera
         member this.Update(input, time, state) =
-            this.Camera.zoom <- (GetScreenHeight() |> float32) / (GameRules.LevelHeight |> float32)
-            let cameraTargetX = ((GetScreenWidth() |> float32) - (GameRules.LevelWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
+            this.Camera.zoom <- (GetScreenHeight() |> float32) / (GameRules.GameScreenHeight |> float32)
+            let cameraTargetX = ((GetScreenWidth() |> float32) - (GameRules.GameScreenWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
             this.Camera.target <- System.Numerics.Vector2(cameraTargetX, 0f)
             let game, effects = state.Game |> InputProcessor.ProcessKeys input this.HUD
 

@@ -8,13 +8,19 @@ open System
 open O21.Game.U95
 
 [<Literal>]
+let GameScreenWidth = 600
+
+[<Literal>]
+let GameScreenHeight = 400
+
+[<Literal>]
 let ShotCooldownTicks = 15
 
 [<Literal>]
-let LevelWidth = 600
+let LevelWidth = GameScreenWidth
 
 [<Literal>]
-let LevelHeight = 400
+let LevelHeight = 300
 
 [<Literal>]
 let TicksPerSecond = 10.0
@@ -37,6 +43,7 @@ let ParticlesOffsetRange = [|-2..2|]
 
 let PlayerParticlesDirection = VerticalDirection.Up
 
+let BrickSize = Vector(12, 12)
 let PlayerSize = Vector(46, 27)
 let BulletSize = Vector(6, 6)
 let ParticleSize = Vector(5, 5)
