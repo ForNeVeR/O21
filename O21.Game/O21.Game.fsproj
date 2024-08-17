@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="**\*.license" CopyToOutputDirectory="Always" />
+        <Content Include="**\*.license" Exclude="bin\**" CopyToOutputDirectory="Always" />
         <Content Include="..\LICENSES\*" CopyToOutputDirectory="Always" Visible="false" />
         <Content Include="Localization\Help\*.md" CopyToOutputDirectory="Always" />
         <Content Include="Localization\Translations\*.json" CopyToOutputDirectory="Always" />
