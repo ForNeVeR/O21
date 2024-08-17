@@ -79,6 +79,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
             SetSoundVolume(effect, state.Settings.SoundVolume)
             PlaySound(effect)
 
+        state.MusicPlayer |> Option.iter _.SetVolume(state.Settings.SoundVolume)
         state <- { state with SoundsToStartPlaying = Set.empty }
 
     member _.Draw() =       

@@ -5,6 +5,7 @@
 module O21.Game.Music
 
 open System
+open System.Threading
 open System.Threading.Tasks
 
 open JetBrains.Lifetimes
@@ -14,21 +15,22 @@ open Raylib_CsLo
 let private SampleRate = 44100
 let BufferSize = 4096
 
-[<Struct>]
-type MusicPlayer =
-    val mutable Buffer: int16[]
-    val mutable Stream: AudioStream
-    val mutable Sequencer: MidiFileSequencer
+type MusicPlayer(buffer: int16[], stream: AudioStream, sequencer: MidiFileSequencer) =
+    let mutable soundVolume = 0.0f
 
-    member this.Initialize(): unit =
-        Raylib.PlayAudioStream this.Stream
+    member _.Initialize(): unit =
+        Raylib.PlayAudioStream stream
 
-    member this.NeedsPlay(): bool =
-        Raylib.IsAudioStreamProcessed this.Stream
+    member _.SetVolume(volume: float32): unit =
+        Volatile.Write(&soundVolume, volume)
+    
+    member _.NeedsPlay(): bool =
+        Raylib.IsAudioStreamProcessed stream
 
-    member this.Play(): unit =
-        this.Sequencer.RenderInterleavedInt16(this.Buffer.AsSpan())
-        Raylib.UpdateAudioStream(this.Stream, this.Buffer.AsSpan(), BufferSize)
+    member _.Play(): unit =
+        sequencer.RenderInterleavedInt16(buffer.AsSpan())
+        Raylib.SetAudioStreamVolume(stream, Volatile.Read(&soundVolume))
+        Raylib.UpdateAudioStream(stream, buffer.AsSpan(), BufferSize)
 
 let CreateMusicPlayerAsync (lifetime: Lifetime) (soundFontPath: string, midiFilePath: string) : Task<MusicPlayer> =
     task {
@@ -52,7 +54,7 @@ let CreateMusicPlayerAsync (lifetime: Lifetime) (soundFontPath: string, midiFile
                     Raylib.StopAudioStream stream
                     Raylib.UnloadAudioStream stream)
         let buffer = Array.zeroCreate(BufferSize * 2)
-        return MusicPlayer(Buffer = buffer, Stream = audioStream, Sequencer = sequencer)
+        return MusicPlayer(buffer, audioStream, sequencer)
     }
 
 let UpdateMusicPlayer (lifetime: Lifetime) (player:inref<MusicPlayer>) =
