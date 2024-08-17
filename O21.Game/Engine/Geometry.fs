@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 Friedrich von Never <friedrich@fornever.me>
+//
+// SPDX-License-Identifier: MIT
+
 module O21.Game.Engine.Geometry
 
 open System
