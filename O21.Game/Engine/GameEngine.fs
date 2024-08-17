@@ -45,7 +45,7 @@ type GameEngine = {
             Tick = newTick
             Player = this.Player.Update(timeDelta)
             Bullets = this.Bullets |> Array.choose(_.Update(this.CurrentLevel, timeDelta))
-            ParticlesSource = this.ParticlesSource.Update timeDelta this.Player
+            ParticlesSource = this.ParticlesSource.Update(this.CurrentLevel, this.Player, timeDelta) 
         }
 
     member this.ApplyCommand(command: PlayerCommand): GameEngine * ExternalEffect[] =

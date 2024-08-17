@@ -76,7 +76,7 @@ type PlayScene = {
         PlayScene.DrawSprite sprite bullet.TopLeft
         
     static member private DrawParticle sprite (particle: Particle) =
-        PlayScene.DrawSprite sprite particle.Position
+        PlayScene.DrawSprite sprite particle.TopLeft
 
     interface IScene with
         member this.Camera: Camera2D = this.Camera

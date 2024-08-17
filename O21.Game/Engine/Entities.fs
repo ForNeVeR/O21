@@ -55,13 +55,16 @@ type Bullet = {
             |> Option.bind _.Update(level, timeDelta - maxTimeToProcessInOneStep)
 
 type Particle = {
-    Position: Point
+    TopLeft: Point
 } with
-    member this.Update(timeDelta: int): Particle option =
-        let Point(_, y) as newPosition =
-            this.Position +
-            Vector(0, GameRules.PlayerParticlesDirection * GameRules.ParticleVelocity * timeDelta)
-        if y < 0 then
-            None
-        else
-            Some { Position = newPosition }
+    member this.Box = { TopLeft = this.TopLeft; Size = GameRules.ParticleSize }
+    
+    member this.Update(level: Level, timeDelta: int): Particle option =
+        let newPosition =
+            this.TopLeft +
+            Vector(0, VerticalDirection.Up * GameRules.ParticleVelocity * timeDelta)
+        let newParticle = { this with TopLeft = newPosition }
+        match CheckCollision level newParticle.Box with
+        | Collision.OutOfBounds -> None
+        | Collision.TouchesBrick -> None
+        | Collision.None -> Some newParticle

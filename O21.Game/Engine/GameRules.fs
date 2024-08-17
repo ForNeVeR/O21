@@ -41,8 +41,6 @@ let ParticleVelocity = 3
 let ParticlesPeriodRange = [|7..10|]
 let ParticlesOffsetRange = [|-2..2|]
 
-let PlayerParticlesDirection = VerticalDirection.Up
-
 let BrickSize = Vector(12, 12)
 let PlayerSize = Vector(46, 27)
 let BulletSize = Vector(6, 6)
