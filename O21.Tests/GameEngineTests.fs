@@ -6,7 +6,6 @@ module O21.Tests.GameEngineTests
 
 open O21.Game.U95
 open O21.Game.U95.Parser
-open System
 open Xunit
 
 open O21.Game.Engine
@@ -90,8 +89,7 @@ module ParticleSystem =
     
     [<Fact>]
     let ``Generator create particles by period``(): unit =
-        let gameEngine = newEngine
-        let gameEngine = { gameEngine with GameEngine.Player.TopLeft = Point(0, Int32.MaxValue) }
+        let gameEngine = { newEngine with GameEngine.Player.TopLeft = Point(50, 50) }
         let frameUp = frameUp timeZero
         let gameEngine = frameUp gameEngine
         let period = gameEngine.ParticlesSource.Period
