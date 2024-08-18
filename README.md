@@ -11,10 +11,12 @@ O21 is a modern free and open-source remake of [U95][old-games.u95], a game by [
 
 Implementation Status
 ---------------------
-
 Some of the game engine features have been implemented, but the game is not in a playable state.
 
 Visit [the issue tracker][issues] if you want to know more.
+
+The screenshot of the currently implemented version (mind that not every element from the screenshot might be functional yet):
+![Screenshot][screenshot]
 
 Usage
 -----
@@ -81,6 +83,7 @@ Acknowledgments
 [old-games.u95]: https://www.old-games.ru/game/4676.html
 [open-sage]: https://github.com/OpenSAGE/OpenSAGE
 [reuse.spec]: https://reuse.software/spec-3.2/
+[screenshot]: docs/screenshot.png
 [status-enfer]: https://img.shields.io/badge/status-enfer-orange.svg
 [wikipedia.o21]: https://en.wikipedia.org/wiki/HNLMS_O_21
 [wikipedia.u-95]: https://en.wikipedia.org/wiki/German_submarine_U-95_(1940)
