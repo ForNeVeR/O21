@@ -64,6 +64,7 @@ type GameEngine = {
                 let newBullet = {
                     TopLeft = GameRules.NewBulletPosition(player.TopForward, player.Direction)
                     Direction = player.Direction
+                    Lifetime = 0 
                 }
                 { this with
                     Player = { player with ShotCooldown = GameRules.ShotCooldownTicks }

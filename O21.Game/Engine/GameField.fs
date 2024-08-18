@@ -27,7 +27,7 @@ type Box =
     { TopLeft: Point; Size: Vector }
     
     member this.TopRight: Point = this.TopLeft + Vector(this.Size.X, 0)
-    member this.BottomLeft: Point = this.TopLeft + Vector(this.Size.Y, 0)
+    member this.BottomLeft: Point = this.TopLeft + Vector(0, this.Size.Y)
     member this.BottomRight: Point = this.TopLeft + this.Size
 
 [<Struct>]
