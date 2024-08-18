@@ -57,6 +57,7 @@ let NewBulletPosition(playerTopForwardCorner: Point, playerDirection: Horizontal
     | HorizontalDirection.Right -> playerTopForwardCorner + Vector(4, 14)
 
 let StartingLevel = LevelCoordinates(1, 1)
+let PlayerStartingPosition = Point(200, 140)
 let LevelSizeInTiles = Vector(50, 25)
 
 let NewParticlePosition(playerTopForwardCorner: Point, playerDirection: HorizontalDirection) =
