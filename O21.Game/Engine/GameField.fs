@@ -9,6 +9,7 @@ type Point =
     | Point of int * int
 
     static member (+) (Point(x1, y1), Vector(x2, y2)): Point = Point(x1 + x2, y1 + y2)
+    static member (-) (Point(x1, y1), Vector(x2, y2)): Point = Point(x1 - x2, y1 - y2)
 
     member this.X: int = let (Point(x, _)) = this in x
     member this.Y: int = let (Point(_, y)) = this in y
@@ -21,14 +22,16 @@ and [<Struct>] Vector =
 
     member this.X: int = let (Vector(x, _)) = this in x
     member this.Y: int = let (Vector(_, y)) = this in y
+    
+    static member Zero: Vector = Vector(0, 0)
 
 [<Struct>]
 type Box =
     { TopLeft: Point; Size: Vector }
     
-    member this.TopRight: Point = this.TopLeft + Vector(this.Size.X, 0)
-    member this.BottomLeft: Point = this.TopLeft + Vector(0, this.Size.Y)
-    member this.BottomRight: Point = this.TopLeft + this.Size
+    member this.TopRight: Point = this.TopLeft + Vector(this.Size.X - 1, 0)
+    member this.BottomLeft: Point = this.TopLeft + Vector(0, this.Size.Y - 1)
+    member this.BottomRight: Point = this.TopLeft + this.Size - Vector(1, 1)
 
 [<Struct>]
 type HorizontalDirection =
@@ -61,5 +64,7 @@ type ObliqueDirection = {
 [<Struct; RequireQualifiedAccess>]
 type Collision =
     | None
+    /// Means the object is completely out of bounds, i.e. not visible on the game field.
     | OutOfBounds
-    | TouchesBrick
+    /// At least one pixel of the object intersects with a brick.
+    | CollidesBrick

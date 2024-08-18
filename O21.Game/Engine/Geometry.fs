@@ -28,5 +28,5 @@ let CheckCollision (level: Level) (box: Box): Collision =
             || isBrickCell box.TopRight
             || isBrickCell box.BottomLeft
             || isBrickCell box.BottomRight
-        then Collision.TouchesBrick
+        then Collision.CollidesBrick
         else Collision.None    

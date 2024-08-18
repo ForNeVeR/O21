@@ -36,17 +36,17 @@ type GameEngine = {
             Period = 0
         }
     }
-
-    member this.Update(time: Time): GameEngine =
+    
+    member this.Update(time: Time): GameEngine * ExternalEffect[] =
         let newTick = int <| (time.Total - this.StartTime.Total) * GameRules.TicksPerSecond
         let timeDelta = newTick - this.Tick
+        let playerEffect = this.Player.Update(this.CurrentLevel, timeDelta)
         // TODO[#26]: Bullet collisions
         { this with
             Tick = newTick
-            Player = this.Player.Update(timeDelta)
             Bullets = this.Bullets |> Array.choose(_.Update(this.CurrentLevel, timeDelta))
             ParticlesSource = this.ParticlesSource.Update(this.CurrentLevel, this.Player, timeDelta) 
-        }
+        } |> GameEngine.ProcessPlayerEffect playerEffect
 
     member this.ApplyCommand(command: PlayerCommand): GameEngine * ExternalEffect[] =
         match command with
@@ -71,3 +71,13 @@ type GameEngine = {
                     Bullets = Array.append this.Bullets [| newBullet |] // TODO[#130]: Make more efficient (persistent vector?)
                 }, [| PlaySound SoundType.Shot |]
             else this, Array.empty
+
+    static member private ProcessPlayerEffect effect (engine: GameEngine) =
+        match effect with
+        | PlayerEffect.Update player -> { engine with Player = player }, Array.empty
+        | PlayerEffect.Die ->
+            { engine with GameEngine.Player.Velocity = Vector.Zero }, [| PlaySound SoundType.LifeLost |]
+            // TODO[#26]: Lose a life: keep lives in the player object and add updated player to PlayerEffect.Die
+            // TODO[#26]: Player sprite should be replaced with explosion for a while
+            // TODO[#26]: Investigate how shot cooldown and direction should behave on resurrect: are they reset or not?
+            // TODO[#27]: Investigate if enemy collision should stop the player from moving

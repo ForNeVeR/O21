@@ -14,7 +14,8 @@ let private frameUp time =
     let mutable currentTime = time
     fun (gameEngine: GameEngine) ->
         let newTime = { Total = currentTime.Total + 0.1; Delta = 0.1f }
-        gameEngine.Update newTime
+        let gameEngine, _ = gameEngine.Update newTime
+        gameEngine
 
 let private frameUpN time n gameEngine =
     let mutable newTime = time
@@ -50,10 +51,10 @@ module Movement =
     let ``GameEngine reacts to the speed change``(): unit =
         let gameEngine = newEngine
         let frameUp = frameUp timeZero
-        Assert.Equal(Point(0, 0), gameEngine.Player.TopLeft)
+        Assert.Equal(GameRules.PlayerStartingPosition, gameEngine.Player.TopLeft)
         let gameEngine, _ = gameEngine.ApplyCommand <| VelocityDelta(Vector(1, 0))
         let gameEngine = frameUp gameEngine
-        Assert.Equal(Point(1, 0), gameEngine.Player.TopLeft)
+        Assert.Equal(GameRules.PlayerStartingPosition + Vector(1, 0), gameEngine.Player.TopLeft)
 
 module Shooting =
 
@@ -84,6 +85,30 @@ module Shooting =
         let bulletCount = gameEngine.Bullets.Length
         let gameEngine, _ = gameEngine.ApplyCommand Shoot
         Assert.Equal(bulletCount + 1, gameEngine.Bullets.Length)
+
+module Player =
+    [<Fact>]
+    let ``Moving towards a brick kills the player``(): unit =
+        let level = {
+            LevelMap = [|
+                [| Empty; Brick 0 |]
+            |]
+        }
+        let player = {
+            TopLeft = Point(GameRules.BrickSize.X - GameRules.PlayerSize.X, 0)
+            Velocity = Vector(0, 0)
+            Direction = HorizontalDirection.Right
+            ShotCooldown = 0 
+        }
+        let player' = player.Update(level, 1)
+        Assert.Equal(PlayerEffect.Update player, player')
+        
+        let player = {
+            player with
+                Velocity = Vector(1, 0) 
+        }
+        let player' = player.Update(level, 1)
+        Assert.Equal(PlayerEffect.Die, player')
 
 module ParticleSystem =
     
@@ -168,4 +193,4 @@ module Geometry =
         Assert.Equal(Collision.None, CheckCollision level box1)
         
         let box2 = { TopLeft = Point(GameRules.BrickSize.X, 0); Size = Vector(1, 1) }
-        Assert.Equal(Collision.TouchesBrick, CheckCollision level box2)
+        Assert.Equal(Collision.CollidesBrick, CheckCollision level box2)

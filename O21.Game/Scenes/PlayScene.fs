@@ -84,12 +84,14 @@ type PlayScene = {
             this.Camera.zoom <- (GetScreenHeight() |> float32) / (GameRules.GameScreenHeight |> float32)
             let cameraTargetX = ((GetScreenWidth() |> float32) - (GameRules.GameScreenWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
             this.Camera.target <- System.Numerics.Vector2(cameraTargetX, 0f)
+            // TODO[#26]: Merge ApplyCommands and Update into single function on GameEngine
             let game, effects = state.Game |> InputProcessor.ProcessKeys input this.HUD
-
-            let state = { state with Game = game.Update time }
+            let game', effects' = game.Update time 
+            let state = { state with Game = game' }
+            let allEffects = Seq.concat [| effects; effects' |]
             let sounds =
                 state.SoundsToStartPlaying +
-                (effects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
+                (allEffects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
             let navigationEvent =
                 if this.HUD.Lives < 0 then
                     // TODO[#32]: Should be handled by the game engine

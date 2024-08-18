@@ -23,12 +23,23 @@ type Player = {
         match this.Direction with
         | HorizontalDirection.Left -> this.TopLeft
         | HorizontalDirection.Right -> this.TopRight
+        
+    member this.Box: Box = { TopLeft = this.TopLeft; Size = GameRules.PlayerSize }
 
-    member this.Update(timeDelta: int): Player =
-        { this with
-            TopLeft = this.TopLeft + this.Velocity * timeDelta
-            ShotCooldown = max (this.ShotCooldown - timeDelta) 0
-        }
+    member this.Update(level: Level, timeDelta: int): PlayerEffect =
+        let newPlayer =
+            { this with
+                TopLeft = this.TopLeft + this.Velocity * timeDelta
+                ShotCooldown = max (this.ShotCooldown - timeDelta) 0
+            }
+        match CheckCollision level newPlayer.Box with
+        | Collision.OutOfBounds -> PlayerEffect.Update newPlayer // TODO[#28]: Level progression
+        | Collision.CollidesBrick -> PlayerEffect.Die
+        | Collision.None -> PlayerEffect.Update newPlayer
+
+and [<RequireQualifiedAccess>] PlayerEffect =
+    | Update of Player
+    | Die
 
 type Bullet = {
     TopLeft: Point
@@ -54,7 +65,7 @@ type Bullet = {
             else
                 match CheckCollision level newBullet.Box with
                 | Collision.OutOfBounds -> None
-                | Collision.TouchesBrick -> None
+                | Collision.CollidesBrick -> None
                 | Collision.None -> Some newBullet
         else
             this.Update(level, maxTimeToProcessInOneStep)
@@ -72,5 +83,5 @@ type Particle = {
         let newParticle = { this with TopLeft = newPosition }
         match CheckCollision level newParticle.Box with
         | Collision.OutOfBounds -> None
-        | Collision.TouchesBrick -> None
+        | Collision.CollidesBrick -> None
         | Collision.None -> Some newParticle
