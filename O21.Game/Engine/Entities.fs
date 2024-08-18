@@ -33,6 +33,7 @@ type Player = {
 type Bullet = {
     TopLeft: Point
     Direction: HorizontalDirection
+    Lifetime: int
 } with
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.BulletSize }
     
@@ -40,16 +41,21 @@ type Bullet = {
         // Check each intermediate position of the bullet for collision:
         let maxTimeToProcessInOneStep = GameRules.BrickSize.X / GameRules.BulletVelocity
         if maxTimeToProcessInOneStep <= 0 then failwith "maxTimeToProcessInOneStep <= 0"
+        
+        let newLifetime = this.Lifetime + timeDelta
 
         if timeDelta <= maxTimeToProcessInOneStep then
             let newTopLeft =
                 this.TopLeft +
                 Vector(this.Direction * GameRules.BulletVelocity * timeDelta, 0)
-            let newBullet = { this with TopLeft = newTopLeft }
-            match CheckCollision level newBullet.Box with
-            | Collision.OutOfBounds -> None
-            | Collision.TouchesBrick -> None
-            | Collision.None -> Some newBullet
+            let newBullet = { this with TopLeft = newTopLeft; Lifetime = newLifetime }
+            
+            if newLifetime > GameRules.BulletLifetime then None
+            else
+                match CheckCollision level newBullet.Box with
+                | Collision.OutOfBounds -> None
+                | Collision.TouchesBrick -> None
+                | Collision.None -> Some newBullet
         else
             this.Update(level, maxTimeToProcessInOneStep)
             |> Option.bind _.Update(level, timeDelta - maxTimeToProcessInOneStep)

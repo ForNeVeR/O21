@@ -108,7 +108,8 @@ module Bullets =
         }
         let bullet = {
             TopLeft = Point(0, 0)
-            Direction = HorizontalDirection.Right 
+            Direction = HorizontalDirection.Right
+            Lifetime = 0 
         }
         let ticksToMove = GameRules.BrickSize.X / GameRules.BulletVelocity
         Assert.Equal(None, bullet.Update(level, ticksToMove))
@@ -122,10 +123,27 @@ module Bullets =
         }
         let bullet = {
             TopLeft = Point(0, 0)
-            Direction = HorizontalDirection.Right 
+            Direction = HorizontalDirection.Right
+            Lifetime = 0 
         }
         let ticksToMove = GameRules.BrickSize.X * 3 / GameRules.BulletVelocity
         Assert.Equal(None, bullet.Update(level, ticksToMove))
+        
+    [<Fact>]
+    let ``Bullet is destroyed after the expiration of its lifetime``(): unit =
+        let level = {
+            LevelMap = [|
+                [| Empty |]
+            |]
+        }
+        let bullet = {
+            TopLeft = Point(0, 0)
+            Direction = HorizontalDirection.Right
+            Lifetime = 0 
+        }
+        let ticksToMove = GameRules.BulletLifetime
+        Assert.True(bullet.Update(level, ticksToMove).IsSome)      
+        Assert.Equal(None, bullet.Update(level, ticksToMove + 1))
 
 module Geometry =
     open O21.Game.Engine.Geometry

@@ -36,6 +36,9 @@ let ClampVelocity(Vector(x, y)): Vector =
 let BulletVelocity = 5 // TODO[#131]: Compare with the original
 
 [<Literal>]
+let BulletLifetime = 10
+
+[<Literal>]
 let ParticleVelocity = 3
 
 let ParticlesPeriodRange = [|7..10|]
