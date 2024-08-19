@@ -28,7 +28,7 @@ type GameEngine = {
             TopLeft = GameRules.PlayerStartingPosition
             Velocity = Vector(0, 0)
             ShotCooldown = 0
-            Direction = Left
+            Direction = Right
         }
         Bullets = Array.empty
         ParticlesSource = {
