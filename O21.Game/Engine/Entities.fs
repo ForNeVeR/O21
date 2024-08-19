@@ -45,12 +45,13 @@ type Bullet = {
     TopLeft: Point
     Direction: HorizontalDirection
     Lifetime: int
+    Velocity: Vector
 } with
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.BulletSize }
     
     member this.Update(level: Level, timeDelta: int): Bullet option =
         // Check each intermediate position of the bullet for collision:
-        let maxTimeToProcessInOneStep = GameRules.BrickSize.X / GameRules.BulletVelocity
+        let maxTimeToProcessInOneStep = GameRules.BrickSize.X / this.Velocity.X
         if maxTimeToProcessInOneStep <= 0 then failwith "maxTimeToProcessInOneStep <= 0"
         
         let newLifetime = this.Lifetime + timeDelta
@@ -58,7 +59,7 @@ type Bullet = {
         if timeDelta <= maxTimeToProcessInOneStep then
             let newTopLeft =
                 this.TopLeft +
-                Vector(this.Direction * GameRules.BulletVelocity * timeDelta, 0)
+                Vector(this.Direction * this.Velocity.X * timeDelta, this.Velocity.Y * timeDelta)
             let newBullet = { this with TopLeft = newTopLeft; Lifetime = newLifetime }
             
             if newLifetime > GameRules.BulletLifetime then None
@@ -73,13 +74,14 @@ type Bullet = {
 
 type Particle = {
     TopLeft: Point
+    Speed: int
 } with
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.ParticleSize }
     
     member this.Update(level: Level, timeDelta: int): Particle option =
         let newPosition =
             this.TopLeft +
-            Vector(0, VerticalDirection.Up * GameRules.ParticleVelocity * timeDelta)
+            Vector(0, VerticalDirection.Up * this.Speed * timeDelta)
         let newParticle = { this with TopLeft = newPosition }
         match CheckCollision level newParticle.Box with
         | Collision.OutOfBounds -> None
