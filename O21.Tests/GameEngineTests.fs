@@ -199,7 +199,7 @@ module Bullets =
     [<InlineData("Left")>]
     [<InlineData("Right")>]
     let ``Bullet creating with additional submarine velocity`` (directionName:string): unit =
-        let submarineMoves = Array.allPairs [|-1; 1|] [|-1; 1|]
+        let submarineMoves = Seq.allPairs [|-1; 1|] [|-1; 1|] |> Seq.map Vector
         let direction =
             match directionName with
             | "Left" -> HorizontalDirection.Left
@@ -213,12 +213,12 @@ module Bullets =
                 }
             }
         let frameUp = frameUp timeZero
-        let bulletVelocity = Vector(GameRules.BulletVelocity, 0)
+        let bulletVelocity = Vector(direction * GameRules.BulletVelocity, 0)
         
         for velocity in submarineMoves do
-            let gameEngine = frameUp { commonGameEngine with GameEngine.Player.Velocity = Vector(velocity) }
+            let gameEngine = frameUp { commonGameEngine with GameEngine.Player.Velocity = velocity }
             let gameEngine, _ = gameEngine.ApplyCommand Shoot
-            let expectedVelocity = bulletVelocity + GameRules.AdditionBulletVelocity(Vector(fst velocity, snd velocity), direction)
+            let expectedVelocity = bulletVelocity + velocity
             let actualVelocity = gameEngine.Bullets[0].Velocity
             Assert.Equal(expectedVelocity, actualVelocity)
 
