@@ -7,7 +7,6 @@ module O21.Tests.GameEngineTests
 open O21.Game.U95
 open O21.Game.U95.Parser
 open Xunit
-open System
 
 open O21.Game.Engine
 
@@ -145,12 +144,12 @@ module ParticleSystem =
         let frameUp = frameUp timeZero
         
         let gameEngine = frameUp { commonGameEngine with GameEngine.Player.Velocity = submarineSurfacing }       
-        let expectedSpeed = GameRules.ParticleVelocity + GameRules.AdditionParticleSpeed(submarineSurfacing.Y)
+        let expectedSpeed = GameRules.ParticleSpeed - submarineSurfacing.Y
         let actualSpeed = gameEngine.ParticlesSource.Particles[0].Speed
         Assert.Equal(expectedSpeed, actualSpeed)
         
         let gameEngine = frameUp { commonGameEngine with GameEngine.Player.Velocity = submarineDiving }       
-        let expectedSpeed = GameRules.ParticleVelocity
+        let expectedSpeed = GameRules.ParticleSpeed
         let actualSpeed = gameEngine.ParticlesSource.Particles[0].Speed
         Assert.Equal(expectedSpeed, actualSpeed)
 
