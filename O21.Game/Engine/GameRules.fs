@@ -39,7 +39,7 @@ let BulletVelocity = 5 // TODO[#131]: Compare with the original
 let BulletLifetime = 10
 
 [<Literal>]
-let ParticleVelocity = 3
+let ParticleSpeed = 3
 
 let ParticlesPeriodRange = [|7..10|]
 let ParticlesOffsetRange = [|-2..2|]
@@ -67,4 +67,3 @@ let NewParticlePosition(playerTopForwardCorner: Point, playerDirection: Horizont
     | HorizontalDirection.Left -> playerTopForwardCorner + Vector(28, -ParticleSize.Y)
     | HorizontalDirection.Right -> playerTopForwardCorner + Vector(-28, -ParticleSize.Y)
 
-let AdditionParticleSpeed(playerVerticalVelocity: int) = Math.Clamp(-playerVerticalVelocity, 0, Math.Abs playerVerticalVelocity)
