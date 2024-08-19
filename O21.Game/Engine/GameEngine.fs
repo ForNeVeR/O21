@@ -5,7 +5,6 @@
 namespace O21.Game.Engine
 
 open O21.Game.U95
-open System
 
 type Time = {
     Total: float
@@ -67,8 +66,7 @@ type GameEngine = {
                     TopLeft = GameRules.NewBulletPosition(player.TopForward, player.Direction)
                     Direction = player.Direction
                     Lifetime = 0
-                    Velocity = Vector(GameRules.BulletVelocity, 0) +
-                               GameRules.AdditionBulletVelocity(player.Velocity, player.Direction)
+                    Velocity = player.Velocity + Vector(player.Direction * GameRules.BulletVelocity, 0) 
                 }
                 { this with
                     Player = { player with ShotCooldown = GameRules.ShotCooldownTicks }

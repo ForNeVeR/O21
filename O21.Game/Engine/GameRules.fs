@@ -56,8 +56,6 @@ let NewBulletPosition(playerTopForwardCorner: Point, playerDirection: Horizontal
     | HorizontalDirection.Left -> playerTopForwardCorner + Vector(-4 - BulletSize.X, 14)
     | HorizontalDirection.Right -> playerTopForwardCorner + Vector(4, 14)
     
-let AdditionBulletVelocity(playerVelocity: Vector, direction:HorizontalDirection) = playerVelocity * Vector(direction * 1, 1)
-
 let StartingLevel = LevelCoordinates(1, 1)
 let PlayerStartingPosition = Point(200, 140)
 let LevelSizeInTiles = Vector(50, 25)
@@ -66,4 +64,3 @@ let NewParticlePosition(playerTopForwardCorner: Point, playerDirection: Horizont
     match playerDirection with
     | HorizontalDirection.Left -> playerTopForwardCorner + Vector(28, -ParticleSize.Y)
     | HorizontalDirection.Right -> playerTopForwardCorner + Vector(-28, -ParticleSize.Y)
-
