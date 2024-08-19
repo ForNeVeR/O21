@@ -18,6 +18,7 @@ and [<Struct>] Vector =
     | Vector of int * int
 
     static member (+) (Vector(x1, y1), Vector(x2, y2)): Vector = Vector(x1 + x2, y1 + y2)
+    static member (*) (Vector(x1, y1), Vector(x2, y2)): Vector = Vector(x1 * x2, y1 * y2)
     static member (*) (Vector(x, y), i: int): Vector = Vector(x * i, y * i)
 
     member this.X: int = let (Vector(x, _)) = this in x
@@ -56,10 +57,10 @@ type ObliqueDirection = {
     XDirection: HorizontalDirection
     YDirection: VerticalDirection
 } with
-    static member (*) (direction: ObliqueDirection, xy_catheters: int * int) =
-        let x_value = direction.XDirection * fst xy_catheters
-        let y_value = direction.YDirection * snd xy_catheters
-        Point(x_value, y_value)
+    static member (*) (direction: ObliqueDirection, catheters: Vector) =
+        let x_value = direction.XDirection * catheters.X
+        let y_value = direction.YDirection * catheters.Y
+        Vector(x_value, y_value)
 
 [<Struct; RequireQualifiedAccess>]
 type Collision =

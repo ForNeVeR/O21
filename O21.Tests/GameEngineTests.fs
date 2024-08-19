@@ -7,6 +7,7 @@ module O21.Tests.GameEngineTests
 open O21.Game.U95
 open O21.Game.U95.Parser
 open Xunit
+open System
 
 open O21.Game.Engine
 
@@ -122,8 +123,45 @@ module ParticleSystem =
         let particlesCount = gameEngine.ParticlesSource.Particles.Length
         let gameEngine = frameUpN timeZero period gameEngine
         Assert.Equal(particlesCount + 1, gameEngine.ParticlesSource.Particles.Length)
+       
+    [<Theory>]
+    [<InlineData("Left")>]
+    [<InlineData("Right")>]
+    let ``Bubble creating with additional submarine velocity`` (directionName:string): unit =
+        let submarineSurfacing = Vector(0, -5)
+        let submarineDiving = Vector(0, 5)
+        let direction =
+            match directionName with
+            | "Left" -> HorizontalDirection.Left
+            | _ -> HorizontalDirection.Right    
+        let commonGameEngine = {
+            newEngine with
+                Player = {
+                    newEngine.Player with
+                        Direction = direction
+                        TopLeft = Point(50, 50) 
+                }
+            }
+        let frameUp = frameUp timeZero
+        
+        let gameEngine = frameUp { commonGameEngine with GameEngine.Player.Velocity = submarineSurfacing }       
+        let expectedSpeed = GameRules.ParticleVelocity + GameRules.AdditionParticleSpeed(submarineSurfacing.Y)
+        let actualSpeed = gameEngine.ParticlesSource.Particles[0].Speed
+        Assert.Equal(expectedSpeed, actualSpeed)
+        
+        let gameEngine = frameUp { commonGameEngine with GameEngine.Player.Velocity = submarineDiving }       
+        let expectedSpeed = GameRules.ParticleVelocity
+        let actualSpeed = gameEngine.ParticlesSource.Particles[0].Speed
+        Assert.Equal(expectedSpeed, actualSpeed)
 
 module Bullets =
+    let private defaultBullet = {
+            TopLeft = Point(0, 0)
+            Direction = HorizontalDirection.Right
+            Lifetime = 0
+            Velocity = Vector(GameRules.BulletVelocity, 0)
+        }
+    
     [<Fact>]
     let ``Bullet is destroyed on a brick collision``(): unit =
         let level = {
@@ -131,11 +169,7 @@ module Bullets =
                 [| Empty; Brick 0 |]
             |]
         }
-        let bullet = {
-            TopLeft = Point(0, 0)
-            Direction = HorizontalDirection.Right
-            Lifetime = 0 
-        }
+        let bullet = defaultBullet
         let ticksToMove = GameRules.BrickSize.X / GameRules.BulletVelocity
         Assert.Equal(None, bullet.Update(level, ticksToMove))
         
@@ -146,11 +180,7 @@ module Bullets =
                 [| Empty; Brick 0 |]
             |]
         }
-        let bullet = {
-            TopLeft = Point(0, 0)
-            Direction = HorizontalDirection.Right
-            Lifetime = 0 
-        }
+        let bullet = defaultBullet
         let ticksToMove = GameRules.BrickSize.X * 3 / GameRules.BulletVelocity
         Assert.Equal(None, bullet.Update(level, ticksToMove))
         
@@ -161,14 +191,37 @@ module Bullets =
                 [| Empty |]
             |]
         }
-        let bullet = {
-            TopLeft = Point(0, 0)
-            Direction = HorizontalDirection.Right
-            Lifetime = 0 
-        }
+        let bullet = defaultBullet
         let ticksToMove = GameRules.BulletLifetime
         Assert.True(bullet.Update(level, ticksToMove).IsSome)      
         Assert.Equal(None, bullet.Update(level, ticksToMove + 1))
+        
+    [<Theory>]
+    [<InlineData("Left")>]
+    [<InlineData("Right")>]
+    let ``Bullet creating with additional submarine velocity`` (directionName:string): unit =
+        let submarineMoves = Array.allPairs [|-1; 1|] [|-1; 1|]
+        let direction =
+            match directionName with
+            | "Left" -> HorizontalDirection.Left
+            | _ -> HorizontalDirection.Right    
+        let commonGameEngine = {
+            newEngine with
+                Player = {
+                    newEngine.Player with
+                        Direction = direction
+                        TopLeft = Point(50, 50) 
+                }
+            }
+        let frameUp = frameUp timeZero
+        let bulletVelocity = Vector(GameRules.BulletVelocity, 0)
+        
+        for velocity in submarineMoves do
+            let gameEngine = frameUp { commonGameEngine with GameEngine.Player.Velocity = Vector(velocity) }
+            let gameEngine, _ = gameEngine.ApplyCommand Shoot
+            let expectedVelocity = bulletVelocity + GameRules.AdditionBulletVelocity(Vector(fst velocity, snd velocity), direction)
+            let actualVelocity = gameEngine.Bullets[0].Velocity
+            Assert.Equal(expectedVelocity, actualVelocity)
 
 module Geometry =
     open O21.Game.Engine.Geometry

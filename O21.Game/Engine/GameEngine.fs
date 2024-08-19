@@ -5,6 +5,7 @@
 namespace O21.Game.Engine
 
 open O21.Game.U95
+open System
 
 type Time = {
     Total: float
@@ -27,7 +28,7 @@ type GameEngine = {
             TopLeft = GameRules.PlayerStartingPosition
             Velocity = Vector(0, 0)
             ShotCooldown = 0
-            Direction = Right
+            Direction = Left
         }
         Bullets = Array.empty
         ParticlesSource = {
@@ -60,11 +61,14 @@ type GameEngine = {
 
         | Shoot ->
             let player = this.Player
+                
             if player.IsAllowedToShoot then
                 let newBullet = {
                     TopLeft = GameRules.NewBulletPosition(player.TopForward, player.Direction)
                     Direction = player.Direction
-                    Lifetime = 0 
+                    Lifetime = 0
+                    Velocity = Vector(GameRules.BulletVelocity, 0) +
+                               GameRules.AdditionBulletVelocity(player.Velocity, player.Direction)
                 }
                 { this with
                     Player = { player with ShotCooldown = GameRules.ShotCooldownTicks }

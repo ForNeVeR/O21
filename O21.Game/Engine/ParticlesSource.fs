@@ -35,4 +35,8 @@ type ParticlesSource = {
     member private this.GenerateFromPlayer(level: Level, player: Player) =
         let startPosition = GameRules.NewParticlePosition (player.TopForward, player.Direction)
         let offset = this.PickRandom GameRules.ParticlesOffsetRange
-        { TopLeft = startPosition + Vector(offset, 0) }.Update(level, 0)
+        let additionalSpeed = GameRules.AdditionParticleSpeed player.Velocity.Y        
+        {
+            TopLeft = startPosition + Vector(offset, 0)
+            Speed = GameRules.ParticleVelocity + additionalSpeed
+        }.Update(level, 0)
