@@ -23,18 +23,9 @@ type GameEngine = {
         StartTime = time
         Tick = 0
         CurrentLevel = level
-        Player = {
-            TopLeft = GameRules.PlayerStartingPosition
-            Velocity = Vector(0, 0)
-            ShotCooldown = 0
-            Direction = Right
-        }
+        Player = Player.Default
         Bullets = Array.empty
-        ParticlesSource = {
-            TimeElapsed = 0
-            Particles = Array.empty
-            Period = 0
-        }
+        ParticlesSource = ParticlesSource.Default
     }
     
     member this.Update(time: Time): GameEngine * ExternalEffect[] =
