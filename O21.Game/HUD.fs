@@ -4,13 +4,16 @@
 
 namespace O21.Game
 
+open System
+open O21.Game.Engine
+open Raylib_CsLo
 open type Raylib_CsLo.Raylib
     
 type HUD =
     {
         Score: int
         Level: int
-        Oxy: float32
+        Oxy: int
         Lives: int
         Abilities: bool[]
         Controls: Controls
@@ -20,7 +23,7 @@ type HUD =
             {
                 Score = 0
                 Level = 1
-                Oxy = 0f
+                Oxy = 0
                 Lives = 5
                 Abilities = Array.init 5 (fun _ -> false )
                 Controls =  Controls.Init()
@@ -31,7 +34,9 @@ type HUD =
                 DrawTexture(textures.Abilities[i], 11 + 17*(i-1), 365, WHITE)
                 
         member private this.renderOxyLine (textures: HUDSprites) =
+            let blue = Color(0, 0, 255, 255)
             DrawRectangle(254, 369, 102, 12, BLACK)
+            DrawRectangle(255, 370, this.Oxy, 10, blue)
         
         member private this.renderScoreLine (textures: HUDSprites) =
             let mutable tmp = this.Score
@@ -46,16 +51,21 @@ type HUD =
                 tmp <- tmp / 10        
         
         member private this.renderLives (textures: HUDSprites) =
-            DrawTexture(textures.Digits[this.Lives % 10], 314, 320, WHITE) // what if the number of lives is a two-digit number?        
+            DrawTexture(textures.Digits[this.Lives % 10], 314, 320, WHITE) // what if the number of lives is a two-digit number?
+            
+        member this.SyncWithGame(gameEngine:GameEngine) =
+            { this with
+                Oxy = gameEngine.Player.OxygenAmount 
+            }
             
         member this.UpdateScore(newScore:int):HUD =
             {
                 this with Score = newScore 
             }
     
-        member this.UpdateOxy(newOxy:float32) =
+        member this.UpdateOxy(newOxy:int) =
             {
-                this with Oxy = newOxy
+                this with Oxy = Math.Clamp(newOxy, 0, 100)
             }
         
         member this.UpdateLives(newLives:int) =

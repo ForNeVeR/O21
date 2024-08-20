@@ -12,11 +12,14 @@ type Player = {
     Velocity: Vector
     Direction: HorizontalDirection
     ShotCooldown: int
+    Oxygen: OxygenStorage
 } with
 
     member this.TopRight = this.TopLeft + Vector(GameRules.PlayerSize.X, 0)
 
     member this.IsAllowedToShoot = this.ShotCooldown = 0
+    
+    member this.OxygenAmount = this.Oxygen.Amount
 
     /// The coordinate of top corner of the forward side (i.e. the one it's directed at) of the sprite.
     member this.TopForward =
@@ -31,11 +34,41 @@ type Player = {
             { this with
                 TopLeft = this.TopLeft + this.Velocity * timeDelta
                 ShotCooldown = max (this.ShotCooldown - timeDelta) 0
+                Oxygen = this.Oxygen.Update(timeDelta) 
             }
         match CheckCollision level newPlayer.Box with
         | Collision.OutOfBounds -> PlayerEffect.Update newPlayer // TODO[#28]: Level progression
         | Collision.CollidesBrick -> PlayerEffect.Die
         | Collision.None -> PlayerEffect.Update newPlayer
+        
+    static member Default = {
+            TopLeft = GameRules.PlayerStartingPosition
+            Velocity = Vector(0, 0)
+            ShotCooldown = 0
+            Direction = Right
+            Oxygen = OxygenStorage.Default
+        }
+and OxygenStorage = {
+    Amount: int
+    Timer: GameTimer
+} with
+    member this.Update(timeDelta: int) =
+        let timer = this.Timer.Update(timeDelta)
+        if timer.HasExpired then
+            let newAmount = if this.Amount > 0 then this.Amount - 1 else GameRules.MaxOxygenUnits
+            {                
+                Amount = newAmount
+                Timer = timer.Reset
+            }
+        else
+            { this with
+                Timer = timer 
+            }
+    
+    static member Default = {
+        Amount = GameRules.MaxOxygenUnits
+        Timer = { GameTimer.Default with Period = GameRules.OxygenUnitPeriod }
+    }
 
 and [<RequireQualifiedAccess>] PlayerEffect =
     | Update of Player

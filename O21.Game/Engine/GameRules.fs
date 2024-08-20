@@ -31,6 +31,12 @@ let ClampVelocity(Vector(x, y)): Vector =
        Math.Clamp(x, -MaxPlayerVelocity, MaxPlayerVelocity),
        Math.Clamp(y, -MaxPlayerVelocity, MaxPlayerVelocity)
    )
+   
+[<Literal>]
+let MaxOxygenUnits = 100
+
+[<Literal>]
+let OxygenUnitPeriod = 22
 
 [<Literal>]
 let BulletVelocity = 5 // TODO[#131]: Compare with the original
