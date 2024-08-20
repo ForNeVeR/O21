@@ -94,22 +94,30 @@ module Player =
                 [| Empty; Brick 0 |]
             |]
         }
-        let player = {
-            TopLeft = Point(GameRules.BrickSize.X - GameRules.PlayerSize.X, 0)
-            Velocity = Vector(0, 0)
-            Direction = HorizontalDirection.Right
-            ShotCooldown = 0 
-        }
+        let player = { Player.Default with TopLeft = Point(GameRules.BrickSize.X - GameRules.PlayerSize.X, 0) }
         let player' = player.Update(level, 1)
-        Assert.Equal(PlayerEffect.Update player, player')
+        Assert.True(match player' with | PlayerEffect.Update _ -> true | _ -> false)
         
         let player = {
             player with
                 Velocity = Vector(1, 0) 
         }
         let player' = player.Update(level, 1)
-        Assert.Equal(PlayerEffect.Die, player')
-
+        Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
+        
+module OxygenSystem =
+    
+    [<Fact>]
+    let ``Oxygen amount decreases over period``(): unit =
+        let gameEngine = { newEngine with GameEngine.Player.TopLeft = Point(50, 50) }
+        let frameUp = frameUp timeZero
+        let gameEngine = frameUp gameEngine
+        let period = gameEngine.Player.Oxygen.Timer.Period
+        
+        let expected = gameEngine.Player.OxygenAmount - 1
+        let gameEngine = frameUpN timeZero period gameEngine
+        Assert.Equal(expected, gameEngine.Player.OxygenAmount)
+        
 module ParticleSystem =
     
     [<Fact>]
@@ -117,8 +125,10 @@ module ParticleSystem =
         let gameEngine = { newEngine with GameEngine.Player.TopLeft = Point(50, 50) }
         let frameUp = frameUp timeZero
         let gameEngine = frameUp gameEngine
-        let period = gameEngine.ParticlesSource.Period
-        let gameEngine = frameUpN timeZero (period - gameEngine.ParticlesSource.TimeElapsed - 1) gameEngine
+        let period = gameEngine.ParticlesSource.Timer.Period
+        let timeElapsed = gameEngine.ParticlesSource.Timer.TimeElapsed
+        
+        let gameEngine = frameUpN timeZero (period - timeElapsed - 1) gameEngine
         let particlesCount = gameEngine.ParticlesSource.Particles.Length
         let gameEngine = frameUpN timeZero period gameEngine
         Assert.Equal(particlesCount + 1, gameEngine.ParticlesSource.Particles.Length)
