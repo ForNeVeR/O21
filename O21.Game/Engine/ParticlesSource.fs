@@ -8,24 +8,22 @@ open System
 open O21.Game.U95
 
 type ParticlesSource = {
-    TimeElapsed: int
     Particles: Particle[]
-    Period: int
+    Timer: GameTimer
 } with
     member this.Update(level: Level, player: Player, timeDelta: int): ParticlesSource =
-        let newElapsed = this.TimeElapsed + timeDelta
         let particles = this.Particles |> Array.choose(_.Update(level, timeDelta))
+        let timer = this.Timer.Update(timeDelta)
         
-        if newElapsed >= this.Period then
+        if timer.HasExpired then
             {
-                TimeElapsed = newElapsed - this.Period
                 Particles = particles |> Array.append ([|this.GenerateFromPlayer(level, player)|] |> Array.choose id)
-                Period = this.PickRandom GameRules.ParticlesPeriodRange 
+                Timer = { timer.Reset with Period = this.PickRandom GameRules.ParticlesPeriodRange }
             }
         else
-            { this with
-                TimeElapsed = newElapsed
+            {
                 Particles = particles
+                Timer = timer 
             }
         
     member private this.PickRandom(range:int array) =
@@ -41,3 +39,8 @@ type ParticlesSource = {
             TopLeft = startPosition + Vector(offset, 0)
             Speed = speed
         }.Update(level, 0)
+
+    static member Default = {
+            Particles = Array.empty
+            Timer = GameTimer.Default 
+        }
