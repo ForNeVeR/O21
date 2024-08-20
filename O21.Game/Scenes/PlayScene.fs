@@ -86,8 +86,9 @@ type PlayScene = {
             this.Camera.target <- System.Numerics.Vector2(cameraTargetX, 0f)
             // TODO[#26]: Merge ApplyCommands and Update into single function on GameEngine
             let game, effects = state.Game |> InputProcessor.ProcessKeys input this.HUD
-            let game', effects' = game.Update time 
-            let state = { state with Game = game' }
+            let game', effects' = game.Update time
+            let hud = this.HUD.SyncWithGame game'
+            let state = { state with Game = game'; Scene = { this with HUD = hud } }
             let allEffects = Seq.concat [| effects; effects' |]
             let sounds =
                 state.SoundsToStartPlaying +
