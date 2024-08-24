@@ -12,14 +12,20 @@ type GameTimer = {
     Period: int
 } with
     member this.HasExpired = this.TimeElapsed >= this.Period
+    member this.ExpirationCount =
+        if this.Period > 0 then this.TimeElapsed / this.Period
+        else 0
     
     member this.Update(timeDelta: int) =
         let newElapsed = this.TimeElapsed + timeDelta
         let timer = this
         { timer with TimeElapsed = newElapsed }
         
-    member this.Reset =
-        let newElapsed = Math.Max(this.TimeElapsed - this.Period, 0)
+    member this.Reset = this.ResetN this.ExpirationCount
+        
+    member this.ResetN n =
+        let expirationReset = Math.Min(n, this.ExpirationCount)
+        let newElapsed = Math.Max(this.TimeElapsed - this.Period * expirationReset, 0)
         let timer = this
         { timer with TimeElapsed = newElapsed }
     static member Default = {
