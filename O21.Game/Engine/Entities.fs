@@ -55,7 +55,10 @@ and OxygenStorage = {
     member this.Update(timeDelta: int) =
         let timer = this.Timer.Update(timeDelta)
         if timer.HasExpired then
-            let newAmount = if this.Amount > 0 then this.Amount - 1 else GameRules.MaxOxygenUnits
+            let newAmount =
+                if this.Amount > 0 then
+                    this.Amount - timer.ExpirationCount
+                else GameRules.MaxOxygenUnits
             {                
                 Amount = newAmount
                 Timer = timer.Reset

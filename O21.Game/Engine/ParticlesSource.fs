@@ -16,9 +16,11 @@ type ParticlesSource = {
         let timer = this.Timer.Update(timeDelta)
         
         if timer.HasExpired then
+            let timer = timer.ResetN 1
+            let particleTimeDelta = timer.TimeElapsed
             {
-                Particles = particles |> Array.append ([|this.GenerateFromPlayer(level, player)|] |> Array.choose id)
-                Timer = { timer.Reset with Period = this.PickRandom GameRules.ParticlesPeriodRange }
+                Particles = particles |> Array.append ([|this.GenerateFromPlayer(particleTimeDelta, level, player)|] |> Array.choose id)
+                Timer = { timer with Period = this.PickRandom GameRules.ParticlesPeriodRange }
             }
         else
             {
@@ -30,7 +32,7 @@ type ParticlesSource = {
         let index = Random.Shared.Next(range.Length)
         range[index]
         
-    member private this.GenerateFromPlayer(level: Level, player: Player) =
+    member private this.GenerateFromPlayer(timeDelta: int, level: Level, player: Player) =
         let startPosition = GameRules.NewParticlePosition (player.TopForward, player.Direction)
         let offset = this.PickRandom GameRules.ParticlesOffsetRange
         let initialSpeed = -player.Velocity.Y
@@ -38,7 +40,7 @@ type ParticlesSource = {
         {
             TopLeft = startPosition + Vector(offset, 0)
             Speed = speed
-        }.Update(level, 0)
+        }.Update(level, timeDelta)
 
     static member Default = {
             Particles = Array.empty
