@@ -39,16 +39,27 @@ module private InputProcessor =
          direction
         
     let ProcessKeys (input:Input) (hud:HUD) (game: GameEngine) =
-        let mutable delta = ProcessDirectionKeys input.Pressed
-        let mutable deltaFromHUD = ProcessHUDKeys (input, hud)
-        if delta.X = 0 && delta.Y = 0 then
-            delta <- deltaFromHUD
-        let mutable game, effects = game.ApplyCommand(VelocityDelta delta)
-        if Set.contains Key.Fire input.Pressed || hud.Controls.Fire.IsClicked(input) then
-            let game', effects' = game.ApplyCommand Shoot
-            game <- game'
-            effects <- Array.append effects effects'
-        game, effects
+        if not game.IsActive then
+            if Set.contains Key.Pause input.Pressed then
+                game.ApplyCommand Activate
+            else game, Array.empty
+            
+        else if Set.contains Key.Pause input.Pressed then
+            if Set.contains Key.Pause input.Pressed then
+                game.ApplyCommand Suspend
+            else game, Array.empty
+            
+        else
+            let mutable delta = ProcessDirectionKeys input.Pressed
+            let mutable deltaFromHUD = ProcessHUDKeys (input, hud)
+            if delta.X = 0 && delta.Y = 0 then
+                delta <- deltaFromHUD
+            let mutable game, effects = game.ApplyCommand(VelocityDelta delta)
+            if Set.contains Key.Fire input.Pressed || hud.Controls.Fire.IsClicked(input) then
+                let game', effects' = game.ApplyCommand Shoot
+                game <- game'
+                effects <- Array.append effects effects'
+            game, effects
 
 type PlayScene = {
     HUD: HUD

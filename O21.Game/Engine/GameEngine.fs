@@ -18,6 +18,7 @@ type GameEngine = {
     Player: Player
     Bullets: Bullet[]
     ParticlesSource: ParticlesSource
+    IsActive: bool
 } with
     static member Create(time: Time, level: Level): GameEngine = {
         StartTime = time
@@ -26,18 +27,22 @@ type GameEngine = {
         Player = Player.Default
         Bullets = Array.empty
         ParticlesSource = ParticlesSource.Default
+        IsActive = true
     }
     
     member this.Update(time: Time): GameEngine * ExternalEffect[] =
         let newTick = int <| (time.Total - this.StartTime.Total) * GameRules.TicksPerSecond
-        let timeDelta = newTick - this.Tick
-        let playerEffect = this.Player.Update(this.CurrentLevel, timeDelta)
-        // TODO[#26]: Bullet collisions
-        { this with
-            Tick = newTick
-            Bullets = this.Bullets |> Array.choose(_.Update(this.CurrentLevel, timeDelta))
-            ParticlesSource = this.ParticlesSource.Update(this.CurrentLevel, this.Player, timeDelta) 
-        } |> GameEngine.ProcessPlayerEffect playerEffect
+        
+        if not this.IsActive then this, Array.empty
+        else
+            let timeDelta = newTick - this.Tick
+            let playerEffect = this.Player.Update(this.CurrentLevel, timeDelta)
+            // TODO[#26]: Bullet collisions
+            { this with
+                Tick = newTick
+                Bullets = this.Bullets |> Array.choose(_.Update(this.CurrentLevel, timeDelta))
+                ParticlesSource = this.ParticlesSource.Update(this.CurrentLevel, this.Player, timeDelta)
+            } |> GameEngine.ProcessPlayerEffect playerEffect
 
     member this.ApplyCommand(command: PlayerCommand): GameEngine * ExternalEffect[] =
         match command with
@@ -64,6 +69,9 @@ type GameEngine = {
                     Bullets = Array.append this.Bullets [| newBullet |] // TODO[#130]: Make more efficient (persistent vector?)
                 }, [| PlaySound SoundType.Shot |]
             else this, Array.empty
+        
+        | Suspend -> { this with IsActive = false }, Array.empty
+        | Activate -> { this with IsActive = true }, Array.empty
 
     static member private ProcessPlayerEffect effect (engine: GameEngine) =
         match effect with
