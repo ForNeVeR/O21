@@ -4,6 +4,7 @@
 
 namespace O21.Game.Engine
 
+open System
 open O21.Game.U95
 
 type Time = {
@@ -14,6 +15,7 @@ type Time = {
 type GameEngine = {
     StartTime: Time
     Tick: int
+    SuspendedTick: int
     CurrentLevel: Level
     Player: Player
     Bullets: Bullet[]
@@ -23,6 +25,7 @@ type GameEngine = {
     static member Create(time: Time, level: Level): GameEngine = {
         StartTime = time
         Tick = 0
+        SuspendedTick = 0
         CurrentLevel = level
         Player = Player.Default
         Bullets = Array.empty
@@ -32,16 +35,18 @@ type GameEngine = {
     
     member this.Update(time: Time): GameEngine * ExternalEffect[] =
         let newTick = int <| (time.Total - this.StartTime.Total) * GameRules.TicksPerSecond
-        
-        if not this.IsActive then this, Array.empty
-        else
-            let timeDelta = newTick - this.Tick
+        let timeDelta = newTick - this.Tick - this.SuspendedTick
+                                 
+        if not this.IsActive then { this with SuspendedTick = timeDelta + this.SuspendedTick }, Array.empty
+        else                     
+            let timeDelta = timeDelta
             let playerEffect = this.Player.Update(this.CurrentLevel, timeDelta)
             // TODO[#26]: Bullet collisions
             { this with
                 Tick = newTick
                 Bullets = this.Bullets |> Array.choose(_.Update(this.CurrentLevel, timeDelta))
                 ParticlesSource = this.ParticlesSource.Update(this.CurrentLevel, this.Player, timeDelta)
+                SuspendedTick = 0
             } |> GameEngine.ProcessPlayerEffect playerEffect
 
     member this.ApplyCommand(command: PlayerCommand): GameEngine * ExternalEffect[] =

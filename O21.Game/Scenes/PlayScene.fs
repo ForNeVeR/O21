@@ -69,7 +69,7 @@ type PlayScene = {
 
     static member Init(content: LocalContent): PlayScene = {
         HUD = HUD.Init()
-        Content = content 
+        Content = content
         Camera = Camera2D(zoom = 1f)
     }
 
