@@ -8,3 +8,5 @@ namespace O21.Game.Engine
 type PlayerCommand =
     | VelocityDelta of Vector
     | Shoot
+    | Suspend
+    | Activate

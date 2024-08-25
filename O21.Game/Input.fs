@@ -8,7 +8,7 @@ open System.Numerics
 open Raylib_CsLo
 open type Raylib_CsLo.Raylib
 
-type Key = Left | Right | Up | Down | Fire
+type Key = Left | Right | Up | Down | Fire | Pause
 
 type Input = {
     Pressed: Set<Key>
@@ -25,7 +25,8 @@ module Input =
                 KeyboardKey.KEY_DOWN, Down
                 KeyboardKey.KEY_LEFT, Left
                 KeyboardKey.KEY_RIGHT, Right
-                KeyboardKey.KEY_SPACE, Fire 
+                KeyboardKey.KEY_SPACE, Fire
+                KeyboardKey.KEY_F3, Pause
             ]
 
 type Input with    
