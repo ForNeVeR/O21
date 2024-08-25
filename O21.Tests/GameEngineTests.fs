@@ -44,6 +44,13 @@ module Ticks =
         Assert.Equal(0, gameEngine.Tick)
         let gameEngine = gameEngine |> frameUp
         Assert.Equal(1, gameEngine.Tick)
+        
+    [<Fact>]
+    let ``GameEngine increments SuspendedTick when not active``(): unit =
+        let gameEngine = { frameUpN timeZero 100 newEngine with IsActive = false }
+        Assert.Equal(0, gameEngine.SuspendedTick)
+        let gameEngine = frameUpN timeZero 101 gameEngine
+        Assert.Equal(1, gameEngine.SuspendedTick)
 
 module Movement =
 
