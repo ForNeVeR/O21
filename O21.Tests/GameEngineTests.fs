@@ -51,6 +51,39 @@ module Ticks =
         Assert.Equal(0, gameEngine.SuspendedTick)
         let gameEngine = frameUpN timeZero 101 gameEngine
         Assert.Equal(1, gameEngine.SuspendedTick)
+        
+module Timer =
+    
+    [<Fact>]
+    let ``GameTimer expired by period``(): unit =
+        let period = 10
+        let timer = { GameTimer.Default with Period = period }
+        
+        Assert.False(timer.HasExpired)
+        let timer = timer.Update(period)
+        Assert.True(timer.HasExpired)
+        
+    [<Fact>]
+    let ``GameTimer can expire many times``(): unit =
+        let period = 10
+        let expirationCount = 10
+        
+        let timer = { GameTimer.Default with Period = period }
+        Assert.Equal(timer.ExpirationCount, 0)
+        let timer = timer.Update(period * expirationCount + period - 1)
+        Assert.Equal(timer.ExpirationCount, expirationCount)
+    
+    [<Fact>]
+    let ``GameTimer resetting``(): unit =
+        let period = 10
+        let expirationCount = 10
+        
+        let timer = { GameTimer.Default with Period = period }
+                        .Update(period * expirationCount)
+                        .ResetN 5
+        Assert.Equal(timer.ExpirationCount, 5)
+        let timer = timer.Reset
+        Assert.Equal(timer.ExpirationCount, 0)
 
 module Movement =
 
