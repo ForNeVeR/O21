@@ -16,6 +16,7 @@ type HUD =
         Oxy: int
         Lives: int
         Abilities: bool[]
+        Pause: bool
         Controls: Controls
     }
     with
@@ -26,6 +27,7 @@ type HUD =
                 Oxy = 0
                 Lives = 5
                 Abilities = Array.init 5 (fun _ -> false )
+                Pause = false 
                 Controls =  Controls.Init()
             }
             
@@ -53,9 +55,14 @@ type HUD =
         member private this.renderLives (textures: HUDSprites) =
             DrawTexture(textures.Digits[this.Lives % 10], 314, 320, WHITE) // what if the number of lives is a two-digit number?
             
+        member private this.renderPause (texture: Texture) =
+            if this.Pause then 
+                DrawTexture(texture, 262, 150, WHITE)
+            
         member this.SyncWithGame(gameEngine:GameEngine) =
             { this with
-                Oxy = gameEngine.Player.OxygenAmount 
+                Oxy = gameEngine.Player.OxygenAmount
+                Pause = not gameEngine.IsActive
             }
             
         member this.UpdateScore(newScore:int):HUD =
@@ -78,7 +85,7 @@ type HUD =
                 this with Level = newLevel
             }
         
-        member this.Render(textures: HUDSprites): unit =
+        member this.Render(textures: HUDSprites, content: LocalContent): unit =
             HUDRenderer.renderAll textures
             this.renderBonusLine textures
             this.renderOxyLine textures
@@ -86,4 +93,4 @@ type HUD =
             this.renderLives textures
             this.renderLevel textures
             this.Controls.Render(textures)
-            
+            this.renderPause content.PauseTexture
