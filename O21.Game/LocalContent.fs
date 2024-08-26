@@ -16,12 +16,15 @@ type LocalContent = {
     UiFontRegular: Font
     UiFontBold: Font
     LoadingTexture: Texture
+    PauseTexture: Texture
     SoundFontPath: string
 } with
     static member Load(lifetime: Lifetime, window: WindowParameters): Task<LocalContent> = task {
         let binDir = Path.GetDirectoryName(Environment.ProcessPath)
         let pathToResource fileName =
             Path.Combine(binDir, "Resources", fileName)
+        let pathToSprites fileName =
+            pathToResource (Path.Combine("Sprites", fileName))
         let fontChars = [|
             for i in 0..95 -> 32 + i // Basic ASCII characters
             for i in 0..255 -> 0x400 + i // Cyrillic characters
@@ -41,12 +44,14 @@ type LocalContent = {
 
         let! regular = loadFont <| pathToResource "Fonts/Inter-Regular.otf"
         let! bold = loadFont <| pathToResource "Fonts/Inter-Bold.otf"
-        let! loading = loadTexture <| pathToResource "submarine.png"
+        let! loading = loadTexture <| pathToSprites "submarine.png"
+        let! pause = loadTexture <| pathToSprites "pause_sprite.png"
 
         return {
             UiFontRegular = regular
             UiFontBold = bold
             LoadingTexture = loading
+            PauseTexture = pause 
             SoundFontPath = pathToResource "SoundFont/microgm.sf2"
         }
     }

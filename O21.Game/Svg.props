@@ -15,7 +15,7 @@ SPDX-License-Identifier: MIT
 
     <Target Name="ProcessSvgFiles" BeforeTargets="Build" DependsOnTargets="DotNetToolRestore"
             Inputs="@(Svg)"
-            Outputs="@(Svg->'$(OutputPath)\Resources\%(FileName).png')">
-        <Exec Command="dotnet tool run Svg.Skia.Converter --inputFiles @(Svg) --outputDirectory $(OutputPath)\Resources" />
+            Outputs="@(Svg->'$(OutputPath)\Resources\Sprites%(FileName).png')">
+        <Exec Command="dotnet tool run Svg.Skia.Converter --inputFiles @(Svg) --outputDirectory $(OutputPath)\Resources\Sprites" />
     </Target>
 </Project>

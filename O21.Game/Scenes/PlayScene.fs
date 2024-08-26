@@ -118,7 +118,6 @@ type PlayScene = {
             let sprites = state.U95Data.Sprites
             
             DrawTexture(sprites.Background[1], 0, 0, WHITE)
-            this.HUD.Render(sprites.HUD)
             let map = game.CurrentLevel.LevelMap
             for i = 0 to map.Length-1 do
                 for j = 0 to map[i].Length-1 do
@@ -136,3 +135,5 @@ type PlayScene = {
                 let fish = sprites.Fishes[i]
                 let frameNumber = state.Game.Tick % fish.LeftDirection.Length
                 DrawTexture(fish.LeftDirection[frameNumber], 60*i, 60*i, WHITE)
+
+            this.HUD.Render(sprites.HUD, this.Content) // Always draw the HUD on last layer
