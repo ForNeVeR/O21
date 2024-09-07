@@ -17,6 +17,12 @@ let GameScreenHeight = 400
 let ShotCooldownTicks = 15
 
 [<Literal>]
+let MaxPlayerLives = 9
+
+[<Literal>]
+let InitialPlayerLives = 5
+
+[<Literal>]
 let LevelWidth = GameScreenWidth
 
 [<Literal>]
@@ -33,7 +39,7 @@ let ClampVelocity(Vector(x, y)): Vector =
    )
    
 [<Literal>]
-let MaxOxygenUnits = 100
+let MaxOxygenUnits = 5
 
 [<Literal>]
 let OxygenUnitPeriod = 22

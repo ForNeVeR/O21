@@ -28,7 +28,7 @@ type HUD =
                 Lives = 5
                 Abilities = Array.init 5 (fun _ -> false )
                 Pause = false 
-                Controls =  Controls.Init()
+                Controls = Controls.Init()
             }
             
         member private this.renderBonusLine(textures: HUDSprites)  =
@@ -61,6 +61,7 @@ type HUD =
             
         member this.SyncWithGame(gameEngine:GameEngine) =
             { this with
+                Lives = gameEngine.Player.Lives
                 Oxy = gameEngine.Player.OxygenAmount
                 Pause = not gameEngine.IsActive
             }

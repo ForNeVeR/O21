@@ -12,6 +12,7 @@ type Player = {
     Velocity: Vector
     Direction: HorizontalDirection
     ShotCooldown: int
+    Lives: int
     Oxygen: OxygenStorage
 } with
 
@@ -36,27 +37,36 @@ type Player = {
                 ShotCooldown = max (this.ShotCooldown - timeDelta) 0
                 Oxygen = this.Oxygen.Update(timeDelta) 
             }
-        match CheckCollision level newPlayer.Box with
-        | Collision.OutOfBounds -> PlayerEffect.Update newPlayer // TODO[#28]: Level progression
-        | Collision.CollidesBrick -> PlayerEffect.Die
-        | Collision.None -> PlayerEffect.Update newPlayer
+        newPlayer.CheckState(level)
+        
+    member private this.CheckState(level: Level) =
+        if this.Oxygen.IsEmpty then PlayerEffect.Die
+        else
+            match CheckCollision level this.Box with
+            | Collision.OutOfBounds -> PlayerEffect.Update this // TODO[#28]: Level progression
+            | Collision.CollidesBrick -> PlayerEffect.Die
+            | Collision.None -> PlayerEffect.Update this
         
     static member Default = {
             TopLeft = GameRules.PlayerStartingPosition
             Velocity = Vector(0, 0)
             ShotCooldown = 0
             Direction = Right
+            Lives = GameRules.InitialPlayerLives
             Oxygen = OxygenStorage.Default
         }
 and OxygenStorage = {
     Amount: int
     Timer: GameTimer
 } with
+    
+    member this.IsEmpty = this.Amount < 0
+    
     member this.Update(timeDelta: int) =
         let timer = this.Timer.Update(timeDelta)
         if timer.HasExpired then
             let newAmount =
-                if this.Amount > 0 then
+                if this.Amount >= 0 then
                     this.Amount - timer.ExpirationCount
                 else GameRules.MaxOxygenUnits
             {                
