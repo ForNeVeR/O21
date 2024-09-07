@@ -39,7 +39,7 @@ let ClampVelocity(Vector(x, y)): Vector =
    )
    
 [<Literal>]
-let MaxOxygenUnits = 5
+let MaxOxygenUnits = 100
 
 [<Literal>]
 let OxygenUnitPeriod = 22

@@ -158,6 +158,19 @@ module OxygenSystem =
         let gameEngine = frameUpN timeZero period gameEngine
         Assert.Equal(expected, gameEngine.Player.OxygenAmount)
         
+    [<Fact>]
+    let ``Player dies when oxygen amount is empty``(): unit =
+        let level = { LevelMap = [| [| Empty |] |] }
+        let player = Player.Default
+        
+        let player = { player with Player.Oxygen.Amount = 1 }
+        let player' = player.Update(level, 0);
+        Assert.True(match player' with | PlayerEffect.Update _ -> true | _ -> false)
+        
+        let player = { player with Player.Oxygen.Amount = -1 }
+        let player' = player.Update(level, 0)
+        Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
+        
 module ParticleSystem =
     
     [<Fact>]
