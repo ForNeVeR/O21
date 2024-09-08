@@ -60,6 +60,9 @@ module private InputProcessor =
                 game <- game'
                 effects <- Array.append effects effects'
             game, effects
+            
+    let RestartKeyPressed (input: Input) = Set.contains Key.Restart input.Pressed
+        
 
 type PlayScene = {
     HUD: HUD
@@ -104,12 +107,14 @@ type PlayScene = {
             let sounds =
                 state.SoundsToStartPlaying +
                 (allEffects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
-            let navigationEvent =
-                if this.HUD.Lives < 0 then
-                    // TODO[#32]: Should be handled by the game engine
+            let state, navigationEvent =
+                if this.HUD.Lives <= 0 then
+                    { state with Game = fst <| state.Game.ApplyCommand(PlayerCommand.Suspend) },
                     Some (NavigateTo Scene.GameOver)
+                else if InputProcessor.RestartKeyPressed input then
+                    state, Some (NavigateTo Scene.Play)
                 else
-                    None
+                    state, None
 
             { state with SoundsToStartPlaying = sounds }, navigationEvent
  

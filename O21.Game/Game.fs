@@ -23,8 +23,8 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
     let context = new QueueSynchronizationContext(eventQueue)
     let prevContext = SynchronizationContext.Current
     do SynchronizationContext.SetSynchronizationContext(context)
-
-    let mutable state = {
+    
+    let initialState = {
         Scene = MainMenuScene.Init(window, content, data)
         Settings = { SoundVolume = 0.1f }
         U95Data = data
@@ -33,6 +33,8 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         Game = GameEngine.Create({ Total = GetTime(); Delta = GetFrameTime() }, data.Levels[GameRules.StartingLevel])
         MusicPlayer = None
     }
+
+    let mutable state = initialState
 
     let pumpQueue() =
         while not eventQueue.IsEmpty do
@@ -50,8 +52,11 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
 
     member _.Initialize(lifetime: Lifetime): unit =
         launchMusicPlayer lifetime
+        
+    member _.Restart(): unit =
+        state <- { initialState with Game = GameEngine.Create({ Total = GetTime(); Delta = GetFrameTime() }, data.Levels[GameRules.StartingLevel]) }
 
-    member _.Update() =
+    member this.Update() =
         let input = Input.Handle(state.Scene.Camera)
         let time = { Total = GetTime(); Delta = GetFrameTime() }
 
@@ -64,8 +69,11 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         let scene: IScene =
             match event with
             | Some (NavigateTo Scene.MainMenu) -> MainMenuScene.Init(window, content, data)
-            | Some (NavigateTo Scene.Play) -> PlayScene.Init content
-            | Some (NavigateTo Scene.GameOver) -> GameOverScene.Init(window, content, state.Language)
+            | Some (NavigateTo Scene.Play) ->
+                this.Restart()
+                PlayScene.Init content
+            | Some (NavigateTo Scene.GameOver) ->
+                GameOverScene.Init(window, content, state.Language)
             | Some (NavigateTo Scene.Help) ->
                 let loadedHelp = (state.Language |> state.U95Data.Help)
                 HelpScene.Init(window, content, loadedHelp, state.Language)
