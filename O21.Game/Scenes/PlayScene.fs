@@ -91,22 +91,24 @@ type PlayScene = {
         
     static member private DrawParticle sprite (particle: Particle) =
         PlayScene.DrawSprite sprite particle.TopLeft
-
+    
+    static member private UpdateGame (input, time) (gameEngine, hud) =
+        let game, inputEffects = InputProcessor.ProcessKeys input hud gameEngine
+        let game', updateEffects = game.Update time
+        game', Array.concat [inputEffects; updateEffects]
+    
     interface IScene with
         member this.Camera: Camera2D = this.Camera
         member this.Update(input, time, state) =
             this.Camera.zoom <- (GetScreenHeight() |> float32) / (GameRules.GameScreenHeight |> float32)
             let cameraTargetX = ((GetScreenWidth() |> float32) - (GameRules.GameScreenWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
             this.Camera.target <- System.Numerics.Vector2(cameraTargetX, 0f)
-            // TODO[#26]: Merge ApplyCommands and Update into single function on GameEngine
-            let game, effects = state.Game |> InputProcessor.ProcessKeys input this.HUD
-            let game', effects' = game.Update time
-            let hud = this.HUD.SyncWithGame game'
-            let state = { state with Game = game'; Scene = { this with HUD = hud } }
-            let allEffects = Seq.concat [| effects; effects' |]
+            let game, effects = PlayScene.UpdateGame (input, time) (state.Game, this.HUD)
+            let hud = this.HUD.SyncWithGame game
+            let state = { state with Game = game; Scene = { this with HUD = hud } }
             let sounds =
                 state.SoundsToStartPlaying +
-                (allEffects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
+                (effects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
             let state, navigationEvent =
                 if this.HUD.Lives <= 0 then
                     { state with Game = fst <| state.Game.ApplyCommand(PlayerCommand.Suspend) },
