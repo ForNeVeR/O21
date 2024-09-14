@@ -41,7 +41,7 @@ type GameEngine = {
         else                     
             let timeDelta = timeDelta
             let playerEffect = this.Player.Update(this.CurrentLevel, timeDelta)
-            // TODO[#26]: Bullet collisions
+            // TODO[#27]: Bullet collisions
             { this with
                 Tick = newTick
                 Bullets = this.Bullets |> Array.choose(_.Update(this.CurrentLevel, timeDelta))
