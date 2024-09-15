@@ -67,12 +67,14 @@ module private InputProcessor =
 type PlayScene = {
     HUD: HUD
     Content: LocalContent
+    Window: WindowParameters
     mutable Camera: Camera2D
 } with
 
-    static member Init(content: LocalContent): PlayScene = {
+    static member Init(window: WindowParameters, content: LocalContent): PlayScene = {
         HUD = HUD.Init()
         Content = content
+        Window = window 
         Camera = Camera2D(zoom = 1f)
     }
 
@@ -100,9 +102,6 @@ type PlayScene = {
     interface IScene with
         member this.Camera: Camera2D = this.Camera
         member this.Update(input, time, state) =
-            this.Camera.zoom <- (GetScreenHeight() |> float32) / (GameRules.GameScreenHeight |> float32)
-            let cameraTargetX = ((GetScreenWidth() |> float32) - (GameRules.GameScreenWidth |> float32) * this.Camera.zoom) / -2f / this.Camera.zoom
-            this.Camera.target <- System.Numerics.Vector2(cameraTargetX, 0f)
             let game, effects = PlayScene.UpdateGame (input, time) (state.Game, this.HUD)
             let hud = this.HUD.SyncWithGame game
             let state = { state with Game = game; Scene = { this with HUD = hud } }
@@ -123,6 +122,8 @@ type PlayScene = {
         member this.Draw(state: State) =
             let game = state.Game
             let sprites = state.U95Data.Sprites
+            
+            DrawSceneHelper.configureCamera this.Window &this.Camera
             
             DrawTexture(sprites.Background[1], 0, 0, WHITE)
             let map = game.CurrentLevel.LevelMap

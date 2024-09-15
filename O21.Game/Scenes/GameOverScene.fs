@@ -17,8 +17,8 @@ type GameOverScene =
         OkButton: Button
         Content: LocalContent
         MinimizeButton: MinimizeButton
+        Window: WindowParameters
         mutable Camera: Camera2D
-
     }
     
     with
@@ -27,6 +27,7 @@ type GameOverScene =
                 OkButton = Button.Create(window, content.UiFontRegular, (fun _ -> "Ok"), Vector2(288f, 229f), language)
                 Content = content
                 MinimizeButton = MinimizeButton.Create(Vector2(193f, 134f), language)
+                Window = window 
                 Camera = Camera2D(zoom = 1f)
             }
             
@@ -35,6 +36,8 @@ type GameOverScene =
 
             member this.Draw(state) =
                 let x,y = 188, 129
+                
+                DrawSceneHelper.configureCamera this.Window &this.Camera
                 
                 WindowRenderer.render(x, y)
                 this.MinimizeButton.Render()

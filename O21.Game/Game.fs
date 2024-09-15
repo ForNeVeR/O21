@@ -54,7 +54,9 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         launchMusicPlayer lifetime
         
     member _.Restart(): unit =
-        state <- { initialState with Game = GameEngine.Create({ Total = GetTime(); Delta = GetFrameTime() }, data.Levels[GameRules.StartingLevel]) }
+        state <- { initialState with
+                    Game = GameEngine.Create({ Total = GetTime(); Delta = GetFrameTime() }, data.Levels[GameRules.StartingLevel])
+                    Language = state.Language }
 
     member this.Update() =
         let input = Input.Handle(state.Scene.Camera)
@@ -71,7 +73,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
             | Some (NavigateTo Scene.MainMenu) -> MainMenuScene.Init(window, content, data)
             | Some (NavigateTo Scene.Play) ->
                 this.Restart()
-                PlayScene.Init content
+                PlayScene.Init(window, content)
             | Some (NavigateTo Scene.GameOver) ->
                 GameOverScene.Init(window, content, state.Language)
             | Some (NavigateTo Scene.Help) ->
