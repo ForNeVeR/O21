@@ -74,7 +74,7 @@ type PlayScene = {
     static member Init(window: WindowParameters, content: LocalContent): PlayScene = {
         HUD = HUD.Init()
         Content = content
-        Window = window 
+        Window = window
         Camera = Camera2D(zoom = 1f)
     }
 
@@ -123,7 +123,9 @@ type PlayScene = {
             let game = state.Game
             let sprites = state.U95Data.Sprites
             
-            DrawSceneHelper.configureCamera this.Window &this.Camera
+            DrawSceneHelper.configureCamera
+                { this.Window with RenderTargetSize = (GameRules.GameScreenWidth, GameRules.GameScreenHeight) }
+                &this.Camera
             
             DrawTexture(sprites.Background[1], 0, 0, WHITE)
             let map = game.CurrentLevel.LevelMap

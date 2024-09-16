@@ -37,7 +37,9 @@ type GameOverScene =
             member this.Draw(state) =
                 let x,y = 188, 129
                 
-                DrawSceneHelper.configureCamera this.Window &this.Camera
+                DrawSceneHelper.configureCamera
+                    { this.Window with RenderTargetSize = (600, 480) }
+                    &this.Camera
                 
                 WindowRenderer.render(x, y)
                 this.MinimizeButton.Render()
