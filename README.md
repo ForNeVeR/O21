@@ -27,6 +27,8 @@ Currently, O21 is only suitable for development mode. To start the game, run the
 $ dotnet run --project O21.Game start <downloaded-data-directory>
 ```
 
+See [the documentation on command line arguments][docs.command-line].
+
 Game History
 ------------
 
@@ -61,6 +63,7 @@ No assets from the original game are included in this software (though it may al
 Documentation
 -------------
 
+- [Command-Line Interface][docs.command-line]
 - [Contributor Guide][docs.contributing]
   - [Original Game Resources][docs.resources]
 - [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
@@ -74,6 +77,7 @@ Acknowledgments
 [abandonware]: https://en.wikipedia.org/wiki/Abandonware
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier#status-enfer-
 [docs.code-of-conduct]: CODE_OF_CONDUCT.md
+[docs.command-line]: docs/command-line.md
 [docs.contributing]: CONTRIBUTING.md
 [docs.license]: LICENSE.md
 [docs.resources]: docs/resources.md
