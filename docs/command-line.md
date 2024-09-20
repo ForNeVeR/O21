@@ -1,9 +1,9 @@
 # O21 CLI
 
 ### Base commands
-* `start` - Start the game
-* `export` - Export resources
-* `helpFile` - Parse a WinHelp file and extract all the information from it
+* [`start`](#command-start) - Start the game
+* [`export`](#command-export) - Export resources
+* [`helpFile`](#command-helpfile) - Parse a WinHelp file and extract all the information from it
 
 ### Common syntax
 * `--no-logo` - Suppress banner message
@@ -11,7 +11,7 @@
 
 ### Command `start`
 ```sh
-O21.Game start <GAME_DIR> [--screenSizes <WIDTH> <HEIGHT>]
+$ O21.Game start <GAME_DIR> [--screenSizes <WIDTH> <HEIGHT>]
 ```
 **Arguments:**
 1. `GAME_DIR` - The directory where the game will be loaded
@@ -19,7 +19,7 @@ O21.Game start <GAME_DIR> [--screenSizes <WIDTH> <HEIGHT>]
 
 ### Command `export`
 ```sh
-O21.Game export <RESOURCES_DIR> [-o|--out <OUTPUT_DIR>]
+$ O21.Game export <RESOURCES_DIR> [-o|--out <OUTPUT_DIR>]
 ```
 **Arguments:**
 1. `RESOURCES_DIR` - The file from which the resources will be exported
@@ -27,7 +27,7 @@ O21.Game export <RESOURCES_DIR> [-o|--out <OUTPUT_DIR>]
 
 ### Command `helpFile`
 ```sh
-O21.Game helpFile <HELP_FILE> [-o|--out <OUTPUT_DIR>]
+$ O21.Game helpFile <HELP_FILE> [-o|--out <OUTPUT_DIR>]
 ```
 **Arguments:**
 1. `HELP_FILE` - Path to the input .hlp file.
