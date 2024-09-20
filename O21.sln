@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{ED5D37B9-3
 		docs\resources.md = docs\resources.md
 		docs\screenshot.png = docs\screenshot.png
 		docs\screenshot.png.license = docs\screenshot.png.license
+		docs\command-line.md = docs\command-line.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{58DB85EB-D5FC-4D30-9FC7-BDD95AFE31EB}"

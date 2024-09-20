@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
 SPDX-License-Identifier: MIT
 -->
 
-# O21 CLI
+# Command-line Interface
 
 ### Base commands
 * [`start`](#command-start) - Start the game
@@ -16,7 +16,7 @@ SPDX-License-Identifier: MIT
 * [`-h` | `--help`] - Show CLI help info or command help info
 
 ### Command `start`
-```sh
+```console
 $ O21.Game start <GAME_DIR> [--screenSizes <WIDTH> <HEIGHT>]
 ```
 **Arguments:**
@@ -24,7 +24,7 @@ $ O21.Game start <GAME_DIR> [--screenSizes <WIDTH> <HEIGHT>]
 2. *(Option)* `--screenSizes` - Set up the sizes of window (width and height)
 
 ### Command `export`
-```sh
+```console
 $ O21.Game export <RESOURCES_DIR> [-o|--out <OUTPUT_DIR>]
 ```
 **Arguments:**
@@ -32,7 +32,7 @@ $ O21.Game export <RESOURCES_DIR> [-o|--out <OUTPUT_DIR>]
 2. *(Option)* `--out` - Directory where resources will be stored
 
 ### Command `helpFile`
-```sh
+```console
 $ O21.Game helpFile <HELP_FILE> [-o|--out <OUTPUT_DIR>]
 ```
 **Arguments:**
