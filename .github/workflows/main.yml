@@ -62,7 +62,7 @@ jobs:
         run: ./Scripts/Verify-Translations.ps1
 
   licenses:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out the sources
         uses: actions/checkout@v4
@@ -70,7 +70,7 @@ jobs:
         uses: fsfe/reuse-action@v4
 
   encoding:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Verify encoding
