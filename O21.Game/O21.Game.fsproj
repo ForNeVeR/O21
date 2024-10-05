@@ -54,6 +54,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="U95\Parser.fs" />
         <Compile Include="U95\Level.fs" />
         <Compile Include="U95\U95Data.fs" />
+        <Compile Include="AnimationType.fs" />
         <Compile Include="Engine\GameTimer.fs" />
         <Compile Include="Engine\GameField.fs" />
         <Compile Include="Engine\GameRules.fs" />
