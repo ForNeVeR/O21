@@ -12,6 +12,7 @@ type Player = {
     Velocity: Vector
     Direction: HorizontalDirection
     ShotCooldown: int
+    FreezeTime: int
     Lives: int
     Oxygen: OxygenStorage
 } with
@@ -19,6 +20,7 @@ type Player = {
     member this.TopRight = this.TopLeft + Vector(GameRules.PlayerSize.X, 0)
 
     member this.IsAllowedToShoot = this.ShotCooldown = 0
+    member this.IsAllowedToMove = this.FreezeTime = 0
     
     member this.OxygenAmount = this.Oxygen.Amount
 
@@ -35,7 +37,8 @@ type Player = {
             { this with
                 TopLeft = this.TopLeft + this.Velocity * timeDelta
                 ShotCooldown = max (this.ShotCooldown - timeDelta) 0
-                Oxygen = this.Oxygen.Update(timeDelta) 
+                FreezeTime =  max (this.FreezeTime - timeDelta) 0
+                Oxygen = this.Oxygen.Update(timeDelta)
             }
         newPlayer.CheckState(level)
         
@@ -51,6 +54,7 @@ type Player = {
             TopLeft = GameRules.PlayerStartingPosition
             Velocity = Vector(0, 0)
             ShotCooldown = 0
+            FreezeTime = 0 
             Direction = Right
             Lives = GameRules.InitialPlayerLives
             Oxygen = OxygenStorage.Default

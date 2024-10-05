@@ -31,7 +31,12 @@ let LevelHeight = 300
 [<Literal>]
 let TicksPerSecond = 10.0
 
+[<Literal>]
 let MaxPlayerVelocity = 3
+
+[<Literal>]
+let FreezeMovementTime = 6
+
 let ClampVelocity(Vector(x, y)): Vector =
    Vector(
        Math.Clamp(x, -MaxPlayerVelocity, MaxPlayerVelocity),
