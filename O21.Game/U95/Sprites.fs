@@ -28,7 +28,7 @@ type PlayerSprites =
             CreateTransparentSprite lifetime images[i] images[i + 24]
         let right = seq { 6; yield! [| 17..23 |] } |> Seq.map loadImageByIndex |> Seq.toArray
         let left = seq { yield! [| 7..13 |]; 24 } |> Seq.map loadImageByIndex |> Seq.toArray
-        let explosion = seq { yield! [| 16..18 |] } |> Seq.map loadImageByIndex |> Seq.toArray
+        let explosion = seq { yield! [| 14..16 |] } |> Seq.map loadImageByIndex |> Seq.toArray
         { Left = left; Right = right; Explosion = explosion }
 
 type Sprites = {
