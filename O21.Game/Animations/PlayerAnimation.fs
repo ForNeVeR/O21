@@ -15,15 +15,13 @@ type PlayerAnimation = {
         {
             Sprites = data.Sprites.Player
             AnimationQueue = []
-            MovementAnimation = {
-                Frames = data.Sprites.Player.Right
-                LoopTime = LoopTime.Infinity
-                TicksPerFrame = 0
-                CurrentFrame = (0, 0)
-            }
+            MovementAnimation = Animation.Init(data.Sprites.Player.Right, LoopTime.Infinity, 0)
         }
         
-    member private this.MovementAnimationSpeedRange = Array.append [|-1|] (Array.rev [|1..GameRules.MaxPlayerVelocity|])
+    member private this.MovementAnimationSpeedRange = Array.concat [|
+                                                            (Array.rev [|-GameRules.MaxPlayerVelocity..(-1)|])
+                                                            [|0|]
+                                                            (Array.rev [|1..GameRules.MaxPlayerVelocity|]) |]
         
     member private this.UpdateMovementAnimation(player: Player) (tick:int)=
         let sprites =
@@ -32,7 +30,7 @@ type PlayerAnimation = {
                 | Right -> this.Sprites.Right
         { this.MovementAnimation.Update(tick).Value with
             Frames = sprites
-            TicksPerFrame = Array.get this.MovementAnimationSpeedRange (Math.Abs(player.Velocity.X)) }
+            TicksPerFrame = Array.get this.MovementAnimationSpeedRange (player.Velocity.X + GameRules.MaxPlayerVelocity) }
         
     member private this.ExplosionAnimation (tick:int) =
         {
