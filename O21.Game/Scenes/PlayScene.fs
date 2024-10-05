@@ -85,9 +85,6 @@ type PlayScene = {
         DrawTexture(sprite, x, y, WHITE)
 
     static member private DrawPlayer sprites (player: Player) =
-        // TODO[#122]: Player animation
-        // TODO[#123]: Generalize player and enemies animations
-        // TODO[#122]: Stopped state handling (separate images?)
         let sprite = if player.Direction = Right then sprites.Right[0] else sprites.Left[0]           
         PlayScene.DrawSprite sprite player.TopLeft
 
@@ -111,7 +108,11 @@ type PlayScene = {
             let state = { state with Game = game; Scene = { this with HUD = hud; AnimationHandler = animationHandler } }
             let sounds =
                 state.SoundsToStartPlaying +
-                (effects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
+                (effects 
+                    |> Seq.choose(function
+                        | PlaySound s -> Some s
+                        | _ -> None)
+                    |> Set.ofSeq)
             let state, navigationEvent =
                 if this.HUD.Lives <= 0 then
                     { state with Game = fst <| state.Game.ApplyCommand(PlayerCommand.Suspend) },

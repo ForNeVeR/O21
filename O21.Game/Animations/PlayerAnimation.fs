@@ -5,6 +5,7 @@ open O21.Game
 open O21.Game.Engine
 open O21.Game.U95
 
+// TODO[#123]: Generalize player and enemies animations
 type PlayerAnimation = {
     Sprites: PlayerSprites
     AnimationQueue: Animation list
@@ -51,7 +52,9 @@ type PlayerAnimation = {
                 | None -> this.AnimationQueue.Tail
                 | Some updated -> updated :: this.AnimationQueue.Tail
             
-        if Seq.exists (fun effect -> match effect with | PlaySound s -> s = SoundType.LifeLost) effects then
+        if Seq.exists (function
+            | PlayAnimation a -> a = AnimationType.Die
+            | _ -> false) effects then
             queue <- this.ExplosionAnimation tick :: queue
             
         { this with
