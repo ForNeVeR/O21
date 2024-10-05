@@ -4,6 +4,7 @@
 
 namespace O21.Game.Scenes
 
+open O21.Game.Animations
 open type Raylib_CsLo.Raylib
 open Raylib_CsLo
 
@@ -68,13 +69,15 @@ type PlayScene = {
     HUD: HUD
     Content: LocalContent
     Window: WindowParameters
+    AnimationHandler: AnimationHandler
     mutable Camera: Camera2D
 } with
 
-    static member Init(window: WindowParameters, content: LocalContent): PlayScene = {
+    static member Init(window: WindowParameters, content: LocalContent, data:U95Data): PlayScene = {
         HUD = HUD.Init()
         Content = content
         Window = window
+        AnimationHandler = AnimationHandler.Init data
         Camera = Camera2D(zoom = 1f)
     }
 
@@ -82,9 +85,6 @@ type PlayScene = {
         DrawTexture(sprite, x, y, WHITE)
 
     static member private DrawPlayer sprites (player: Player) =
-        // TODO[#122]: Player animation
-        // TODO[#123]: Generalize player and enemies animations
-        // TODO[#122]: Stopped state handling (separate images?)
         let sprite = if player.Direction = Right then sprites.Right[0] else sprites.Left[0]           
         PlayScene.DrawSprite sprite player.TopLeft
 
@@ -104,10 +104,15 @@ type PlayScene = {
         member this.Update(input, time, state) =
             let game, effects = PlayScene.UpdateGame (input, time) (state.Game, this.HUD)
             let hud = this.HUD.SyncWithGame game
-            let state = { state with Game = game; Scene = { this with HUD = hud } }
+            let animationHandler = this.AnimationHandler.Update (state, effects)
+            let state = { state with Game = game; Scene = { this with HUD = hud; AnimationHandler = animationHandler } }
             let sounds =
                 state.SoundsToStartPlaying +
-                (effects |> Seq.map(fun (PlaySound s) -> s) |> Set.ofSeq)
+                (effects 
+                    |> Seq.choose(function
+                        | PlaySound s -> Some s
+                        | _ -> None)
+                    |> Set.ofSeq)
             let state, navigationEvent =
                 if this.HUD.Lives <= 0 then
                     { state with Game = fst <| state.Game.ApplyCommand(PlayerCommand.Suspend) },
@@ -137,7 +142,7 @@ type PlayScene = {
                     | _ ->
                         ()
 
-            PlayScene.DrawPlayer sprites.Player game.Player
+            this.AnimationHandler.Draw(state)
             game.Bullets |> Seq.iter(PlayScene.DrawBullet sprites.Bullet)
             game.ParticlesSource.Particles |> Seq.iter(PlayScene.DrawParticle sprites.BubbleParticle)
 

@@ -73,7 +73,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
             | Some (NavigateTo Scene.MainMenu) -> MainMenuScene.Init(window, content, data)
             | Some (NavigateTo Scene.Play) ->
                 this.Restart()
-                PlayScene.Init(window, content)
+                PlayScene.Init(window, content, data)
             | Some (NavigateTo Scene.GameOver) ->
                 GameOverScene.Init(window, content, state.Language)
             | Some (NavigateTo Scene.Help) ->

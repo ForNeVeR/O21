@@ -5,6 +5,7 @@
 namespace O21.Game.Engine
 
 open System
+open O21.Game.Animations
 open O21.Game.U95
 
 type Time = {
@@ -51,13 +52,14 @@ type GameEngine = {
 
     member this.ApplyCommand(command: PlayerCommand): GameEngine * ExternalEffect[] =
         match command with
-        | VelocityDelta(delta) ->
+        | VelocityDelta(delta) when this.Player.IsAllowedToMove ->
             { this with
                 Player =
                     { this.Player with
                         Velocity = GameRules.ClampVelocity(this.Player.Velocity + delta)
                     }
             }, Array.empty
+        | VelocityDelta _ -> this, Array.empty
 
         | Shoot ->
             let player = this.Player
@@ -85,9 +87,10 @@ type GameEngine = {
             { engine with
                 Player = { engine.Player with
                             Velocity = Vector.Zero
+                            FreezeTime = GameRules.FreezeMovementTime 
                             Lives = Math.Max(engine.Player.Lives - 1, 0)
                             Oxygen = OxygenStorage.Default }
-            }, [| PlaySound SoundType.LifeLost |]
+            }, [| PlaySound SoundType.LifeLost; PlayAnimation AnimationType.Die |]
             // TODO[#26]: Player sprite should be replaced with explosion for a while
             // TODO[#26]: Investigate how shot cooldown and direction should behave on resurrect: are they reset or not?
             // TODO[#27]: Investigate if enemy collision should stop the player from moving
