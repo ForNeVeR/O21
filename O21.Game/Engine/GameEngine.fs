@@ -87,7 +87,7 @@ type GameEngine = {
             { engine with
                 Player = { engine.Player with
                             Velocity = Vector.Zero
-                            FreezeTime = GameRules.FreezeMovementTime 
+                            FreezeTime = GameRules.PostDeathFreezeTicks 
                             Lives = Math.Max(engine.Player.Lives - 1, 0)
                             Oxygen = OxygenStorage.Default }
             }, [| PlaySound SoundType.LifeLost; PlayAnimation AnimationType.Die |]

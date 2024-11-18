@@ -35,7 +35,7 @@ let TicksPerSecond = 10.0
 let MaxPlayerVelocity = 3
 
 [<Literal>]
-let FreezeMovementTime = 6
+let PostDeathFreezeTicks = 6
 
 let ClampVelocity(Vector(x, y)): Vector =
    Vector(
