@@ -125,7 +125,7 @@ let private UnpackData inputFile directoryInArchive outputDirectory =
                 | None -> ()
     )
 
-let private WriteDataHash outputDirectory hash =
+let private WriteDataHash outputDirectory (hash: string) =
     File.WriteAllTextAsync(Paths.U95ContentHashFile outputDirectory, hash)
 
 let private DownloadAndUnpackData contentConfig

@@ -10,7 +10,7 @@ O21 Contributor Guide
 Development Prerequisites
 -------------------------
 
-To develop O21, you'll need [.NET 7 SDK][dotnet] (or a later version).
+To develop O21, you'll need [.NET 9 SDK][dotnet] (or a later version).
 
 Build the Project
 -----------------
@@ -76,7 +76,7 @@ The `-AutoFix` switch will automatically fix the encoding issues, and you'll onl
 
 [archive.u95]: https://archive.org/details/u-95_20230304
 [docs.resources]: docs/resources.md
-[dotnet]: https://dot.net/
+[dotnet]: https://dotnet.microsoft.com/en-us/download
 [play-mini-games.u95]: https://playminigames.net/game/u95
 [powershell]: https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell
 [reuse]: https://reuse.software/
