@@ -46,7 +46,7 @@ License and Legal Disclaimers
 The project is distributed under the terms of [the MIT license][docs.license]
 (unless a particular file states otherwise).
 
-The license indication in the project's sources is compliant with the [REUSE specification v3.2][reuse.spec].
+The license indication in the project's sources is compliant with the [REUSE specification v3.3][reuse.spec].
 
 _The following section is maintained by me, the O21 project lead, [Friedrich von Never][fornever]. The statements made in first person are all mine, do not hesitate to contact me if you have any comments._
 
@@ -86,7 +86,7 @@ Acknowledgments
 [nikita]: https://en.wikipedia.org/wiki/Nikita_Online
 [old-games.u95]: https://www.old-games.ru/game/4676.html
 [open-sage]: https://github.com/OpenSAGE/OpenSAGE
-[reuse.spec]: https://reuse.software/spec-3.2/
+[reuse.spec]: https://reuse.software/spec-3.3/
 [screenshot]: docs/screenshot.png
 [status-enfer]: https://img.shields.io/badge/status-enfer-orange.svg
 [wikipedia.o21]: https://en.wikipedia.org/wiki/HNLMS_O_21
