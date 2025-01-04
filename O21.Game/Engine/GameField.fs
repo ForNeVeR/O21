@@ -35,6 +35,11 @@ type Box =
     member this.BottomRight: Point = this.TopLeft + this.Size - Vector(1, 1)
 
 [<Struct>]
+type Trigger =
+    | VerticalTrigger of X:int
+    | HorizontalTrigger of Y:int
+
+[<Struct>]
 type HorizontalDirection =
     | Left
     | Right
@@ -69,3 +74,4 @@ type Collision =
     | OutOfBounds
     /// At least one pixel of the object intersects with a brick.
     | CollidesBrick
+    | CollidesBox

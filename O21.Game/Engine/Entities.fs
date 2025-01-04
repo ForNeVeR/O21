@@ -4,6 +4,8 @@
 
 namespace O21.Game.Engine
 
+open System
+open O21.Game.Engine.Environments
 open O21.Game.U95
 open O21.Game.Engine.Geometry
 
@@ -32,7 +34,7 @@ type Player = {
         
     member this.Box: Box = { TopLeft = this.TopLeft; Size = GameRules.PlayerSize }
 
-    member this.Update(level: Level, timeDelta: int): PlayerEffect =
+    member this.Update(playerEnv: PlayerEnv, timeDelta: int): PlayerEffect =
         let newPlayer =
             { this with
                 TopLeft = this.TopLeft + this.Velocity * timeDelta
@@ -40,15 +42,25 @@ type Player = {
                 FreezeTime =  max (this.FreezeTime - timeDelta) 0
                 Oxygen = this.Oxygen.Update(timeDelta)
             }
-        newPlayer.CheckState(level)
+        newPlayer.CheckState(playerEnv)
         
-    member private this.CheckState(level: Level) =
+    member private this.CheckState(playerEnv: PlayerEnv) =
+        let level = playerEnv.Level
+        let enemies = playerEnv.EnemyColliders
+        let bullets = playerEnv.BulletColliders
+        
+        let newPlayer = this.CheckBullets(bullets)
+        
         if this.Oxygen.IsEmpty then PlayerEffect.Die
-        else
-            match CheckCollision level this.Box with
+        else                
+            match CheckCollision level this.Box enemies with
             | Collision.OutOfBounds -> PlayerEffect.Update this // TODO[#28]: Level progression
             | Collision.CollidesBrick -> PlayerEffect.Die
-            | Collision.None -> PlayerEffect.Update this
+            | Collision.CollidesBox -> PlayerEffect.Die
+            | Collision.None -> PlayerEffect.Update newPlayer
+            
+    member private this.CheckBullets(bullets: Box[]) = // TODO[#30]: Calculate scores
+        this
         
     static member Default = {
             TopLeft = GameRules.PlayerStartingPosition
@@ -109,15 +121,14 @@ type Bullet = {
         if timeDelta <= maxTimeToProcessInOneStep then
             let newTopLeft =
                 this.TopLeft +
-                Vector(this.Direction * this.Velocity.X * timeDelta, this.Velocity.Y * timeDelta)
+                Vector(this.Velocity.X * timeDelta, this.Velocity.Y * timeDelta)
             let newBullet = { this with TopLeft = newTopLeft; Lifetime = newLifetime }
             
             if newLifetime > GameRules.BulletLifetime then None
             else
-                match CheckCollision level newBullet.Box with
-                | Collision.OutOfBounds -> None
-                | Collision.CollidesBrick -> None
+                match CheckCollision level newBullet.Box [||] with
                 | Collision.None -> Some newBullet
+                | _ -> None
         else
             this.Update(level, maxTimeToProcessInOneStep)
             |> Option.bind _.Update(level, timeDelta - maxTimeToProcessInOneStep)
@@ -133,7 +144,78 @@ type Particle = {
             this.TopLeft +
             Vector(0, VerticalDirection.Up * this.Speed * timeDelta)
         let newParticle = { this with TopLeft = newPosition }
-        match CheckCollision level newParticle.Box with
+        match CheckCollision level newParticle.Box [||] with
         | Collision.OutOfBounds -> None
         | Collision.CollidesBrick -> None
-        | Collision.None -> Some newParticle
+        | _ -> Some newParticle
+
+[<RequireQualifiedAccess>]
+type EnemyEffect<'e> =
+    | Update of 'e
+    | PlayerHit
+    | Die
+
+type Fish = {
+    TopLeft: Point
+    Type: int
+    Velocity: Vector
+    Direction: HorizontalDirection
+} with
+    member this.Box = { TopLeft = this.TopLeft; Size = GameRules.FishSizes[this.Type] }
+
+    member this.Update(fishEnv: EnemyEnv, timeDelta: int): Fish EnemyEffect = // TODO[#27]: Fish behavior
+        EnemyEffect.Die
+           
+type Bomb = {
+    Id: int
+    TopLeft: Point
+    State: BombState
+} with   
+    static member Create(position: Point) =
+        {
+            Id = Random.Shared.Next(1, 1000000)
+            TopLeft = position
+            State = BombState.Sleep(VerticalTrigger(position.X + GameRules.BombTriggerOffset))
+        }
+        
+    member this.Box = { TopLeft = this.TopLeft; Size = GameRules.BombSize }
+       
+    member this.Update(bombEnv: EnemyEnv, timeDelta: int): Bomb EnemyEffect =
+        let level = bombEnv.Level
+        let player = bombEnv.PlayerCollider
+        let bullets = bombEnv.BulletColliders
+        
+        let allEntities = Array.append [|player|] bullets
+        
+        match this.State with
+        | BombState.Sleep trigger ->
+            let updated =
+                if IsTriggered trigger player then
+                    { this with State = BombState.Active(Vector(0, GameRules.BombVelocity)) }
+                else
+                    this
+            match CheckCollision level updated.Box allEntities with
+                | Collision.CollidesBox -> EnemyEffect.PlayerHit
+                | Collision.None -> EnemyEffect.Update updated
+                | _ -> EnemyEffect.Die
+        | BombState.Active velocity ->
+            // Check each intermediate position of the bomb for collision:
+            let maxTimeToProcessInOneStep = GameRules.PlayerSize.Y / Math.Abs(velocity.Y)
+            if maxTimeToProcessInOneStep <= 0 then failwith "maxTimeToProcessInOneStep <= 0"
+            if timeDelta <= maxTimeToProcessInOneStep then
+                let newBomb =
+                    { this with
+                        TopLeft = this.TopLeft + velocity * timeDelta }
+                match CheckCollision level this.Box allEntities with
+                | Collision.CollidesBox -> EnemyEffect.PlayerHit
+                | Collision.None -> EnemyEffect.Update newBomb
+                | _ -> EnemyEffect.Die
+            else
+                let effect = this.Update(bombEnv, maxTimeToProcessInOneStep)
+                match effect with
+                | EnemyEffect.Update newBomb -> newBomb.Update(bombEnv, timeDelta - maxTimeToProcessInOneStep)
+                | _ -> effect
+            
+and [<RequireQualifiedAccess>] BombState =
+    | Sleep of trigger: Trigger
+    | Active of velocity: Vector

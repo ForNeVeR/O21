@@ -53,6 +53,9 @@ let OxygenUnitPeriod = 22
 let BulletVelocity = 5 // TODO[#131]: Compare with the original
 
 [<Literal>]
+let BombVelocity = -5
+
+[<Literal>]
 let BulletLifetime = 10
 
 [<Literal>]
@@ -65,6 +68,8 @@ let BrickSize = Vector(12, 12)
 let PlayerSize = Vector(46, 27)
 let BulletSize = Vector(6, 6)
 let ParticleSize = Vector(5, 5)
+let FishSizes = [|Vector(25, 25); Vector(25, 25); Vector(25, 25); Vector(25, 25); Vector(25, 25)|]
+let BombSize = Vector(20, 20)
 
 /// Relative position of the bullet sprite's top left corner to the player sprite's top corner (from the shooting side)
 /// when the bullet appears.
@@ -73,11 +78,13 @@ let NewBulletPosition(playerTopForwardCorner: Point, playerDirection: Horizontal
     | HorizontalDirection.Left -> playerTopForwardCorner + Vector(-4 - BulletSize.X, 14)
     | HorizontalDirection.Right -> playerTopForwardCorner + Vector(4, 14)
     
-let StartingLevel = LevelCoordinates(1, 1)
-let PlayerStartingPosition = Point(200, 140)
+let StartingLevel = LevelCoordinates(2, 1)
+let PlayerStartingPosition = Point(100, 140)
 let LevelSizeInTiles = Vector(50, 25)
 
 let NewParticlePosition(playerTopForwardCorner: Point, playerDirection: HorizontalDirection) =
     match playerDirection with
     | HorizontalDirection.Left -> playerTopForwardCorner + Vector(28, -ParticleSize.Y)
     | HorizontalDirection.Right -> playerTopForwardCorner + Vector(-28, -ParticleSize.Y)
+
+let BombTriggerOffset = 100000
