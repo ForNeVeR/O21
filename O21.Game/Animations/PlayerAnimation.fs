@@ -44,7 +44,7 @@ type PlayerAnimation = {
             CurrentFrame = (0, tick)
         }
 
-    member this.Update(state: State, effects: ExternalEffect array) =
+    member this.Update(state: State, animations: AnimationType[]) =
         let tick = state.Game.Tick
         let player = state.Game.Player
         let mutable queue =
@@ -54,9 +54,7 @@ type PlayerAnimation = {
                 | None -> this.AnimationQueue.Tail
                 | Some updated -> updated :: this.AnimationQueue.Tail
             
-        if Seq.exists (function
-            | PlayAnimation a -> a = AnimationType.Die
-            | _ -> false) effects then
+        if Seq.exists ((=) AnimationType.Die) animations then
             queue <- this.ExplosionAnimation tick :: queue
             
         { this with
