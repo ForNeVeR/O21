@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+//
+// SPDX-License-Identifier: MIT
 module O21.Tests.Helpers
 
 open O21.Game.U95
