@@ -12,13 +12,21 @@ open O21.Game.U95
 type AnimationHandler = {
     SubmarineAnimation: PlayerAnimation
 } with
-    static member Init(data:U95Data) =
+    static member Init(data: U95Data) =
         {
             SubmarineAnimation = PlayerAnimation.Init data
         }
 
-    member this.Update(state:State, effects: ExternalEffect array) =        
-        { this with SubmarineAnimation = this.SubmarineAnimation.Update(state, effects) }
+    member this.Update(state: State, effects: ExternalEffect[]) =
+        let extractAnim entityType =
+            effects
+            |> Array.choose (function
+                | PlayAnimation (anim, t) when t = entityType -> Some anim
+                | _ -> None)
+            
+        let playerAnims = extractAnim EntityType.Player
+            
+        { this with SubmarineAnimation = this.SubmarineAnimation.Update(state, playerAnims) }
 
     member this.Draw(state:State) =
         this.SubmarineAnimation.Draw(state)

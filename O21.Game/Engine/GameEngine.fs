@@ -43,6 +43,7 @@ type GameEngine = {
         engine.ChangeLevel(level);
     
     member this.Update(time: Time): GameEngine * ExternalEffect[] =
+        let (>->) = GameEngine.compose
         let newTick = int <| (time.Total - this.StartTime.Total) * GameRules.TicksPerSecond
         let timeDelta = newTick - this.Tick - this.SuspendedTick
                                  
@@ -50,23 +51,21 @@ type GameEngine = {
         else                     
             let timeDelta = timeDelta
             let level = this.CurrentLevel
-            let playerEnv = this.GetPlayerEnv()
-            let enemyEnv = this.GetEnemyEnv(playerEnv.BulletColliders)
             
-            let playerEffect = this.Player.Update(playerEnv, timeDelta)
-            // TODO[#27]: Bullet collisions
-            { this with
-                Tick = newTick
-                Bullets = this.Bullets |> Array.choose(_.Update(level, timeDelta))
-                ParticlesSource = this.ParticlesSource.Update(this.CurrentLevel, this.Player, timeDelta)
-                Bombs = this.Bombs |>
-                            Array.choose (fun b ->
-                                let effect = b.Update(enemyEnv, timeDelta)
-                                match effect with
-                                | EnemyEffect.Update bomb -> Some bomb // TODO: Pass bomb effect to external effects
-                                | _ -> None)
-                SuspendedTick = 0
-            } |> GameEngine.ProcessPlayerEffect playerEffect
+            let playerEnemyHandler: UpdateHandler = (GameEngine.UpdatePlayerWithoutEnemyCollisionHandler timeDelta)
+                                                    >-> (GameEngine.UpdatePlayerHandler timeDelta)
+                                                    >-> (GameEngine.UpdateEnemiesHandler timeDelta)
+            let finalHandler =
+                (fun (engine: GameEngine) ->
+                    { engine with
+                        Tick = newTick
+                        Bullets = this.Bullets |> Array.choose(_.Update(level, timeDelta))
+                        ParticlesSource = this.ParticlesSource.Update(this.CurrentLevel, this.Player, timeDelta)
+                        SuspendedTick = 0
+                    }, [||])
+                
+            (playerEnemyHandler >-> finalHandler) this
+            
             
     member this.GetPlayerEnv() : PlayerEnv = {
         Level = this.CurrentLevel
@@ -77,11 +76,11 @@ type GameEngine = {
         BonusColliders = Array.empty // TODO[#29]: Add bonus collision with player
     }
     
-    member this.GetEnemyEnv(bullets: Box[]) =
+    member this.GetEnemyEnv() =
         {
             Level = this.CurrentLevel
             PlayerCollider = this.Player.Box
-            BulletColliders = bullets
+            BulletColliders = Array.map (fun (x: Bullet) -> x.Box) this.Bullets
         }
             
     member this.ChangeLevel(level: Level): GameEngine =
@@ -118,7 +117,9 @@ type GameEngine = {
                     Velocity = player.Velocity + Vector(player.Direction * GameRules.BulletVelocity, 0) 
                 }
                 { this with
-                    Player = { player with ShotCooldown = GameRules.ShotCooldownTicks }
+                    Player = { player with
+                                ShotCooldown = GameRules.ShotCooldownTicks
+                                Scores = player.Scores - GameRules.SubtractScoresForShot }
                     Bullets = Array.append this.Bullets [| newBullet |] // TODO[#130]: Make more efficient (persistent vector?)
                 }, [| PlaySound SoundType.Shot |]
             else this, Array.empty
@@ -126,6 +127,24 @@ type GameEngine = {
         | Suspend -> { this with IsActive = false }, Array.empty
         | Activate -> { this with IsActive = true }, Array.empty
 
+    static member private compose (upd1: UpdateHandler) (upd2: UpdateHandler) : UpdateHandler =
+        fun (engine: GameEngine) ->
+            let engine, effects1 = upd1 engine
+            let engine, effects2 = upd2 engine
+            engine, (Array.append effects1 effects2)
+    
+    static member private UpdatePlayerWithoutEnemyCollisionHandler (timeDelta: int) : UpdateHandler =
+        fun (engine: GameEngine) ->
+            let playerEnv = { engine.GetPlayerEnv() with EnemyColliders = Array.empty }
+            let effect = engine.Player.Update(playerEnv, timeDelta)
+            GameEngine.ProcessPlayerEffect(effect) engine
+            
+    static member private UpdatePlayerHandler (timeDelta: int) : UpdateHandler =
+        fun (engine: GameEngine) ->
+            let playerEnv = engine.GetPlayerEnv()
+            let effect = engine.Player.Update(playerEnv, timeDelta)
+            GameEngine.ProcessPlayerEffect(effect) engine
+            
     static member private ProcessPlayerEffect effect (engine: GameEngine) =
         match effect with
         | PlayerEffect.Update player -> { engine with Player = player }, Array.empty
@@ -136,7 +155,33 @@ type GameEngine = {
                             FreezeTime = GameRules.PostDeathFreezeTicks 
                             Lives = Math.Max(engine.Player.Lives - 1, 0)
                             Oxygen = OxygenStorage.Default }
-            }, [| PlaySound SoundType.LifeLost; PlayAnimation AnimationType.Die |]
+            }, [| PlaySound SoundType.LifeLost; PlayAnimation (AnimationType.Die, EntityType.Player) |]
             // TODO[#26]: Player sprite should be replaced with explosion for a while
             // TODO[#26]: Investigate how shot cooldown and direction should behave on resurrect: are they reset or not?
             // TODO[#27]: Investigate if enemy collision should stop the player from moving
+    
+    static member private UpdateEnemiesHandler (timeDelta: int) : UpdateHandler =
+        fun (engine: GameEngine) ->
+            let enemyEnv = engine.GetEnemyEnv()
+            let bombs, externalEffects =
+                engine.Bombs
+                |> Array.map _.Update(enemyEnv, timeDelta)
+                |> Array.map (GameEngine.ProcessEnemyEffect true)
+                |> Array.unzip
+            let externalEffects = externalEffects |> Array.collect id
+            { engine with Bombs = Array.choose id bombs }, externalEffects
+            
+    static member private ProcessEnemyEffect isStationary effect =
+        let soundTypeDestroyed =
+            if isStationary
+                then SoundType.StationaryEnemyDestroyed
+                else SoundType.MovingEnemyDestroyed
+        match effect with
+        | EnemyEffect.Update enemy -> Some enemy, Array.empty
+        | EnemyEffect.PlayerHit id -> None, [| PlaySound soundTypeDestroyed
+                                               PlayAnimation (AnimationType.Die, EntityType.Enemy id) |]
+        | EnemyEffect.Die -> None, Array.empty
+and
+    UpdateResult = GameEngine * ExternalEffect[]
+and
+    UpdateHandler = GameEngine -> UpdateResult

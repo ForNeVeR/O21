@@ -59,9 +59,10 @@ type HUD =
             if this.Pause then 
                 DrawTexture(texture, 262, 150, WHITE)
             
-        member this.SyncWithGame(gameEngine:GameEngine) =
+        member this.SyncWithGame(gameEngine: GameEngine) =
             { this with
                 Lives = gameEngine.Player.Lives
+                Score = gameEngine.Player.Scores
                 Oxy = gameEngine.Player.OxygenAmount
                 Pause = not gameEngine.IsActive
             }

@@ -16,6 +16,7 @@ type Player = {
     ShotCooldown: int
     FreezeTime: int
     Lives: int
+    Scores: int
     Oxygen: OxygenStorage
 } with
 
@@ -47,9 +48,9 @@ type Player = {
     member private this.CheckState(playerEnv: PlayerEnv) =
         let level = playerEnv.Level
         let enemies = playerEnv.EnemyColliders
-        let bullets = playerEnv.BulletColliders
         
-        let newPlayer = this.CheckBullets(bullets)
+        let scores = this.CalculateScores(playerEnv)
+        let newPlayer = { this with Scores = Math.Max(this.Scores + scores, 0) }
         
         if this.Oxygen.IsEmpty then PlayerEffect.Die
         else                
@@ -59,8 +60,22 @@ type Player = {
             | Collision.CollidesBox -> PlayerEffect.Die
             | Collision.None -> PlayerEffect.Update newPlayer
             
-    member private this.CheckBullets(bullets: Box[]) = // TODO[#30]: Calculate scores
-        this
+    member private this.CalculateScores(playerEnv: PlayerEnv) =
+        this.ScoresFromShot(playerEnv)
+            
+    member private this.ScoresFromShot(playerEnv: PlayerEnv) =
+        let level = playerEnv.Level
+        let bullets = playerEnv.BulletColliders
+        let enemies = playerEnv.EnemyColliders
+        let bonuses = playerEnv.BonusColliders
+        
+        let isCollides b boxes = (CheckCollision level b boxes).IsCollidesBox
+        
+        bullets
+        |> Array.fold (fun acc b ->
+            let plus = if isCollides b enemies then GameRules.GiveScoresForBomb else 0 // TODO: Split bomb and fish collision check
+            let subtract = if isCollides b bonuses then GameRules.SubtractScoresForShotBonus else 0
+            acc + plus - subtract) 0
         
     static member Default = {
             TopLeft = GameRules.PlayerStartingPosition
@@ -69,6 +84,7 @@ type Player = {
             FreezeTime = 0 
             Direction = Right
             Lives = GameRules.InitialPlayerLives
+            Scores = 0
             Oxygen = OxygenStorage.Default
         }
 and OxygenStorage = {
@@ -152,7 +168,7 @@ type Particle = {
 [<RequireQualifiedAccess>]
 type EnemyEffect<'e> =
     | Update of 'e
-    | PlayerHit
+    | PlayerHit of id: int
     | Die
 
 type Fish = {
@@ -195,9 +211,9 @@ type Bomb = {
                 else
                     this
             match CheckCollision level updated.Box allEntities with
-                | Collision.CollidesBox -> EnemyEffect.PlayerHit
-                | Collision.None -> EnemyEffect.Update updated
-                | _ -> EnemyEffect.Die
+            | Collision.CollidesBox -> EnemyEffect.PlayerHit this.Id
+            | Collision.None -> EnemyEffect.Update updated
+            | _ -> EnemyEffect.Die
         | BombState.Active velocity ->
             // Check each intermediate position of the bomb for collision:
             let maxTimeToProcessInOneStep = GameRules.PlayerSize.Y / Math.Abs(velocity.Y)
@@ -207,7 +223,7 @@ type Bomb = {
                     { this with
                         TopLeft = this.TopLeft + velocity * timeDelta }
                 match CheckCollision level this.Box allEntities with
-                | Collision.CollidesBox -> EnemyEffect.PlayerHit
+                | Collision.CollidesBox -> EnemyEffect.PlayerHit this.Id
                 | Collision.None -> EnemyEffect.Update newBomb
                 | _ -> EnemyEffect.Die
             else

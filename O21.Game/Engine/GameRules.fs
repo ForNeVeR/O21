@@ -37,6 +37,24 @@ let MaxPlayerVelocity = 3
 [<Literal>]
 let PostDeathFreezeTicks = 6
 
+[<Literal>]
+let GiveScoresForBonus = 25
+
+[<Literal>]
+let GiveScoresForFish = 10
+
+[<Literal>]
+let GiveScoresForBomb = 20
+
+[<Literal>]
+let GiveScoresForLifeline = 50
+
+[<Literal>]
+let SubtractScoresForShotBonus = 10
+
+[<Literal>]
+let SubtractScoresForShot = 1
+
 let ClampVelocity(Vector(x, y)): Vector =
    Vector(
        Math.Clamp(x, -MaxPlayerVelocity, MaxPlayerVelocity),
@@ -87,4 +105,4 @@ let NewParticlePosition(playerTopForwardCorner: Point, playerDirection: Horizont
     | HorizontalDirection.Left -> playerTopForwardCorner + Vector(28, -ParticleSize.Y)
     | HorizontalDirection.Right -> playerTopForwardCorner + Vector(-28, -ParticleSize.Y)
 
-let BombTriggerOffset = 100000
+let BombTriggerOffset = -15
