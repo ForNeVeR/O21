@@ -53,7 +53,7 @@ type GameEngine = {
             let level = this.CurrentLevel
             
             let playerEnemyHandler: UpdateHandler = (GameEngine.UpdatePlayerWithoutEnemyCollisionHandler timeDelta)
-                                                    >-> (GameEngine.UpdatePlayerHandler timeDelta)
+                                                    >-> (GameEngine.UpdatePlayerHandler 0)
                                                     >-> (GameEngine.UpdateEnemiesHandler timeDelta)
             let finalHandler =
                 (fun (engine: GameEngine) ->

@@ -135,14 +135,14 @@ module Player =
             |]
         }
         let player = { Player.Default with TopLeft = Point(GameRules.BrickSize.X - GameRules.PlayerSize.X, 0) }
-        let player' = player.Update(level, 1)
+        let player' = player.Update(Helpers.getEmptyPlayerEnvWithLevel level, 1)
         Assert.True(match player' with | PlayerEffect.Update _ -> true | _ -> false)
         
         let player = {
             player with
                 Velocity = Vector(1, 0) 
         }
-        let player' = player.Update(level, 1)
+        let player' = player.Update(Helpers.getEmptyPlayerEnvWithLevel level, 1)
         Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
         
 module OxygenSystem =
@@ -164,11 +164,11 @@ module OxygenSystem =
         let player = Player.Default
         
         let player = { player with Player.Oxygen.Amount = 1 }
-        let player' = player.Update(level, 0);
+        let player' = player.Update(Helpers.getEmptyPlayerEnvWithLevel level, 0);
         Assert.True(match player' with | PlayerEffect.Update _ -> true | _ -> false)
         
         let player = { player with Player.Oxygen.Amount = -1 }
-        let player' = player.Update(level, 0)
+        let player' = player.Update(Helpers.getEmptyPlayerEnvWithLevel level, 0)
         Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
         
 module ParticleSystem =
@@ -292,10 +292,10 @@ module Geometry =
     let ``Out of bounds check``(): unit =
         let level = { LevelMap = Array.empty }
         let box1 = { TopLeft = Point(-1, -1); Size = Vector(1, 1) }
-        Assert.Equal(Collision.OutOfBounds, CheckCollision level box1)
+        Assert.Equal(Collision.OutOfBounds, CheckCollision level box1 [||])
         
         let box2 = { TopLeft = Point(GameRules.LevelWidth, 0); Size = Vector(1, 1) }
-        Assert.Equal(Collision.OutOfBounds, CheckCollision level box2)
+        Assert.Equal(Collision.OutOfBounds, CheckCollision level box2 [||])
     
     [<Fact>]
     let ``Brick collision check``(): unit =
@@ -305,7 +305,7 @@ module Geometry =
             |]
         }
         let box1 = { TopLeft = Point(0, 0); Size = Vector(1, 1) }
-        Assert.Equal(Collision.None, CheckCollision level box1)
+        Assert.Equal(Collision.None, CheckCollision level box1 [||])
         
         let box2 = { TopLeft = Point(GameRules.BrickSize.X, 0); Size = Vector(1, 1) }
-        Assert.Equal(Collision.CollidesBrick, CheckCollision level box2)
+        Assert.Equal(Collision.CollidesBrick, CheckCollision level box2 [||])
