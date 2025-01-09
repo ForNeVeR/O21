@@ -2,6 +2,7 @@ module O21.Tests.Helpers
 
 open O21.Game.U95
 open O21.Game.Engine.Environments
+open O21.Game.U95.Parser
 
 let getEmptyPlayerEnvWithLevel (level: Level) =
     {
@@ -10,3 +11,8 @@ let getEmptyPlayerEnvWithLevel (level: Level) =
         EnemyColliders = [||]
         BonusColliders = [||]
     }
+    
+let createEmptyLevel width height = {
+    LevelMap =
+        Array.create height (Array.create width MapOfLevel.Empty)
+}
