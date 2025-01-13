@@ -84,10 +84,6 @@ type PlayScene = {
     static member private DrawSprite sprite (Point(x, y)) =
         DrawTexture(sprite, x, y, WHITE)
 
-    static member private DrawPlayer sprites (player: Player) =
-        let sprite = if player.Direction = Right then sprites.Right[0] else sprites.Left[0]           
-        PlayScene.DrawSprite sprite player.TopLeft
-
     static member private DrawBullet sprite (bullet: Bullet) =
         PlayScene.DrawSprite sprite bullet.TopLeft
         
@@ -145,6 +141,11 @@ type PlayScene = {
             this.AnimationHandler.Draw(state)
             game.Bullets |> Seq.iter(PlayScene.DrawBullet sprites.Bullet)
             game.ParticlesSource.Particles |> Seq.iter(PlayScene.DrawParticle sprites.BubbleParticle)
+            
+            for i = 0 to game.Bombs.Length-1 do
+                let bomb = game.Bombs[i]
+                let sprite = sprites.Bombs[bomb.Id % sprites.Bombs.Length]
+                DrawTexture(sprite.LeftDirection[0], bomb.TopLeft.X, bomb.TopLeft.Y, WHITE)
 
             for i = 0 to sprites.Fishes.Length-1 do
                 let fish = sprites.Fishes[i]

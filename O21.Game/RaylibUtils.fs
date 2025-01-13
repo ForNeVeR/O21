@@ -8,7 +8,7 @@ open JetBrains.Lifetimes
 open Microsoft.FSharp.NativeInterop
 open Raylib_CsLo
 
-#nowarn "9"
+#nowarn 9
 
 let LoadFontFromMemory (lifetime: Lifetime)
                        (fileType: string)

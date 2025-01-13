@@ -36,6 +36,7 @@ type Sprites = {
     Background: Texture[]
     TitleScreenBackground: Texture
     Fishes: Fish[]
+    Bombs: Fish[]
     Player: PlayerSprites
     Bullet: Texture
     HUD: HUDSprites
@@ -92,10 +93,42 @@ module Sprites =
                   CreateTransparentSprite lt fishGraphics[shift + 143] fishGraphics[shift + 98]
                   |]
         }
+        
+    let private createBomb lt index (bombsGraphics: Dib[]) =
+        let textureCount = 11
+        let bombAliveTextureCount = 8
+        let colorsOffset = 55
+        let shift = (index * textureCount) + 49
+        
+        let textures =
+            Array.append
+                [| CreateTransparentSprite lt bombsGraphics[shift + colorsOffset] bombsGraphics[shift] |]
+            <| Array.init (bombAliveTextureCount - 1) (fun i ->
+                CreateTransparentSprite lt bombsGraphics[shift + i + colorsOffset + 3] bombsGraphics[shift + i + 3]
+            )
+            
+        {
+            Width = bombsGraphics[shift].Width
+            Height = bombsGraphics[shift].Height
+            
+            LeftDirection = textures
+            RightDirection = textures
+            
+            OnDying = [|
+                CreateTransparentSprite lt bombsGraphics[shift + 10 + colorsOffset] bombsGraphics[shift + 10]
+                CreateTransparentSprite lt bombsGraphics[shift + 2 + colorsOffset] bombsGraphics[shift + 2]
+                CreateTransparentSprite lt bombsGraphics[shift + 1 + colorsOffset] bombsGraphics[shift + 1]
+            |]
+        }
                
     let private loadFishes lt (fishGraphics: Dib[]): Fish[] =
         Array.init (fishGraphics.Length / 36) ( fun i ->
             createFish lt i fishGraphics
+        )
+        
+    let private loadBombs lt (bombsGraphics: Dib[]): Fish[] =
+        Array.init 5 (fun i ->
+            createBomb lt i bombsGraphics
         )
         
     let private loadHUD lt (exeGraphics: Dib[]): HUDSprites =
@@ -129,6 +162,7 @@ module Sprites =
             Background = loadBackgrounds lifetime backgrounds
             TitleScreenBackground = CreateSprite lifetime titleScreen
             Fishes = loadFishes lifetime fishes
+            Bombs = loadBombs lifetime exeSprites
             Player = PlayerSprites.Load lifetime exeSprites
             Bullet = CreateTransparentSprite lifetime exeSprites[1] exeSprites[2]
             HUD = loadHUD lifetime exeSprites

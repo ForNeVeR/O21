@@ -9,6 +9,7 @@ open O21.Game.U95.Parser
 open Xunit
 
 open O21.Game.Engine
+open O21.Tests.Helpers
 
 let private frameUp time =
     let mutable currentTime = time
@@ -135,15 +136,15 @@ module Player =
             |]
         }
         let player = { Player.Default with TopLeft = Point(GameRules.BrickSize.X - GameRules.PlayerSize.X, 0) }
-        let player' = player.Update(level, 1)
+        let player' = player.Update(getEmptyPlayerEnvWithLevel level, 1)
         Assert.True(match player' with | PlayerEffect.Update _ -> true | _ -> false)
         
         let player = {
             player with
                 Velocity = Vector(1, 0) 
         }
-        let player' = player.Update(level, 1)
-        Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
+        let player' = player.Update(getEmptyPlayerEnvWithLevel level, 1)
+        Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)    
         
 module OxygenSystem =
     
@@ -164,11 +165,11 @@ module OxygenSystem =
         let player = Player.Default
         
         let player = { player with Player.Oxygen.Amount = 1 }
-        let player' = player.Update(level, 0);
+        let player' = player.Update(getEmptyPlayerEnvWithLevel level, 0);
         Assert.True(match player' with | PlayerEffect.Update _ -> true | _ -> false)
         
         let player = { player with Player.Oxygen.Amount = -1 }
-        let player' = player.Update(level, 0)
+        let player' = player.Update(getEmptyPlayerEnvWithLevel level, 0)
         Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
         
 module ParticleSystem =
@@ -285,6 +286,31 @@ module Bullets =
             let actualVelocity = gameEngine.Bullets[0].Velocity
             Assert.Equal(expectedVelocity, actualVelocity)
 
+module ScoreSystem =
+    [<Fact>]
+    let ``Adding scores for hit enemy``(): unit =
+        let level = {
+            LevelMap = [|
+                [| Empty; Bomb |]
+            |]
+        }
+        
+        let engine = newEngine.ChangeLevel(level)
+        let engine =
+            { engine with
+                Player = { newEngine.Player with
+                            TopLeft = Point(engine.Bombs[0].TopLeft.X
+                                                - GameRules.PlayerSize.X - GameRules.BulletSize.X,
+                                                - GameRules.PlayerSize.Y / 2) }}
+            
+        let initialScores = engine.Player.Scores
+        
+        let engine, _ = engine.ApplyCommand PlayerCommand.Shoot
+        let engine = engine |> frameUpN timeZero
+                                   ((engine.Bombs[0].TopLeft.X - engine.Bullets[0].Box.TopRight.X) / GameRules.BulletVelocity + 1)
+        let actualScores = engine.Player.Scores
+        Assert.Equal(initialScores + GameRules.GiveScoresForBomb, actualScores)
+
 module Geometry =
     open O21.Game.Engine.Geometry
     
@@ -292,10 +318,10 @@ module Geometry =
     let ``Out of bounds check``(): unit =
         let level = { LevelMap = Array.empty }
         let box1 = { TopLeft = Point(-1, -1); Size = Vector(1, 1) }
-        Assert.Equal(Collision.OutOfBounds, CheckCollision level box1)
+        Assert.Equal(Collision.OutOfBounds, CheckCollision level box1 [||])
         
         let box2 = { TopLeft = Point(GameRules.LevelWidth, 0); Size = Vector(1, 1) }
-        Assert.Equal(Collision.OutOfBounds, CheckCollision level box2)
+        Assert.Equal(Collision.OutOfBounds, CheckCollision level box2 [||])
     
     [<Fact>]
     let ``Brick collision check``(): unit =
@@ -305,7 +331,44 @@ module Geometry =
             |]
         }
         let box1 = { TopLeft = Point(0, 0); Size = Vector(1, 1) }
-        Assert.Equal(Collision.None, CheckCollision level box1)
+        Assert.Equal(Collision.None, CheckCollision level box1 [||])
         
         let box2 = { TopLeft = Point(GameRules.BrickSize.X, 0); Size = Vector(1, 1) }
-        Assert.Equal(Collision.CollidesBrick, CheckCollision level box2)
+        Assert.Equal(Collision.CollidesBrick, CheckCollision level box2 [||])
+
+    [<Fact>]
+    let ``Box collision check``(): unit =
+        let level = createEmptyLevel 50 50
+        let box1 = { TopLeft = Point(20, 20); Size = Vector(10, 10) }
+        let box2 = { TopLeft = box1.TopRight + Vector(1, 1); Size = Vector(10, 10) }
+        
+        Assert.Equal(Collision.None, CheckCollision level box1 [| box2 |])
+        
+        let size = Vector(2, 2)
+        
+        let topLeft = [|
+            Point(box1.TopLeft.X - size.X / 2, box1.TopLeft.Y - size.Y / 2) // TopLeft collides
+            Point(box1.TopRight.X - size.X / 2, box1.TopLeft.Y - size.Y / 2) // TopRight collides
+            Point(box1.BottomLeft.X - size.X / 2, box1.BottomLeft.Y - size.Y / 2) // BottomLeft collides
+            Point(box1.BottomRight.X - size.X / 2, box1.BottomRight.Y - size.Y / 2) // BottomRight collides
+            Point(box1.TopLeft.X + size.X / 2, box1.TopLeft.Y + size.Y / 2) // Inner collides
+        |]
+
+        let isAllCollides =
+            topLeft
+            |> Array.forall (fun p ->
+                let box = { TopLeft = p; Size = size }
+                (CheckCollision level box1 [| box |]).IsCollidesObject)
+            
+        Assert.True(isAllCollides)
+
+    [<Fact>]
+    let ``Collision with objects counter in one tick test``(): unit =
+        let level = createEmptyLevel 50 50
+        let objectCount = 10
+        let entity = { TopLeft = Point(20, 20); Size = Vector(10, 10) }
+        let objects = entity |> Array.create objectCount
+        
+        match CheckCollision level entity objects with
+        | Collision.CollidesObject count -> Assert.Equal(objectCount, count)
+        | _ -> Assert.Fail("Entity doesn't collides any object")

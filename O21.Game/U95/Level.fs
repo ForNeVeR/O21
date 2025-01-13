@@ -18,11 +18,13 @@ type LevelCoordinates =
 type Level = {
     LevelMap: MapOfLevel[][]
 }
-    with 
+    with
+        static member Empty = { LevelMap = Array.empty } 
+        
         static member private Load(directory:string) (level:int) (part:int): Task<Level> = task{
             let parser = Parser(directory)
             let level = parser.LoadLevel level part
-            return{
+            return {
                 LevelMap = level;
             }
         }
@@ -48,3 +50,18 @@ type Level = {
                 |> Task.WhenAll
             return Map.ofArray levelPairs
         }
+
+        member private this.BombsCoordinatesLazy = lazy (
+                let mutable coords = Array.empty
+                this.LevelMap
+                |> Array.iteri (fun i row ->
+                    row
+                    |> Array.iteri (fun j e ->
+                        match e with
+                        | Bomb -> coords <- Array.append [| (j, i) |] coords
+                        | _ -> ()
+                        ))
+                coords
+            )
+
+        member this.BombsCoordinates() = this.BombsCoordinatesLazy.Value
