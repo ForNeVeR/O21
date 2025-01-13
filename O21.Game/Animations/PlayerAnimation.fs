@@ -54,7 +54,7 @@ type PlayerAnimation = {
                 | None -> this.AnimationQueue.Tail
                 | Some updated -> updated :: this.AnimationQueue.Tail
             
-        if Seq.exists ((=) AnimationType.Die) animations then
+        if Array.contains AnimationType.Die animations then
             queue <- this.ExplosionAnimation tick :: queue
             
         { this with

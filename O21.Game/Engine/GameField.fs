@@ -75,4 +75,4 @@ type Collision =
     /// At least one pixel of the object intersects with a brick.
     | CollidesBrick
     /// Tells, that the object collides other box\boxes in its environment
-    | CollidesBox
+    | CollidesObject of count: int

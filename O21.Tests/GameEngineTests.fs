@@ -355,9 +355,20 @@ module Geometry =
         |]
 
         let isAllCollides =
-            (topLeft, true)
-            ||> Array.foldBack (fun p acc ->
+            topLeft
+            |> Array.forall (fun p ->
                 let box = { TopLeft = p; Size = size }
-                acc && (CheckCollision level box1 [| box |]).IsCollidesBox)
+                (CheckCollision level box1 [| box |]).IsCollidesObject)
             
         Assert.True(isAllCollides)
+
+    [<Fact>]
+    let ``Collision with objects counter in one tick test``(): unit =
+        let level = createEmptyLevel 50 50
+        let objectCount = 10
+        let entity = { TopLeft = Point(20, 20); Size = Vector(10, 10) }
+        let objects = entity |> Array.create objectCount
+        
+        match CheckCollision level entity objects with
+        | Collision.CollidesObject count -> Assert.Equal(objectCount, count)
+        | _ -> Assert.Fail("Entity doesn't collides any object")
