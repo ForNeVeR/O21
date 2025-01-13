@@ -1,10 +1,9 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
 namespace O21.Game.Animations
 
-open System
 open O21.Game
 open O21.Game.Engine
 open O21.Game.U95

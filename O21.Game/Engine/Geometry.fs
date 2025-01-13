@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Friedrich von Never <friedrich@fornever.me>
+// SPDX-FileCopyrightText: 2025 O21 contributors <friedrich@fornever.me>
 //
 // SPDX-License-Identifier: MIT
 
