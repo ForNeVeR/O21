@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
