@@ -49,7 +49,7 @@ type Player = {
         let level = playerEnv.Level
         let enemies = playerEnv.EnemyColliders
         
-        let scores = this.CalculateScores(playerEnv)
+        let scores = this.CalculateScoreChange(playerEnv)
         let newPlayer = { this with Scores = Math.Max(this.Scores + scores, 0) }
         
         if this.Oxygen.IsEmpty then PlayerEffect.Die
@@ -57,10 +57,10 @@ type Player = {
             match CheckCollision level this.Box enemies with
             | Collision.OutOfBounds -> PlayerEffect.Update this // TODO[#28]: Level progression
             | Collision.CollidesBrick -> PlayerEffect.Die
-            | Collision.CollidesBox -> PlayerEffect.Die
+            | Collision.CollidesObject _ -> PlayerEffect.Die
             | Collision.None -> PlayerEffect.Update newPlayer
             
-    member private this.CalculateScores(playerEnv: PlayerEnv) =
+    member private this.CalculateScoreChange(playerEnv: PlayerEnv) =
         this.ScoresFromShot(playerEnv)
             
     member private this.ScoresFromShot(playerEnv: PlayerEnv) =
@@ -69,13 +69,17 @@ type Player = {
         let enemies = playerEnv.EnemyColliders
         let bonuses = playerEnv.BonusColliders
         
-        let isCollides b boxes = (CheckCollision level b boxes).IsCollidesBox
+        let countCollision b boxes =
+            match CheckCollision level b boxes with
+            | Collision.CollidesObject count -> count | _ -> 0
         
-        bullets
-        |> Array.fold (fun acc b ->
-            let plus = if isCollides b enemies then GameRules.GiveScoresForBomb else 0 // TODO: Split bomb and fish collision check
-            let subtract = if isCollides b bonuses then GameRules.SubtractScoresForShotBonus else 0
-            acc + plus - subtract) 0
+        (0, bullets)
+        ||> Array.fold (fun acc b ->
+            let plus =
+                countCollision b enemies * GameRules.GiveScoresForBomb  // TODO: Split bomb and fish collision check
+            let subtract =
+                countCollision b bonuses * GameRules.SubtractScoresForShotBonus
+            acc + plus - subtract)
         
     static member Default = {
             TopLeft = GameRules.PlayerStartingPosition
@@ -211,7 +215,7 @@ type Bomb = {
                 else
                     this
             match CheckCollision level updated.Box allEntities with
-            | Collision.CollidesBox -> EnemyEffect.PlayerHit this.Id
+            | Collision.CollidesObject _ -> EnemyEffect.PlayerHit this.Id
             | Collision.None -> EnemyEffect.Update updated
             | _ -> EnemyEffect.Die
         | BombState.Active velocity ->
@@ -223,7 +227,7 @@ type Bomb = {
                     { this with
                         TopLeft = this.TopLeft + velocity * timeDelta }
                 match CheckCollision level this.Box allEntities with
-                | Collision.CollidesBox -> EnemyEffect.PlayerHit this.Id
+                | Collision.CollidesObject _ -> EnemyEffect.PlayerHit this.Id
                 | Collision.None -> EnemyEffect.Update newBomb
                 | _ -> EnemyEffect.Die
             else
