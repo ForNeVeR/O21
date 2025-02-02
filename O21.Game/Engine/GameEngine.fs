@@ -84,14 +84,20 @@ type GameEngine = {
         }
             
     member this.ChangeLevel(level: Level): GameEngine =
-        let bombs = level.BombsCoordinates()
-                    |> Array.map (fun point ->
-                        Bomb.Create(
-                            Point(GameRules.LevelWidth / level.LevelMap[0].Length * fst point,
-                                  GameRules.LevelHeight / level.LevelMap.Length * snd point)))
+        let bombs =
+            level.BombsCoordinates()
+                |> Array.map (fun point ->
+                    Bomb.Create(
+                        Point(GameRules.LevelWidth / level.LevelMap[0].Length * fst point,
+                              GameRules.LevelHeight / level.LevelMap.Length * snd point)))
+                    
+        let player =
+            { this.Player with
+                TopLeft = this.Player.TopLeft % Point(GameRules.LevelWidth, GameRules.LevelHeight) }
         
         { this with
             CurrentLevel = level
+            Player = player
             Bombs = bombs
             Bullets = Array.empty
             Fishes = Array.empty
@@ -148,6 +154,15 @@ type GameEngine = {
     static member private ProcessPlayerEffect effect (engine: GameEngine) =
         match effect with
         | PlayerEffect.Update player -> { engine with Player = player }, Array.empty
+        | PlayerEffect.OutOfBounds player ->
+            let levelDelta =
+                match player.Box with
+                | upper when upper.BottomLeft.Y >= GameRules.LevelHeight -> Vector(0, 1)
+                | lower when lower.TopLeft.Y <= 0 -> Vector(0, -1)
+                | right when right.TopRight.X >= GameRules.LevelWidth -> Vector(1, 0)
+                | left when left.TopLeft.X <= 0 -> Vector(-1, 0)
+                | _ -> Vector(0, 0)
+            { engine with Player = player }, [| SwitchLevel levelDelta |]
         | PlayerEffect.Die ->
             { engine with
                 Player = { engine.Player with

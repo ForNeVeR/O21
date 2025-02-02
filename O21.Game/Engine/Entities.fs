@@ -53,9 +53,9 @@ type Player = {
         let newPlayer = { this with Scores = Math.Max(this.Scores + scores, 0) }
         
         if this.Oxygen.IsEmpty then PlayerEffect.Die
-        else                
+        else
             match CheckCollision level this.Box enemies with
-            | Collision.OutOfBounds -> PlayerEffect.Update this // TODO[#28]: Level progression
+            | Collision.OutOfBounds -> PlayerEffect.OutOfBounds this
             | Collision.CollidesBrick -> PlayerEffect.Die
             | Collision.CollidesObject _ -> PlayerEffect.Die
             | Collision.None -> PlayerEffect.Update newPlayer
@@ -121,6 +121,7 @@ and OxygenStorage = {
 
 and [<RequireQualifiedAccess>] PlayerEffect =
     | Update of Player
+    | OutOfBounds of Player
     | Die
 
 type Bullet = {

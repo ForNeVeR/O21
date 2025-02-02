@@ -13,6 +13,13 @@ type MapOfLevel =
     | Empty
     
 type Parser(directory) =
+     member private this.getLevelPosition (part: int) =
+         if part <= 4 then 1 else
+            if part <= 9 then 2 else
+                let d1, d2 = (part / 10, part % 10)
+                let pos = 2 * d1 + 1
+                if d2 < 5 then pos else pos + 1
+         
      member private this.readDatFile(level:int) (part:int): string[] = 
         let lines = File.ReadAllLines(Path.Combine(directory, $"U95_{level}_{part}.DAT")) 
         lines
@@ -21,7 +28,7 @@ type Parser(directory) =
          let levelMap = Array.init line.Length (fun i ->
             let brick = 
                 match line[i] with
-                    | t when t>='1' && t <= '9' -> Brick(int line[i] - int '0')
+                    | t when t >='1' && t <= '9' -> Brick(int line[i] - int '0')
                     | 'b' -> Bomb
                     | 'a' -> Bonus
                     | _ -> Empty
@@ -36,6 +43,7 @@ type Parser(directory) =
          )
          level
 
-     member this.LoadLevel (level:int) (part:int): MapOfLevel[][] =
+     member this.LoadLevel (level:int) (part:int): int * MapOfLevel[][] =
+        let pos = this.getLevelPosition part
         let lines = this.readDatFile level part
-        this.parseLevel lines 
+        (pos, this.parseLevel lines)
