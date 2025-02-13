@@ -28,12 +28,9 @@ let private frameUpN time n gameEngine =
 
 let private timeZero = { Total = 0.0; Delta = 0.0f }
 
-let private emptyLevel = {
-    LevelMap = Array.init GameRules.LevelSizeInTiles.X (fun _ ->
-        Array.init GameRules.LevelSizeInTiles.Y (fun _ -> MapOfLevel.Empty)
-    )
-}
-
+let private emptyLevel = createEmptyLevel
+                                 GameRules.LevelSizeInTiles.X
+                                 GameRules.LevelSizeInTiles.Y
 let private newEngine = GameEngine.Create(timeZero, emptyLevel)
 
 module Ticks =
@@ -130,11 +127,11 @@ module Shooting =
 module Player =
     [<Fact>]
     let ``Moving towards a brick kills the player``(): unit =
-        let level = {
-            LevelMap = [|
-                [| Empty; Brick 0 |]
-            |]
-        }
+        let level =
+            { emptyLevel with
+                LevelMap = [|
+                    [| Empty; Brick 0 |]
+                |] }
         let player = { Player.Default with TopLeft = Point(GameRules.BrickSize.X - GameRules.PlayerSize.X, 0) }
         let player' = player.Update(getEmptyPlayerEnvWithLevel level, 1)
         Assert.True(match player' with | PlayerEffect.Update _ -> true | _ -> false)
@@ -161,7 +158,7 @@ module OxygenSystem =
         
     [<Fact>]
     let ``Player dies when oxygen amount is empty``(): unit =
-        let level = { LevelMap = [| [| Empty |] |] }
+        let level = createEmptyLevel 1 1
         let player = Player.Default
         
         let player = { player with Player.Oxygen.Amount = 1 }
@@ -227,33 +224,29 @@ module Bullets =
     
     [<Fact>]
     let ``Bullet is destroyed on a brick collision``(): unit =
-        let level = {
-            LevelMap = [|
-                [| Empty; Brick 0 |]
-            |]
-        }
+        let level =
+            { emptyLevel with
+                LevelMap = [|
+                    [| Empty; Brick 0 |]
+                |] }
         let bullet = defaultBullet
         let ticksToMove = GameRules.BrickSize.X / GameRules.BulletVelocity
         Assert.Equal(None, bullet.Update(level, ticksToMove))
         
     [<Fact>]    
     let ``Bullet doesn't pierce through a brick``(): unit =
-        let level = {
-            LevelMap = [|
-                [| Empty; Brick 0 |]
-            |]
-        }
+        let level =
+            { emptyLevel with
+                LevelMap = [|
+                    [| Empty; Brick 0 |]
+                |] }
         let bullet = defaultBullet
         let ticksToMove = GameRules.BrickSize.X * 3 / GameRules.BulletVelocity
         Assert.Equal(None, bullet.Update(level, ticksToMove))
         
     [<Fact>]
     let ``Bullet is destroyed after the expiration of its lifetime``(): unit =
-        let level = {
-            LevelMap = [|
-                [| Empty |]
-            |]
-        }
+        let level = createEmptyLevel 1 1
         let bullet = defaultBullet
         let ticksToMove = GameRules.BulletLifetime
         Assert.True(bullet.Update(level, ticksToMove).IsSome)      
@@ -289,11 +282,11 @@ module Bullets =
 module ScoreSystem =
     [<Fact>]
     let ``Adding scores for hit enemy``(): unit =
-        let level = {
-            LevelMap = [|
-                [| Empty; Bomb |]
-            |]
-        }
+        let level =
+            { emptyLevel with
+                LevelMap = [|
+                    [| Empty; Bomb |]
+                |] }
         
         let engine = newEngine.ChangeLevel(level)
         let engine =
@@ -316,20 +309,20 @@ module Geometry =
     
     [<Fact>]
     let ``Out of bounds check``(): unit =
-        let level = { LevelMap = Array.empty }
+        let level = emptyLevel
         let box1 = { TopLeft = Point(-1, -1); Size = Vector(1, 1) }
         Assert.Equal(Collision.OutOfBounds, CheckCollision level box1 [||])
         
-        let box2 = { TopLeft = Point(GameRules.LevelWidth, 0); Size = Vector(1, 1) }
+        let box2 = { TopLeft = Point(GameRules.LevelWidth, GameRules.LevelHeight); Size = Vector(1, 1) }
         Assert.Equal(Collision.OutOfBounds, CheckCollision level box2 [||])
     
     [<Fact>]
     let ``Brick collision check``(): unit =
-        let level = {
-            LevelMap = [|
-                [| Empty; Brick 0 |]
-            |]
-        }
+        let level =
+            { emptyLevel with
+                LevelMap = [|
+                    [| Empty; Brick 0 |]
+                |] }
         let box1 = { TopLeft = Point(0, 0); Size = Vector(1, 1) }
         Assert.Equal(Collision.None, CheckCollision level box1 [||])
         
