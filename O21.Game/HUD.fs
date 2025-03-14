@@ -65,6 +65,7 @@ type HUD =
                 Score = gameEngine.Player.Scores
                 Oxy = gameEngine.Player.OxygenAmount
                 Pause = not gameEngine.IsActive
+                Level = gameEngine.CurrentLevel.Position
             }
             
         member this.UpdateScore(newScore:int):HUD =

@@ -15,7 +15,7 @@ let getEmptyPlayerEnvWithLevel (level: Level) =
         BonusColliders = [||]
     }
     
-let createEmptyLevel width height = {
-    LevelMap =
-        Array.create height (Array.create width MapOfLevel.Empty)
-}
+let createEmptyLevel width height =
+    { Level.Empty with
+        LevelMap =
+            Array.create height (Array.create width MapOfLevel.Empty) }

@@ -12,4 +12,5 @@ type EntityType =
     
 type ExternalEffect =
     | PlaySound of SoundType
+    | SwitchLevel of Vector
     | PlayAnimation of AnimationType * EntityType
