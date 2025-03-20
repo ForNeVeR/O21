@@ -4,6 +4,7 @@
 
 namespace O21.Game.Scenes
 
+open Microsoft.FSharp.Core
 open O21.Game.Animations
 open type Raylib_CsLo.Raylib
 open Raylib_CsLo
@@ -94,11 +95,24 @@ type PlayScene = {
         let game, inputEffects = InputProcessor.ProcessKeys input hud gameEngine
         let game', updateEffects = game.Update time
         game', Array.concat [inputEffects; updateEffects]
+        
+    static member private UpdateLevelOnRequest (game: GameEngine) (effects: ExternalEffect[]) (levels: Map<LevelCoordinates, Level>) =
+        effects
+        |> Array.tryPick (fun e ->
+            match e with
+            | SwitchLevel delta ->
+                let dx, dy = delta.X, delta.Y
+                let newCoords = LevelCoordinates(game.CurrentLevel.Coordinates.X + dx,
+                                                 game.CurrentLevel.Coordinates.Y + dy)
+                Some (game.ChangeLevel levels[newCoords])
+            | _ -> None)
+        |> Option.defaultValue game
     
     interface IScene with
         member this.Camera: Camera2D = this.Camera
         member this.Update(input, time, state) =
             let game, effects = PlayScene.UpdateGame (input, time) (state.Game, this.HUD)
+            let game = PlayScene.UpdateLevelOnRequest game effects state.U95Data.Levels
             let hud = this.HUD.SyncWithGame game
             let animationHandler = this.AnimationHandler.Update (state, effects)
             let state = { state with Game = game; Scene = { this with HUD = hud; AnimationHandler = animationHandler } }
@@ -128,7 +142,7 @@ type PlayScene = {
                 { this.Window with RenderTargetSize = (GameRules.GameScreenWidth, GameRules.GameScreenHeight) }
                 &this.Camera
             
-            DrawTexture(sprites.Background[1], 0, 0, WHITE)
+            DrawTexture(sprites.Background[game.CurrentLevel.Position], 0, 0, WHITE)
             let map = game.CurrentLevel.LevelMap
             for i = 0 to map.Length-1 do
                 for j = 0 to map[i].Length-1 do

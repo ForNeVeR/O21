@@ -17,15 +17,24 @@ type LevelCoordinates =
 
 type Level = {
     LevelMap: MapOfLevel[][]
+    Position: int
+    Coordinates: LevelCoordinates
 }
     with
-        static member Empty = { LevelMap = Array.empty } 
+        static member Empty = {
+            LevelMap = Array.empty
+            Position = 0
+            Coordinates = LevelCoordinates(0, 0)
+        }
         
-        static member private Load(directory:string) (level:int) (part:int): Task<Level> = task{
+        static member private Load(directory: string) (level: int) (part: int): Task<Level> = task{
             let parser = Parser(directory)
-            let level = parser.LoadLevel level part
+            let coordinates = LevelCoordinates(part, level)
+            let pos, level = parser.LoadLevel level part
             return {
-                LevelMap = level;
+                LevelMap = level
+                Position = pos
+                Coordinates = coordinates
             }
         }
 
@@ -50,7 +59,7 @@ type Level = {
                 |> Task.WhenAll
             return Map.ofArray levelPairs
         }
-
+        
         member private this.BombsCoordinatesLazy = lazy (
                 let mutable coords = Array.empty
                 this.LevelMap
@@ -65,3 +74,4 @@ type Level = {
             )
 
         member this.BombsCoordinates() = this.BombsCoordinatesLazy.Value
+        
