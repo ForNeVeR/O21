@@ -76,7 +76,7 @@ type Player = {
         (0, bullets)
         ||> Array.fold (fun acc b ->
             let plus =
-                countCollision b enemies * GameRules.GiveScoresForBomb  // TODO: Split bomb and fish collision check
+                countCollision b enemies * GameRules.GiveScoresForBomb  // TODO[#229]: Split bomb and fish collision check
             let subtract =
                 countCollision b bonuses * GameRules.SubtractScoresForShotBonus
             acc + plus - subtract)
