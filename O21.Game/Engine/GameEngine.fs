@@ -24,6 +24,7 @@ type GameEngine = {
     Bullets: Bullet[]
     Fishes: Fish[]
     Bombs: Bomb[]
+    Bonuses: Bonus[]
     ParticlesSource: ParticlesSource
     IsActive: bool
 } with
@@ -36,7 +37,8 @@ type GameEngine = {
             Player = Player.Default
             Bullets = Array.empty
             Fishes = Array.empty
-            Bombs = Array.empty 
+            Bombs = Array.empty
+            Bonuses = Array.empty
             ParticlesSource = ParticlesSource.Default
             IsActive = true
         }
@@ -53,6 +55,7 @@ type GameEngine = {
             let level = this.CurrentLevel
             
             let playerEnemyHandler: UpdateHandler = (GameEngine.UpdatePlayerWithoutEnemyCollisionHandler timeDelta)
+                                                    >-> GameEngine.UpdateBonusesHandler()
                                                     >-> (GameEngine.UpdatePlayerHandler 0)
                                                     >-> (GameEngine.UpdateEnemiesHandler timeDelta)
             let finalHandler =
@@ -67,29 +70,63 @@ type GameEngine = {
             (playerEnemyHandler >-> finalHandler) this
             
             
-    member this.GetPlayerEnv() : PlayerEnv = {
-        Level = this.CurrentLevel
-        BulletColliders = Array.map (fun (x: Bullet) -> x.Box) this.Bullets
-        EnemyColliders = Array.append
-                             (Array.map (fun (x: Fish) -> x.Box) this.Fishes)
-                             (Array.map (fun (x: Bomb) -> x.Box) this.Bombs)
-        BonusColliders = Array.empty // TODO[#29]: Add bonus collision with player
-    }
+    member this.GetPlayerEnv() : PlayerEnv =
+        let mutable lifebuoy = None
+        let mutable lifeBonus = None
+        {
+            Level = this.CurrentLevel
+            BulletColliders = Array.map (fun (x: Bullet) -> x.Box) this.Bullets
+            EnemyColliders = Array.append
+                                 (Array.map (fun (x: Fish) -> x.Box) this.Fishes)
+                                 (Array.map (fun (x: Bomb) -> x.Box) this.Bombs)
+            StaticBonusColliders = (Array.empty, this.Bonuses)
+                                   ||> Array.fold (fun acc b ->
+                                       match b.Type with
+                                       | BonusType.Static _ -> [| b.Box |] |> Array.append acc
+                                       | BonusType.Lifebuoy -> lifebuoy <- Some b; acc
+                                       | BonusType.Life -> lifeBonus <- Some b; acc)
+            LifebuoyCollider = lifebuoy |> Option.map _.Box
+            LifeBonusCollider = lifeBonus |> Option.map _.Box
+        }
     
-    member this.GetEnemyEnv() =
+    member this.GetEnemyEnv(): EnemyEnv =
         {
             Level = this.CurrentLevel
             PlayerCollider = this.Player.Box
             BulletColliders = Array.map (fun (x: Bullet) -> x.Box) this.Bullets
         }
+        
+    member this.GetBonusEnv(): BonusEnv = this.GetEnemyEnv()
             
     member this.ChangeLevel(level: Level): GameEngine =
+        let getLevelPosition (coordinates: int * int) =
+            Point(GameRules.LevelWidth / level.LevelMap[0].Length * fst coordinates,
+                  GameRules.LevelHeight / level.LevelMap.Length * snd coordinates)
+        
         let bombs =
             level.BombsCoordinates()
-                |> Array.map (fun point ->
-                    Bomb.Create(
-                        Point(GameRules.LevelWidth / level.LevelMap[0].Length * fst point,
-                              GameRules.LevelHeight / level.LevelMap.Length * snd point)))
+                |> Array.map (getLevelPosition >> Bomb.Create)
+                
+        let bonuses =
+            level.StaticBonusesCoordinates()
+                |> Array.map (getLevelPosition >> Bonus.CreateRandomStaticBonus)
+                
+        let lifebuoy =
+            if GameRules.IsEventOccurs GameRules.LifebuoySpawnChance
+                then
+                    let topLeft = level.EmptyPositions() |> (Array.randomChoice >> getLevelPosition)
+                    Some { TopLeft = topLeft; Type = BonusType.Lifebuoy }
+                else None
+            |> Option.toArray
+                
+        let lifeBonus =
+            if GameRules.IsEventOccurs GameRules.LifeBonusSpawnChance[this.Player.Lives]
+            && lifebuoy.Length = 0
+                then
+                    let topLeft = level.EmptyPositions() |> (Array.randomChoice >> getLevelPosition)
+                    Some { TopLeft = topLeft; Type = BonusType.Life }
+                else None
+            |> Option.toArray
                     
         let player =
             { this.Player with
@@ -99,6 +136,7 @@ type GameEngine = {
             CurrentLevel = level
             Player = player
             Bombs = bombs
+            Bonuses = Array.collect id [| bonuses; lifebuoy; lifeBonus |]
             Bullets = Array.empty
             Fishes = Array.empty
             ParticlesSource = ParticlesSource.Default }
@@ -164,13 +202,14 @@ type GameEngine = {
                 | _ -> Vector(0, 0)
             { engine with Player = player }, [| SwitchLevel levelDelta |]
         | PlayerEffect.Die ->
+            let effects = [| PlaySound SoundType.LifeLost; PlayAnimation (AnimationType.Die, EntityType.Player) |]
             { engine with
                 Player = { engine.Player with
                             Velocity = Vector.Zero
                             FreezeTime = GameRules.PostDeathFreezeTicks 
                             Lives = Math.Max(engine.Player.Lives - 1, 0)
                             Oxygen = OxygenStorage.Default }
-            }, [| PlaySound SoundType.LifeLost; PlayAnimation (AnimationType.Die, EntityType.Player) |]
+            }, if engine.Player.Lives = 1 then effects |> Array.append [|PlaySound SoundType.GameOver|] else effects
             // TODO[#26]: Player sprite should be replaced with explosion for a while
             // TODO[#26]: Investigate how shot cooldown and direction should behave on resurrect: are they reset or not?
             // TODO[#27]: Investigate if enemy collision should stop the player from moving
@@ -196,6 +235,29 @@ type GameEngine = {
         | EnemyEffect.PlayerHit id -> None, [| PlaySound soundTypeDestroyed
                                                PlayAnimation (AnimationType.Die, EntityType.Enemy id) |]
         | EnemyEffect.Die -> None, Array.empty
+        
+    static member private UpdateBonusesHandler() : UpdateHandler =
+        fun (engine: GameEngine) ->
+            let bonusEnv = engine.GetBonusEnv()
+            let bonuses, externalEffects =
+                engine.Bonuses
+                |> Array.map _.Update(bonusEnv)
+                |> Array.map GameEngine.ProcessBonusEffect
+                |> Array.unzip
+            let externalEffects = externalEffects |> Array.collect id
+            { engine with Bonuses = Array.choose id bonuses }, externalEffects
+                
+    static member private ProcessBonusEffect effect =
+        match effect with
+        | BonusEffect.Pickup bonusType ->
+            None, [| ( match bonusType with
+                     | BonusType.Static _ -> PlaySound SoundType.TreasurePickedUp
+                     | BonusType.Life -> PlaySound SoundType.LifePickedUp
+                     | BonusType.Lifebuoy -> PlaySound SoundType.LifebuoyPickedUp ) |]
+        | BonusEffect.Die ->
+            None, [| PlaySound SoundType.ItemDestroyed |]
+        | BonusEffect.Update b ->
+            Some b, Array.empty
 and
     UpdateResult = GameEngine * ExternalEffect[]
 and

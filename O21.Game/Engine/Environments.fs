@@ -9,8 +9,15 @@ type PlayerEnv = {
     Level: Level
     BulletColliders: Box[]
     EnemyColliders: Box[]
-    BonusColliders: Box[]
-}
+    StaticBonusColliders: Box[]
+    LifebuoyCollider: Box Option
+    LifeBonusCollider: Box Option
+} with
+    member this.BonusColliders = seq {
+        yield! this.StaticBonusColliders
+        yield! Option.toArray this.LifebuoyCollider
+        yield! Option.toArray this.LifeBonusCollider
+    }
 
 type EnemyEnv = {
     Level: Level

@@ -302,7 +302,7 @@ module ScoreSystem =
         let engine = engine |> frameUpN timeZero
                                    ((engine.Bombs[0].TopLeft.X - engine.Bullets[0].Box.TopRight.X) / GameRules.BulletVelocity + 1)
         let actualScores = engine.Player.Scores
-        Assert.Equal(initialScores + GameRules.GiveScoresForBomb, actualScores)
+        Assert.Equal(initialScores + GameRules.GivePointsForBomb, actualScores)
 
 module Geometry =
     open O21.Game.Engine.Geometry

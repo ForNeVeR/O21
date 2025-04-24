@@ -7,11 +7,15 @@ module O21.Game.Engine.GameRules
 open System
 open O21.Game.U95
 
+// ----------------------- Screen Constants -----------------------
+
 [<Literal>]
 let GameScreenWidth = 600
 
 [<Literal>]
 let GameScreenHeight = 400
+
+// ----------------------- Player Constants -----------------------
 
 [<Literal>]
 let ShotCooldownTicks = 15
@@ -23,49 +27,54 @@ let MaxPlayerLives = 9
 let InitialPlayerLives = 5
 
 [<Literal>]
+let MaxPlayerVelocity = 3
+
+[<Literal>]
+let MaxOxygenUnits = 100
+
+// ----------------------- Level Constants -----------------------
+
+[<Literal>]
 let LevelWidth = GameScreenWidth
 
 [<Literal>]
 let LevelHeight = 300
 
-[<Literal>]
-let TicksPerSecond = 10.0
+// ----------------------- Time Constants -----------------------
 
 [<Literal>]
-let MaxPlayerVelocity = 3
+let TicksPerSecond = 10.0
 
 [<Literal>]
 let PostDeathFreezeTicks = 6
 
 [<Literal>]
-let GiveScoresForBonus = 25
+let OxygenUnitPeriod = 22
+
+// ----------------------- Score Constants -----------------------
+
+[<Literal>]
+let GiveScoresForStaticBonus = 25
+
+[<Literal>]
+let GiveScoresForLifebuoy = 50
+
+[<Literal>]
+let GivePointsForBomb = 20
 
 [<Literal>]
 let GiveScoresForFish = 10
 
 [<Literal>]
-let GiveScoresForBomb = 20
-
-[<Literal>]
-let GiveScoresForLifeline = 50
-
-[<Literal>]
-let SubtractScoresForShotBonus = 10
+let SubtractPointsForShotBonus = 10
 
 [<Literal>]
 let SubtractScoresForShot = 1
 
-let ClampVelocity(Vector(x, y)): Vector =
-   Vector(
-       Math.Clamp(x, -MaxPlayerVelocity, MaxPlayerVelocity),
-       Math.Clamp(y, -MaxPlayerVelocity, MaxPlayerVelocity)
-   )
-   
 [<Literal>]
-let MaxOxygenUnits = 100
+let SubtractScoresForShotByBlueBullet = 5
 
-[<Literal>]
-let OxygenUnitPeriod = 22
+// ----------------------- Physics Constants -----------------------
 
 [<Literal>]
 let BulletVelocity = 5 // TODO[#131]: Compare with the original
@@ -82,12 +91,17 @@ let ParticleSpeed = 3
 let ParticlesPeriodRange = [|7..10|]
 let ParticlesOffsetRange = [|-2..2|]
 
+// ----------------------- Object Sizes -----------------------
+
 let BrickSize = Vector(12, 12)
 let PlayerSize = Vector(46, 27)
 let BulletSize = Vector(6, 6)
 let ParticleSize = Vector(5, 5)
 let FishSizes = [|Vector(25, 25); Vector(25, 25); Vector(25, 25); Vector(25, 25); Vector(25, 25)|]
 let BombSize = Vector(20, 20)
+let BonusSize = BombSize
+
+// ----------------------- Functions -----------------------
 
 /// Relative position of the bullet sprite's top left corner to the player sprite's top corner (from the shooting side)
 /// when the bullet appears.
@@ -96,13 +110,26 @@ let NewBulletPosition(playerTopForwardCorner: Point, playerDirection: Horizontal
     | HorizontalDirection.Left -> playerTopForwardCorner + Vector(-4 - BulletSize.X, 14)
     | HorizontalDirection.Right -> playerTopForwardCorner + Vector(4, 14)
     
-let StartingLevel = LevelCoordinates(1, 1)
-let PlayerStartingPosition = Point(200, 140)
-let LevelSizeInTiles = Vector(50, 25)
 
 let NewParticlePosition(playerTopForwardCorner: Point, playerDirection: HorizontalDirection) =
     match playerDirection with
     | HorizontalDirection.Left -> playerTopForwardCorner + Vector(28, -ParticleSize.Y)
     | HorizontalDirection.Right -> playerTopForwardCorner + Vector(-28, -ParticleSize.Y)
+    
+let ClampVelocity(Vector(x, y)): Vector =
+   Vector(
+       Math.Clamp(x, -MaxPlayerVelocity, MaxPlayerVelocity),
+       Math.Clamp(y, -MaxPlayerVelocity, MaxPlayerVelocity)
+   )
+   
+let IsEventOccurs chance =
+    Random.Shared.NextDouble() <= chance
 
+// ----------------------- Other Game Constants -----------------------
+
+let StartingLevel = LevelCoordinates(1, 1)
+let PlayerStartingPosition = Point(200, 140)
+let LevelSizeInTiles = Vector(50, 25)
 let BombTriggerOffset = -15
+let LifebuoySpawnChance = 0.2 // TODO: Compare with the original
+let LifeBonusSpawnChance = [| 0.; 0.5; 0.25; 0.125; 0.0625; 0.|] // TODO: Compare with the original

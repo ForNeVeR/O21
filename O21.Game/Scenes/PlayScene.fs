@@ -165,5 +165,19 @@ type PlayScene = {
                 let fish = sprites.Fishes[i]
                 let frameNumber = state.Game.Tick % fish.LeftDirection.Length
                 DrawTexture(fish.LeftDirection[frameNumber], 60*i, 60*i, WHITE)
+                
+            for i = 0 to game.Bonuses.Length-1 do
+                let bonus = game.Bonuses[i]
+                match bonus.Type with
+                | BonusType.Static id ->
+                    let len = sprites.Bonuses.Static.Length
+                    let sprite = sprites.Bonuses.Static[id % len]
+                    DrawTexture(sprite, bonus.TopLeft.X, bonus.TopLeft.Y, WHITE)
+                | BonusType.Life ->
+                    let sprite = sprites.Bonuses.LifeBonus
+                    DrawTexture(sprite, bonus.TopLeft.X, bonus.TopLeft.Y, WHITE)
+                | BonusType.Lifebuoy ->
+                    let sprite = sprites.Bonuses.Lifebuoy[0]
+                    DrawTexture(sprite, bonus.TopLeft.X, bonus.TopLeft.Y, WHITE)
 
             this.HUD.Render(sprites.HUD, this.Content) // Always draw the HUD on last layer

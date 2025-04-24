@@ -50,7 +50,12 @@ type Player = {
         let enemies = playerEnv.EnemyColliders
         
         let scores = this.CalculateScoreChange(playerEnv)
-        let newPlayer = { this with Scores = Math.Max(this.Scores + scores, 0) }
+        let newPlayer = { this with
+                            Scores = Math.Max(this.Scores + scores, 0)
+                            Lives = this.Lives
+                                    + if CheckCollision playerEnv.Level this.Box (playerEnv.LifeBonusCollider |> Option.toArray)
+                                            |> _.IsCollidesObject
+                                            then 1 else 0 }
         
         if this.Oxygen.IsEmpty then PlayerEffect.Die
         else
@@ -60,14 +65,15 @@ type Player = {
             | Collision.CollidesObject _ -> PlayerEffect.Die
             | Collision.None -> PlayerEffect.Update newPlayer
             
-    member private this.CalculateScoreChange(playerEnv: PlayerEnv) =
-        this.ScoresFromShot(playerEnv)
+    member private this.CalculateScoreChange(playerEnv: PlayerEnv): int
+        = this.PointsFromShot(playerEnv)
+        + this.PointsForBonus(playerEnv)
             
-    member private this.ScoresFromShot(playerEnv: PlayerEnv) =
+    member private this.PointsFromShot(playerEnv: PlayerEnv) =
         let level = playerEnv.Level
         let bullets = playerEnv.BulletColliders
         let enemies = playerEnv.EnemyColliders
-        let bonuses = playerEnv.BonusColliders
+        let bonuses = playerEnv.BonusColliders |> Seq.toArray
         
         let countCollision b boxes =
             match CheckCollision level b boxes with
@@ -76,10 +82,21 @@ type Player = {
         (0, bullets)
         ||> Array.fold (fun acc b ->
             let plus =
-                countCollision b enemies * GameRules.GiveScoresForBomb  // TODO[#229]: Split bomb and fish collision check
+                countCollision b enemies * GameRules.GivePointsForBomb  // TODO[#229]: Split bomb and fish collision check
             let subtract =
-                countCollision b bonuses * GameRules.SubtractScoresForShotBonus
+                countCollision b bonuses * GameRules.SubtractPointsForShotBonus
             acc + plus - subtract)
+        
+    member private this.PointsForBonus(playerEnv: PlayerEnv) =
+        let staticBonusPoints =
+            if CheckCollision playerEnv.Level this.Box playerEnv.StaticBonusColliders
+               |> _.IsCollidesObject
+                then GameRules.GiveScoresForStaticBonus else 0
+        let lifebuoyPoints =
+            if CheckCollision playerEnv.Level this.Box (playerEnv.LifebuoyCollider |> Option.toArray)
+               |> _.IsCollidesObject
+                then GameRules.GiveScoresForLifebuoy else 0
+        staticBonusPoints + lifebuoyPoints
         
     static member Default = {
             TopLeft = GameRules.PlayerStartingPosition
@@ -175,7 +192,7 @@ type EnemyEffect<'e> =
     | Update of 'e
     | PlayerHit of id: int
     | Die
-
+    
 type Fish = {
     TopLeft: Point
     Type: int
@@ -240,3 +257,31 @@ type Bomb = {
 and [<RequireQualifiedAccess>] BombState =
     | Sleep of trigger: Trigger
     | Active of velocity: Vector
+
+type Bonus = {
+    TopLeft: Point
+    Type: BonusType
+} with
+    static member CreateRandomStaticBonus(position: Point) = {
+        TopLeft = position
+        Type = BonusType.Static <| Random.Shared.Next(1, 1000000)
+    }
+    
+    member this.Box = { TopLeft = this.TopLeft; Size = GameRules.BonusSize }
+    
+    member this.Update(bonusEnv: BonusEnv): BonusEffect =
+        let level = bonusEnv.Level
+        match (CheckCollision level this.Box [| bonusEnv.PlayerCollider |],
+               CheckCollision level this.Box bonusEnv.BulletColliders) with
+        | Collision.CollidesObject _, Collision.None -> BonusEffect.Pickup this.Type
+        | _, Collision.CollidesObject _ -> BonusEffect.Die
+        | _ -> BonusEffect.Update this
+            
+and [<RequireQualifiedAccess>] BonusType =
+    | Static of id: int
+    | Lifebuoy
+    | Life
+and [<RequireQualifiedAccess>] BonusEffect =
+    | Update of Bonus
+    | Pickup of BonusType
+    | Die
