@@ -118,9 +118,8 @@ type GameEngine = {
             |> Option.toArray
                 
         let lifeBonus =
-            if GameRules.IsEventOccurs GameRules.LifeBonusSpawnChance[this.Player.Lives]
+            if GameRules.IsEventOccurs <| Seq.item this.Player.Lives GameRules.LifeBonusSpawnChance
             && level.EmptyPositions().Length <> 0
-            && lifebuoy.Length = 0
                 then
                     let topLeft = level.EmptyPositions() |> (Array.randomChoice >> getLevelPosition)
                     Some { TopLeft = topLeft; Type = BonusType.Life }

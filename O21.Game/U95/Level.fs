@@ -78,13 +78,13 @@ type Level = {
                         | Bomb -> bombCoords.Add(j, i)
                         | Bonus -> bonusCoords.Add(j, i)
                         | Empty ->
-                            let isNearBrick = 
-                                [ (i - 1, j); (i + 1, j); (i, j - 1); (i, j + 1) ]
+                            let isNearEmpty = 
+                                [ (i - 1, j); (i + 1, j); (i, j - 1); (i, j + 1); (i - 1, j - 1); (i + 1, j + 1); (i - 1, j + 1); (i + 1, j - 1)]
                                 |> List.exists (fun (x, y) -> 
-                                    x >= 0 && y >= 0 && x < this.LevelMap.Length && y < row.Length && 
-                                    this.LevelMap[x].[y].IsBrick)
+                                    x >= 2 && y >= 2 && x < this.LevelMap.Length - 2 && y < row.Length - 2 && 
+                                    this.LevelMap[x].[y].IsEmpty)
                             let isNearBoundary = i = 0 || j = 0 || i = this.LevelMap.Length - 1 || j = row.Length - 1
-                            if not isNearBrick && not isNearBoundary then 
+                            if isNearEmpty && not isNearBoundary then 
                                 emptyCoords.Add(j, i) 
                             else ()
                         | _ -> ()
