@@ -4,6 +4,7 @@
 
 namespace O21.Game.U95
 
+open System
 open System.IO
 open System.Threading.Tasks
 
@@ -18,7 +19,6 @@ type LevelCoordinates =
 type LevelEntitiesCoordinates = {
     Bombs: (int * int)[]
     Bonuses: (int * int)[]
-    EmptyPositions: (int * int)[]
 }
 
 type Level = {
@@ -69,7 +69,6 @@ type Level = {
         member private this.EntitiesCoordinatesLazy = lazy (
                 let bombCoords = ResizeArray()
                 let bonusCoords = ResizeArray()
-                let emptyCoords = ResizeArray()
                 this.LevelMap
                 |> Array.iteri (fun i row ->
                     row
@@ -77,26 +76,42 @@ type Level = {
                         match e with
                         | Bomb -> bombCoords.Add(j, i)
                         | Bonus -> bonusCoords.Add(j, i)
-                        | Empty ->
-                            let isNearEmpty = 
-                                [ (i - 1, j); (i + 1, j); (i, j - 1); (i, j + 1); (i - 1, j - 1); (i + 1, j + 1); (i - 1, j + 1); (i + 1, j - 1)]
-                                |> List.exists (fun (x, y) -> 
-                                    x >= 2 && y >= 2 && x < this.LevelMap.Length - 2 && y < row.Length - 2 && 
-                                    this.LevelMap[x].[y].IsEmpty)
-                            let isNearBoundary = i = 0 || j = 0 || i = this.LevelMap.Length - 1 || j = row.Length - 1
-                            if isNearEmpty && not isNearBoundary then 
-                                emptyCoords.Add(j, i) 
-                            else ()
                         | _ -> ()
                         ))
                 {
                     Bombs = bombCoords |> _.ToArray()
                     Bonuses = bonusCoords |> _.ToArray()
-                    EmptyPositions = emptyCoords |> _.ToArray()
                 }
             )
 
         member this.BombsCoordinates() = this.EntitiesCoordinatesLazy.Value.Bombs
         
         member this.StaticBonusesCoordinates() = this.EntitiesCoordinatesLazy.Value.Bonuses
-        member this.EmptyPositions() = this.EntitiesCoordinatesLazy.Value.EmptyPositions
+        member this.GetRandomEmptyPosition eps =
+            let height = this.LevelMap.Length
+            let width = this.LevelMap[0].Length
+
+            let isWithinBounds i j =
+                i >= 0 && i < height && j >= 0 && j < width
+
+            let isSurroundingEmpty i j =
+                let offsets = [|-eps..eps|]
+                offsets |> Array.forall (fun di ->
+                    offsets |> Array.forall (fun dj ->
+                        let ni, nj = i + di, j + dj
+                        isWithinBounds ni nj && this.LevelMap[ni].[nj].IsEmpty
+                    )
+                )
+            
+            let validEmptyPositions = ResizeArray()
+            
+            this.LevelMap
+            |> Array.iteri (fun i row ->
+                row
+                |> Array.iteri (fun j e ->
+                    if e.IsEmpty && isSurroundingEmpty i j then
+                        validEmptyPositions.Add (j, i)
+                    ))
+
+            if validEmptyPositions.Count = 0
+                then None else Some (Seq.randomChoice validEmptyPositions)

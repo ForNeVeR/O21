@@ -108,23 +108,25 @@ type GameEngine = {
             level.StaticBonusesCoordinates()
                 |> Array.map (getLevelPosition >> Bonus.CreateRandomStaticBonus)
                 
-        let lifebuoy =
-            if GameRules.IsEventOccurs GameRules.LifebuoySpawnChance
-            && level.EmptyPositions().Length <> 0
+        let trySpawnSpecialBonus bonusType =
+            let chance =
+                match bonusType with
+                | BonusType.Lifebuoy -> GameRules.LifebuoySpawnChance
+                | BonusType.Life -> Seq.item this.Player.Lives GameRules.LifeBonusSpawnChance
+                | _ -> 0
+            if GameRules.IsEventOccurs chance
                 then
-                    let topLeft = level.EmptyPositions() |> (Array.randomChoice >> getLevelPosition)
-                    Some { TopLeft = topLeft; Type = BonusType.Lifebuoy }
+                    let emptyPos = level.GetRandomEmptyPosition 2 |> Option.map getLevelPosition
+                    match emptyPos with
+                    | Some topLeft -> Some { TopLeft = topLeft; Type = bonusType }
+                    | None -> None
                 else None
-            |> Option.toArray
+                
+        let lifebuoy =
+            trySpawnSpecialBonus BonusType.Lifebuoy |> Option.toArray
                 
         let lifeBonus =
-            if GameRules.IsEventOccurs <| Seq.item this.Player.Lives GameRules.LifeBonusSpawnChance
-            && level.EmptyPositions().Length <> 0
-                then
-                    let topLeft = level.EmptyPositions() |> (Array.randomChoice >> getLevelPosition)
-                    Some { TopLeft = topLeft; Type = BonusType.Life }
-                else None
-            |> Option.toArray
+            trySpawnSpecialBonus BonusType.Life |> Option.toArray
                     
         let player =
             { this.Player with

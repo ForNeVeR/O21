@@ -17,6 +17,7 @@ type Player = {
     FreezeTime: int
     Lives: int
     Score: int
+    Abilities: AbilityType[]
     Oxygen: OxygenStorage
 } with
 
@@ -108,6 +109,7 @@ type Player = {
             Direction = Right
             Lives = GameRules.InitialPlayerLives
             Score = 0
+            Abilities = Array.empty
             Oxygen = OxygenStorage.Default
         }
 and OxygenStorage = {
@@ -142,6 +144,13 @@ and [<RequireQualifiedAccess>] PlayerEffect =
     | Update of Player
     | OutOfBounds of Player
     | Die
+
+and AbilityType =
+    | BulletZeroCooldown
+    | BulletInfinityLifetime
+    | BulletTriple
+    | BulletWithSpecialBullet
+    | AllowTurn
 
 type Bullet = {
     TopLeft: Point
