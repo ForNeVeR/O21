@@ -337,6 +337,22 @@ module ScoreSystem =
         let actualPoints = engine.Player.Score
         Assert.Equal(initialPoints + pointsForPickup, actualPoints)
         
+    [<Fact>]
+    let ``Picking up a life bonus adds life to the player``(): unit =
+        let level = createEmptyLevel 1 1
+        
+        let engine = newEngine.ChangeLevel(level)
+        let engine = engine |> spawnEntity EntityKind.LifeBonus (0, 0)
+            
+        let engine =
+            { engine with
+                GameEngine.Player.TopLeft = engine.Bonuses[0].TopLeft }
+                  
+        let initialLives = engine.Player.Lives
+        
+        let engine = engine |> frameUpN timeZero 1
+        let actualLives = engine.Player.Lives
+        Assert.Equal(initialLives + 1, actualLives)
         
 module Geometry =
     open O21.Game.Engine.Geometry

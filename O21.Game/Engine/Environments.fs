@@ -21,7 +21,7 @@ type PlayerEnv = {
     }
     
     member this.EnemyColliders = seq {
-        yield! this.BulletColliders
+        yield! this.BombColliders
         yield! this.FishColliders
     }
 
