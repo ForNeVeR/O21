@@ -8,7 +8,8 @@ open O21.Game.U95
 type PlayerEnv = {
     Level: Level
     BulletColliders: Box[]
-    EnemyColliders: Box[]
+    BombColliders: Box[]
+    FishColliders: Box[]
     StaticBonusColliders: Box[]
     LifebuoyCollider: Box Option
     LifeBonusCollider: Box Option
@@ -17,6 +18,11 @@ type PlayerEnv = {
         yield! this.StaticBonusColliders
         yield! Option.toArray this.LifebuoyCollider
         yield! Option.toArray this.LifeBonusCollider
+    }
+    
+    member this.EnemyColliders = seq {
+        yield! this.BulletColliders
+        yield! this.FishColliders
     }
 
 type EnemyEnv = {

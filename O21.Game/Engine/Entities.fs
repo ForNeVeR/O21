@@ -16,7 +16,7 @@ type Player = {
     ShotCooldown: int
     FreezeTime: int
     Lives: int
-    Scores: int
+    Score: int
     Oxygen: OxygenStorage
 } with
 
@@ -47,11 +47,11 @@ type Player = {
         
     member private this.CheckState(playerEnv: PlayerEnv) =
         let level = playerEnv.Level
-        let enemies = playerEnv.EnemyColliders
+        let enemies = playerEnv.EnemyColliders |> Seq.toArray
         
-        let scores = this.CalculateScoreChange(playerEnv)
+        let score = this.CalculateScoreChange(playerEnv)
         let newPlayer = { this with
-                            Scores = Math.Max(this.Scores + scores, 0)
+                            Score = Math.Max(this.Score + score, 0)
                             Lives = this.Lives
                                     + if CheckCollision playerEnv.Level this.Box (playerEnv.LifeBonusCollider |> Option.toArray)
                                             |> _.IsCollidesObject
@@ -72,7 +72,8 @@ type Player = {
     member private this.PointsFromShot(playerEnv: PlayerEnv) =
         let level = playerEnv.Level
         let bullets = playerEnv.BulletColliders
-        let enemies = playerEnv.EnemyColliders
+        let bombs = playerEnv.BombColliders
+        let fishes = playerEnv.FishColliders
         let bonuses = playerEnv.BonusColliders |> Seq.toArray
         
         let countCollision b boxes =
@@ -81,8 +82,9 @@ type Player = {
         
         (0, bullets)
         ||> Array.fold (fun acc b ->
-            let plus =
-                countCollision b enemies * GameRules.GivePointsForBomb  // TODO[#229]: Split bomb and fish collision check
+            let plus
+                = countCollision b bombs * GameRules.GivePointsForBomb
+                + countCollision b fishes * GameRules.GivePointsForFish
             let subtract =
                 countCollision b bonuses * GameRules.SubtractPointsForShotBonus
             acc + plus - subtract)
@@ -91,11 +93,11 @@ type Player = {
         let staticBonusPoints =
             if CheckCollision playerEnv.Level this.Box playerEnv.StaticBonusColliders
                |> _.IsCollidesObject
-                then GameRules.GiveScoresForStaticBonus else 0
+                then GameRules.GivePointsForStaticBonus else 0
         let lifebuoyPoints =
             if CheckCollision playerEnv.Level this.Box (playerEnv.LifebuoyCollider |> Option.toArray)
                |> _.IsCollidesObject
-                then GameRules.GiveScoresForLifebuoy else 0
+                then GameRules.GivePointsForLifebuoy else 0
         staticBonusPoints + lifebuoyPoints
         
     static member Default = {
@@ -105,7 +107,7 @@ type Player = {
             FreezeTime = 0 
             Direction = Right
             Lives = GameRules.InitialPlayerLives
-            Scores = 0
+            Score = 0
             Oxygen = OxygenStorage.Default
         }
 and OxygenStorage = {
@@ -203,6 +205,13 @@ type Fish = {
 
     member this.Update(fishEnv: EnemyEnv, timeDelta: int): Fish EnemyEffect = // TODO[#27]: Fish behavior
         EnemyEffect.Die
+        
+    static member Default = {
+        TopLeft = Point(0, 0)
+        Type = 0
+        Velocity = Vector(0, 0)
+        Direction = HorizontalDirection.Right
+    }
            
 type Bomb = {
     Id: int

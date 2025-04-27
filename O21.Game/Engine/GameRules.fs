@@ -54,25 +54,25 @@ let OxygenUnitPeriod = 22
 // ----------------------- Score Constants -----------------------
 
 [<Literal>]
-let GiveScoresForStaticBonus = 25
+let GivePointsForStaticBonus = 25
 
 [<Literal>]
-let GiveScoresForLifebuoy = 50
+let GivePointsForLifebuoy = 50
 
 [<Literal>]
 let GivePointsForBomb = 20
 
 [<Literal>]
-let GiveScoresForFish = 10
+let GivePointsForFish = 10
 
 [<Literal>]
 let SubtractPointsForShotBonus = 10
 
 [<Literal>]
-let SubtractScoresForShot = 1
+let SubtractPointsForShot = 1
 
 [<Literal>]
-let SubtractScoresForShotByBlueBullet = 5
+let SubtractPointsForShotByBlueBullet = 5
 
 // ----------------------- Physics Constants -----------------------
 
@@ -110,7 +110,6 @@ let NewBulletPosition(playerTopForwardCorner: Point, playerDirection: Horizontal
     | HorizontalDirection.Left -> playerTopForwardCorner + Vector(-4 - BulletSize.X, 14)
     | HorizontalDirection.Right -> playerTopForwardCorner + Vector(4, 14)
     
-
 let NewParticlePosition(playerTopForwardCorner: Point, playerDirection: HorizontalDirection) =
     match playerDirection with
     | HorizontalDirection.Left -> playerTopForwardCorner + Vector(28, -ParticleSize.Y)
@@ -124,6 +123,10 @@ let ClampVelocity(Vector(x, y)): Vector =
    
 let IsEventOccurs chance =
     Random.Shared.NextDouble() <= chance
+    
+let GetLevelPosition level (coordinates: int * int)  =
+            Point(LevelWidth / level.LevelMap[0].Length * fst coordinates,
+                  LevelHeight / level.LevelMap.Length * snd coordinates)
 
 // ----------------------- Other Game Constants -----------------------
 

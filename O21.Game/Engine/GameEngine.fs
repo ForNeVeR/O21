@@ -76,9 +76,8 @@ type GameEngine = {
         {
             Level = this.CurrentLevel
             BulletColliders = Array.map (fun (x: Bullet) -> x.Box) this.Bullets
-            EnemyColliders = Array.append
-                                 (Array.map (fun (x: Fish) -> x.Box) this.Fishes)
-                                 (Array.map (fun (x: Bomb) -> x.Box) this.Bombs)
+            BombColliders = Array.map (fun (x: Bomb) -> x.Box) this.Bombs
+            FishColliders = Array.map (fun (x: Fish) -> x.Box) this.Fishes
             StaticBonusColliders = (Array.empty, this.Bonuses)
                                    ||> Array.fold (fun acc b ->
                                        match b.Type with
@@ -99,9 +98,7 @@ type GameEngine = {
     member this.GetBonusEnv(): BonusEnv = this.GetEnemyEnv()
             
     member this.ChangeLevel(level: Level): GameEngine =
-        let getLevelPosition (coordinates: int * int) =
-            Point(GameRules.LevelWidth / level.LevelMap[0].Length * fst coordinates,
-                  GameRules.LevelHeight / level.LevelMap.Length * snd coordinates)
+        let getLevelPosition = GameRules.GetLevelPosition level
         
         let bombs =
             level.BombsCoordinates()
@@ -113,6 +110,7 @@ type GameEngine = {
                 
         let lifebuoy =
             if GameRules.IsEventOccurs GameRules.LifebuoySpawnChance
+            && level.EmptyPositions().Length <> 0
                 then
                     let topLeft = level.EmptyPositions() |> (Array.randomChoice >> getLevelPosition)
                     Some { TopLeft = topLeft; Type = BonusType.Lifebuoy }
@@ -121,6 +119,7 @@ type GameEngine = {
                 
         let lifeBonus =
             if GameRules.IsEventOccurs GameRules.LifeBonusSpawnChance[this.Player.Lives]
+            && level.EmptyPositions().Length <> 0
             && lifebuoy.Length = 0
                 then
                     let topLeft = level.EmptyPositions() |> (Array.randomChoice >> getLevelPosition)
@@ -163,7 +162,7 @@ type GameEngine = {
                 { this with
                     Player = { player with
                                 ShotCooldown = GameRules.ShotCooldownTicks
-                                Scores = player.Scores - GameRules.SubtractScoresForShot }
+                                Score = player.Score - GameRules.SubtractPointsForShot }
                     Bullets = Array.append this.Bullets [| newBullet |] // TODO[#130]: Make more efficient (persistent vector?)
                 }, [| PlaySound SoundType.Shot |]
             else this, Array.empty
@@ -179,7 +178,9 @@ type GameEngine = {
     
     static member private UpdatePlayerWithoutEnemyCollisionHandler (timeDelta: int) : UpdateHandler =
         fun (engine: GameEngine) ->
-            let playerEnv = { engine.GetPlayerEnv() with EnemyColliders = Array.empty }
+            let playerEnv = { engine.GetPlayerEnv() with
+                                BombColliders = Array.empty
+                                FishColliders = Array.empty }
             let effect = engine.Player.Update(playerEnv, timeDelta)
             GameEngine.ProcessPlayerEffect(effect) engine
             

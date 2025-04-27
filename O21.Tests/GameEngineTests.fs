@@ -4,6 +4,7 @@
 
 module O21.Tests.GameEngineTests
 
+open System
 open O21.Game.U95
 open O21.Game.U95.Parser
 open Xunit
@@ -280,30 +281,63 @@ module Bullets =
             Assert.Equal(expectedVelocity, actualVelocity)
 
 module ScoreSystem =
-    [<Fact>]
-    let ``Adding scores for hit enemy``(): unit =
-        let level =
-            { emptyLevel with
-                LevelMap = [|
-                    [| Empty; Bomb |]
-                |] }
+    
+    [<Theory>]
+    [<InlineData(EntityKind.Bomb, GameRules.GivePointsForBomb)>]
+    [<InlineData(EntityKind.Fish, GameRules.GivePointsForFish)>]
+    [<InlineData(EntityKind.StaticBonus, - GameRules.SubtractPointsForShotBonus)>]
+    [<InlineData(EntityKind.Lifebuoy, - GameRules.SubtractPointsForShotBonus)>]
+    [<InlineData(EntityKind.LifeBonus, - GameRules.SubtractPointsForShotBonus)>]
+    let ``Adding points for shot entity``(entity, pointsForHit): unit =
+        let level = createEmptyLevel 2 1
         
         let engine = newEngine.ChangeLevel(level)
+        let engine = engine |> spawnEntity entity (1, 0)
+        let enemyPosX =
+            match entity with
+            | EntityKind.Bomb ->
+                engine.Bombs[0].TopLeft.X
+            | EntityKind.Fish ->
+                engine.Fishes[0].TopLeft.X
+            | EntityKind.StaticBonus | EntityKind.Lifebuoy | EntityKind.LifeBonus ->
+                engine.Bonuses[0].TopLeft.X
+            | _ -> failwithf $"Cannot get points for shot %s{Enum.GetName(entity)}"
+            
         let engine =
             { engine with
-                Player = { newEngine.Player with
-                            TopLeft = Point(engine.Bombs[0].TopLeft.X
+                GameEngine.Player.TopLeft = Point(enemyPosX
                                                 - GameRules.PlayerSize.X - GameRules.BulletSize.X,
-                                                - GameRules.PlayerSize.Y / 2) }}
-            
-        let initialScores = engine.Player.Scores
+                                                - GameRules.PlayerSize.Y / 2)
+                GameEngine.Player.Score = 100 }
+                  
+        let initialPoints = engine.Player.Score
         
         let engine, _ = engine.ApplyCommand PlayerCommand.Shoot
         let engine = engine |> frameUpN timeZero
-                                   ((engine.Bombs[0].TopLeft.X - engine.Bullets[0].Box.TopRight.X) / GameRules.BulletVelocity + 1)
-        let actualScores = engine.Player.Scores
-        Assert.Equal(initialScores + GameRules.GivePointsForBomb, actualScores)
-
+                                   ((enemyPosX - engine.Bullets[0].Box.TopRight.X) / GameRules.BulletVelocity + 1)
+        let actualPoints = engine.Player.Score
+        Assert.Equal(initialPoints + pointsForHit, actualPoints + GameRules.SubtractPointsForShot)
+        
+    [<Theory>]
+    [<InlineData(EntityKind.StaticBonus, GameRules.GivePointsForStaticBonus)>]
+    [<InlineData(EntityKind.Lifebuoy, GameRules.GivePointsForLifebuoy)>]
+    let ``Adding points for pickup bonus`` (bonus, pointsForPickup): unit =
+        let level = createEmptyLevel 1 1
+        
+        let engine = newEngine.ChangeLevel(level)
+        let engine = engine |> spawnEntity bonus (0, 0)
+            
+        let engine =
+            { engine with
+                GameEngine.Player.TopLeft = engine.Bonuses[0].TopLeft }
+                  
+        let initialPoints = engine.Player.Score
+        
+        let engine = engine |> frameUpN timeZero 1
+        let actualPoints = engine.Player.Score
+        Assert.Equal(initialPoints + pointsForPickup, actualPoints)
+        
+        
 module Geometry =
     open O21.Game.Engine.Geometry
     

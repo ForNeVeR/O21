@@ -62,7 +62,7 @@ type HUD =
         member this.SyncWithGame(gameEngine: GameEngine) =
             { this with
                 Lives = gameEngine.Player.Lives
-                Score = gameEngine.Player.Scores
+                Score = gameEngine.Player.Score
                 Oxy = gameEngine.Player.OxygenAmount
                 Pause = not gameEngine.IsActive
                 Level = gameEngine.CurrentLevel.Position
