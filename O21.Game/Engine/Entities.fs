@@ -186,7 +186,7 @@ type Bullet = {
     
     member this.Update(level: Level, timeDelta: int): Bullet option =
         // Check each intermediate position of the bullet for collision:
-        let maxTimeToProcessInOneStep = GameRules.BrickSize.X / this.Velocity.X
+        let maxTimeToProcessInOneStep = GameRules.BrickSize.X / Math.Abs(this.Velocity.X)
         if maxTimeToProcessInOneStep <= 0 then failwith "maxTimeToProcessInOneStep <= 0"
         
         let newLifetime = this.Lifetime + timeDelta

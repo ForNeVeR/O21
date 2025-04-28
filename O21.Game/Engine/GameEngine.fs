@@ -144,9 +144,16 @@ type GameEngine = {
     member this.ApplyCommand(command: PlayerCommand): GameEngine * ExternalEffect[] =
         match command with
         | VelocityDelta(delta) when this.Player.IsAllowedToMove ->
+            let newVelocity = GameRules.ClampVelocity(this.Player.Velocity + delta)
+            let direction =
+                if this.Player.Can AbilityType.AllowTurn then
+                    if newVelocity.X < 0
+                        then HorizontalDirection.Left
+                        else HorizontalDirection.Right
+                else this.Player.Direction
             { this with
-                GameEngine.Player.Velocity =
-                    GameRules.ClampVelocity(this.Player.Velocity + delta)
+                GameEngine.Player.Velocity = newVelocity
+                GameEngine.Player.Direction = direction
             }, Array.empty
         | VelocityDelta _ -> this, Array.empty
 
