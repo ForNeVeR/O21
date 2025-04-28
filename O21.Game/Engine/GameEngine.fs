@@ -157,14 +157,25 @@ type GameEngine = {
                 let newBullet = {
                     TopLeft = GameRules.NewBulletPosition(player.TopForward, player.Direction)
                     Direction = player.Direction
-                    Lifetime = 0
+                    Lifetime = if player.Can AbilityType.BulletInfinityLifetime then Int32.MinValue else 0
                     Velocity = player.Velocity + Vector(player.Direction * GameRules.BulletVelocity, 0) 
                 }
+                
+                let newBullets = seq {
+                    yield newBullet
+                    if player.Can AbilityType.BulletTriple then
+                        yield { newBullet with Velocity = newBullet.Velocity + GameRules.BulletVerticalSpread }
+                        yield { newBullet with Velocity = newBullet.Velocity + GameRules.BulletVerticalSpread * -1 }
+                }
+                
                 { this with
                     Player = { player with
-                                ShotCooldown = GameRules.ShotCooldownTicks
+                                ShotCooldown =
+                                    if player.Can AbilityType.BulletZeroCooldown
+                                        then GameRules.ShotCooldownTicksWithZeroCooldownAbility
+                                        else GameRules.ShotCooldownTicks
                                 Score = player.Score - GameRules.SubtractPointsForShot }
-                    Bullets = Array.append this.Bullets [| newBullet |] // TODO[#130]: Make more efficient (persistent vector?)
+                    Bullets = Array.append this.Bullets (newBullets |> Seq.toArray) // TODO[#130]: Make more efficient (persistent vector?)
                 }, [| PlaySound SoundType.Shot |]
             else this, Array.empty
         
@@ -246,10 +257,17 @@ type GameEngine = {
                 |> Array.map _.Update(bonusEnv)
                 |> Array.map GameEngine.ProcessBonusEffect
                 |> Array.unzip
+            let bonuses = Array.choose id bonuses
+            let engine =
+                if engine.Bonuses |> Array.exists (fun b -> b.Type.IsLifebuoy && b.Update(bonusEnv).IsPickup)
+                    then { engine with
+                            GameEngine.Player.Abilities =
+                                engine.Player.Abilities |> Array.append [| Ability.CreateRandomAbility() |] }
+                    else engine
             let externalEffects = externalEffects |> Array.collect id
-            { engine with Bonuses = Array.choose id bonuses }, externalEffects
+            { engine with Bonuses = bonuses }, externalEffects
                 
-    static member private ProcessBonusEffect effect =
+    static member private ProcessBonusEffect effect  =
         match effect with
         | BonusEffect.Pickup bonusType ->
             None, [| ( match bonusType with

@@ -26,14 +26,17 @@ type HUD =
                 Level = 1
                 Oxy = 0
                 Lives = 5
-                Abilities = Array.init 5 (fun _ -> false )
+                Abilities = Array.init 5 (fun _ -> false)
                 Pause = false 
                 Controls = Controls.Init()
             }
             
         member private this.renderBonusLine(textures: HUDSprites)  =
             for i = 1 to 5 do 
-                DrawTexture(textures.Abilities[i], 11 + 17*(i-1), 365, WHITE)
+                if this.Abilities[i - 1] then
+                    DrawTexture(textures.Abilities[i], 11 + 17*(i-1), 365, WHITE)
+                else
+                    DrawTexture(textures.Abilities[0], 11 + 17*(i-1), 365, WHITE)
                 
         member private this.renderOxyLine (textures: HUDSprites) =
             let blue = Color(0, 0, 255, 255)
@@ -66,6 +69,9 @@ type HUD =
                 Oxy = gameEngine.Player.OxygenAmount
                 Pause = not gameEngine.IsActive
                 Level = gameEngine.CurrentLevel.Position
+                Abilities = Array.init 5 (fun i ->
+                    gameEngine.Player.Abilities
+                    |> Array.exists (fun a -> a.Type = (enum i)))
             }
             
         member this.UpdateScore(newScore:int):HUD =

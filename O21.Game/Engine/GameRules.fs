@@ -21,6 +21,9 @@ let GameScreenHeight = 400
 let ShotCooldownTicks = 15
 
 [<Literal>]
+let ShotCooldownTicksWithZeroCooldownAbility = 3
+
+[<Literal>]
 let MaxPlayerLives = 9
 
 [<Literal>]
@@ -51,6 +54,13 @@ let PostDeathFreezeTicks = 6
 [<Literal>]
 let OxygenUnitPeriod = 22
 
+[<Literal>]
+let BulletLifetime = 10
+
+/// 7 Min
+[<Literal>]
+let AbilityLifetime = 4200
+
 // ----------------------- Score Constants -----------------------
 
 [<Literal>]
@@ -79,11 +89,10 @@ let SubtractPointsForShotByBlueBullet = 5
 [<Literal>]
 let BulletVelocity = 5 // TODO[#131]: Compare with the original
 
-[<Literal>]
-let BombVelocity = -5
+let BulletVerticalSpread = Vector(0, 3) // TODO: Compare with the original
 
 [<Literal>]
-let BulletLifetime = 10
+let BombVelocity = -5
 
 [<Literal>]
 let ParticleSpeed = 3

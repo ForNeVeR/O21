@@ -5,6 +5,8 @@
 namespace O21.Game.Engine
 
 open System
+open System.Linq
+open Microsoft.FSharp.Core
 open O21.Game.Engine.Environments
 open O21.Game.U95
 open O21.Game.Engine.Geometry
@@ -17,7 +19,7 @@ type Player = {
     FreezeTime: int
     Lives: int
     Score: int
-    Abilities: AbilityType[]
+    Abilities: Ability[]
     Oxygen: OxygenStorage
 } with
 
@@ -35,6 +37,9 @@ type Player = {
         | HorizontalDirection.Right -> this.TopRight
         
     member this.Box: Box = { TopLeft = this.TopLeft; Size = GameRules.PlayerSize }
+    
+    member this.Can abilityType =
+        this.Abilities |> Array.exists (fun a -> a.Type = abilityType)
 
     member this.Update(playerEnv: PlayerEnv, timeDelta: int): PlayerEffect =
         let newPlayer =
@@ -43,6 +48,7 @@ type Player = {
                 ShotCooldown = max (this.ShotCooldown - timeDelta) 0
                 FreezeTime =  max (this.FreezeTime - timeDelta) 0
                 Oxygen = this.Oxygen.Update(timeDelta)
+                Abilities = this.Abilities |> Array.choose _.Update(timeDelta)
             }
         newPlayer.CheckState(playerEnv)
         
@@ -144,13 +150,31 @@ and [<RequireQualifiedAccess>] PlayerEffect =
     | Update of Player
     | OutOfBounds of Player
     | Die
+    
+and Ability = {
+    Type: AbilityType
+    Lifetime: int
+} with
+    static member private Abilities =
+        let values = Enum.GetValues(typeof<AbilityType>)
+        values.Cast<AbilityType>().ToArray()
+    
+    static member CreateRandomAbility() = {
+        Type = Ability.Abilities |> Array.randomChoice
+        Lifetime = 0
+    }
+    
+    member this.Update(timeDelta: int): Ability Option =
+        let newLifetime = this.Lifetime + timeDelta
+        if newLifetime > GameRules.AbilityLifetime
+            then None else Some { this with Lifetime = newLifetime }
 
 and AbilityType =
-    | BulletZeroCooldown
-    | BulletInfinityLifetime
-    | BulletTriple
-    | BulletWithSpecialBullet
-    | AllowTurn
+    | BulletTriple = 0
+    | BulletZeroCooldown = 1
+    | BulletInfinityLifetime = 2
+    | BulletWithSpecialBullet = 3
+    | AllowTurn = 4        
 
 type Bullet = {
     TopLeft: Point
