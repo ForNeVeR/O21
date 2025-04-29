@@ -39,6 +39,7 @@ type Sprites = {
     Bombs: Fish[]
     Player: PlayerSprites
     Bullet: Texture
+    ExplosiveBullet: Texture
     HUD: HUDSprites
     Bonuses: BonusSprites
     BubbleParticle: Texture
@@ -165,6 +166,7 @@ module Sprites =
             Bombs = loadBombs lifetime exeSprites
             Player = PlayerSprites.Load lifetime exeSprites
             Bullet = CreateTransparentSprite lifetime exeSprites[1] exeSprites[2]
+            ExplosiveBullet = CreateTransparentSprite lifetime exeSprites[225] exeSprites[226] 
             HUD = loadHUD lifetime exeSprites
             Bonuses = loadBonuses lifetime exeSprites
             BubbleParticle =  CreateTransparentSprite lifetime exeSprites[3] exeSprites[4]

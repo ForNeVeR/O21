@@ -173,7 +173,7 @@ and AbilityType =
     | BulletTriple = 0
     | BulletZeroCooldown = 1
     | BulletInfinityLifetime = 2
-    | BulletWithSpecialBullet = 3
+    | ExplosiveBullet = 3
     | AllowTurn = 4        
 
 type Bullet = {
@@ -181,12 +181,31 @@ type Bullet = {
     Direction: HorizontalDirection
     Lifetime: int
     Velocity: Vector
+    Explosive: bool
 } with
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.BulletSize }
     
+    static member SpawnBulletsInPattern (pattern: BulletsPattern) (bullet: Bullet)=
+        let velocities =
+            match pattern with
+            | Circle count ->
+                let angleStep = 2.0 * Math.PI / float count
+                [| for i in 0 .. count - 1 do
+                    let angle = float i * angleStep
+                    let velocity = Vector(
+                        Math.Cos(angle) * float(GameRules.BulletVelocity) |> int,
+                        Math.Sin(angle) * float(GameRules.BulletVelocity) |> int)
+                    yield velocity |]
+        velocities
+        |> Array.map (fun v -> { bullet with Velocity = v })
+
+    
     member this.Update(level: Level, timeDelta: int): Bullet option =
         // Check each intermediate position of the bullet for collision:
-        let maxTimeToProcessInOneStep = GameRules.BrickSize.X / Math.Abs(this.Velocity.X)
+        let maxTimeToProcessInOneStep =
+            if this.Velocity.X <> 0
+                then GameRules.BrickSize.X / Math.Abs(this.Velocity.X)
+                else GameRules.BrickSize.Y / Math.Abs(this.Velocity.Y)
         if maxTimeToProcessInOneStep <= 0 then failwith "maxTimeToProcessInOneStep <= 0"
         
         let newLifetime = this.Lifetime + timeDelta
@@ -205,7 +224,10 @@ type Bullet = {
         else
             this.Update(level, maxTimeToProcessInOneStep)
             |> Option.bind _.Update(level, timeDelta - maxTimeToProcessInOneStep)
-
+            
+and BulletsPattern =
+    | Circle of count: int
+    
 type Particle = {
     TopLeft: Point
     Speed: int

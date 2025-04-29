@@ -52,22 +52,21 @@ type GameEngine = {
         if not this.IsActive then { this with SuspendedTick = timeDelta + this.SuspendedTick }, Array.empty
         else                     
             let timeDelta = timeDelta
-            let level = this.CurrentLevel
             
-            let playerEnemyHandler: UpdateHandler = (GameEngine.UpdatePlayerWithoutEnemyCollisionHandler timeDelta)
+            let mainHandler: UpdateHandler = (GameEngine.UpdatePlayerWithoutEnemyCollisionHandler timeDelta)
                                                     >-> GameEngine.UpdateBonusesHandler()
                                                     >-> (GameEngine.UpdatePlayerHandler 0)
                                                     >-> (GameEngine.UpdateEnemiesHandler timeDelta)
+                                                    >-> (GameEngine.UpdateBulletsHandler timeDelta)
             let finalHandler =
                 (fun (engine: GameEngine) ->
                     { engine with
                         Tick = newTick
-                        Bullets = this.Bullets |> Array.choose(_.Update(level, timeDelta))
                         ParticlesSource = this.ParticlesSource.Update(this.CurrentLevel, this.Player, timeDelta)
                         SuspendedTick = 0
                     }, [||])
                 
-            (playerEnemyHandler >-> finalHandler) this
+            (mainHandler >-> finalHandler) this
             
             
     member this.GetPlayerEnv() : PlayerEnv =
@@ -165,14 +164,25 @@ type GameEngine = {
                     TopLeft = GameRules.NewBulletPosition(player.TopForward, player.Direction)
                     Direction = player.Direction
                     Lifetime = if player.Can AbilityType.BulletInfinityLifetime then Int32.MinValue else 0
-                    Velocity = player.Velocity + Vector(player.Direction * GameRules.BulletVelocity, 0) 
+                    Velocity = player.Velocity + Vector(player.Direction * GameRules.BulletVelocity, 0)
+                    Explosive = false
                 }
+                
+                let mutable subtractPointsForExplosiveBullet =
+                    if player.Can AbilityType.ExplosiveBullet then
+                        GameRules.SubtractPointsForShotByExplosiveBullet else 0
                 
                 let newBullets = seq {
                     yield newBullet
                     if player.Can AbilityType.BulletTriple then
                         yield { newBullet with Velocity = newBullet.Velocity + GameRules.BulletVerticalSpread }
                         yield { newBullet with Velocity = newBullet.Velocity + GameRules.BulletVerticalSpread * -1 }
+                    if player.Can AbilityType.ExplosiveBullet then
+                        yield { newBullet with
+                                    Lifetime = 0
+                                    Velocity = player.Velocity
+                                               + Vector(player.Direction * GameRules.ExplosiveBulletVelocity, 0)
+                                    Explosive = true }
                 }
                 
                 { this with
@@ -181,7 +191,9 @@ type GameEngine = {
                                     if player.Can AbilityType.BulletZeroCooldown
                                         then GameRules.ShotCooldownTicksWithZeroCooldownAbility
                                         else GameRules.ShotCooldownTicks
-                                Score = player.Score - GameRules.SubtractPointsForShot }
+                                Score = player.Score
+                                        - GameRules.SubtractPointsForShot
+                                        - subtractPointsForExplosiveBullet }
                     Bullets = Array.append this.Bullets (newBullets |> Seq.toArray) // TODO[#130]: Make more efficient (persistent vector?)
                 }, [| PlaySound SoundType.Shot |]
             else this, Array.empty
@@ -285,6 +297,28 @@ type GameEngine = {
             None, [| PlaySound SoundType.ItemDestroyed |]
         | BonusEffect.Update b ->
             Some b, Array.empty
+            
+    static member private UpdateBulletsHandler (timeDelta: int): UpdateHandler =
+        fun (engine: GameEngine) ->
+            let level = engine.CurrentLevel
+            let fromExplosiveBullets =
+                engine.Bullets
+                |> Array.fold (fun acc b ->
+                    if b.Explosive
+                        then
+                            if b.Update(level, timeDelta).IsNone then
+                                Array.append acc
+                                    (Bullet.SpawnBulletsInPattern (BulletsPattern.Circle 8)
+                                        { b with
+                                            Explosive = false
+                                            Lifetime = 0 - GameRules.BulletFromExplosiveLifetime - GameRules.BulletLifetime })
+                            else acc
+                        else
+                            acc) [||]
+            { engine with
+                Bullets = Array.append
+                    (engine.Bullets |> Array.choose(_.Update(level, timeDelta)))
+                    fromExplosiveBullets } , [||]
 and
     UpdateResult = GameEngine * ExternalEffect[]
 and

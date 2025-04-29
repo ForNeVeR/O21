@@ -153,7 +153,8 @@ type PlayScene = {
                         ()
 
             this.AnimationHandler.Draw(state)
-            game.Bullets |> Seq.iter(PlayScene.DrawBullet sprites.Bullet)
+            game.Bullets |> Seq.iter(fun b ->
+                PlayScene.DrawBullet (if b.Explosive then sprites.ExplosiveBullet else sprites.Bullet) b)
             game.ParticlesSource.Particles |> Seq.iter(PlayScene.DrawParticle sprites.BubbleParticle)
             
             for i = 0 to game.Bombs.Length-1 do

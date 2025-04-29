@@ -57,6 +57,9 @@ let OxygenUnitPeriod = 22
 [<Literal>]
 let BulletLifetime = 10
 
+[<Literal>]
+let BulletFromExplosiveLifetime = 15
+
 /// 7 Min
 [<Literal>]
 let AbilityLifetime = 4200
@@ -82,12 +85,15 @@ let SubtractPointsForShotBonus = 10
 let SubtractPointsForShot = 1
 
 [<Literal>]
-let SubtractPointsForShotByBlueBullet = 5
+let SubtractPointsForShotByExplosiveBullet = 5
 
 // ----------------------- Physics Constants -----------------------
 
 [<Literal>]
 let BulletVelocity = 5 // TODO[#131]: Compare with the original
+
+[<Literal>]
+let ExplosiveBulletVelocity = 7 // TODO[#131]: Compare with the original
 
 let BulletVerticalSpread = Vector(0, 3) // TODO: Compare with the original
 

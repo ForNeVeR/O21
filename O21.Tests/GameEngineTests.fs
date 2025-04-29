@@ -221,6 +221,7 @@ module Bullets =
             Direction = HorizontalDirection.Right
             Lifetime = 0
             Velocity = Vector(GameRules.BulletVelocity, 0)
+            Explosive = false
         }
     
     [<Fact>]
