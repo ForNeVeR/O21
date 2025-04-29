@@ -174,7 +174,7 @@ module Player =
             Assert.Equal(0, engine.Bombs.Length)
         | EntityKind.Fish ->
             // Assert.Equal(0, engine.Fishes.Length)
-            // TODO: Uncomment when fishes are implemented
+            // TODO[#27]: Uncomment when fishes are implemented
             ()
         | _ -> failwith "Entity is not enemy"
         

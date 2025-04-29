@@ -95,7 +95,7 @@ let BulletVelocity = 5 // TODO[#131]: Compare with the original
 [<Literal>]
 let ExplosiveBulletVelocity = 7 // TODO[#131]: Compare with the original
 
-let BulletVerticalSpread = Vector(0, 3) // TODO: Compare with the original
+let BulletVerticalSpread = Vector(0, 3) // TODO[#236]: Compare with the original
 
 [<Literal>]
 let BombVelocity = -5
@@ -149,9 +149,9 @@ let StartingLevel = LevelCoordinates(1, 1)
 let PlayerStartingPosition = Point(200, 140)
 let LevelSizeInTiles = Vector(50, 25)
 let BombTriggerOffset = -15
-let LifebuoySpawnChance = 0.2 // TODO: Compare with the original
+let LifebuoySpawnChance = 0.2 // TODO[#237]: Compare with the original
 let LifeBonusSpawnChance = seq {
     yield! [|0.25; 0.125;|]
     yield! Array.create 7 0.0625
     while true do yield 0.
-} // TODO: Compare with the original
+} // TODO[#238]: Compare with the original
