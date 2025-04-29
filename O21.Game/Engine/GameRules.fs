@@ -114,7 +114,7 @@ let BulletSize = Vector(6, 6)
 let ParticleSize = Vector(5, 5)
 let FishSizes = [|Vector(25, 25); Vector(25, 25); Vector(25, 25); Vector(25, 25); Vector(25, 25)|]
 let BombSize = Vector(20, 20)
-let BonusSize = BombSize
+let BonusSize = Vector(30, 30)
 
 // ----------------------- Functions -----------------------
 
