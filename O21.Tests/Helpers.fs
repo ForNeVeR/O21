@@ -37,7 +37,9 @@ let spawnEntity entityKind levelCoords engine =
     
     match entityKind with
     | EntityKind.Player ->
-        System.ArgumentException("There should be only one player") |> raise
+        { engine with
+            GameEngine.Player.TopLeft = position
+        }
     | EntityKind.Fish ->
         { engine with
             Fishes = Array.append engine.Fishes [| { Fish.Default with TopLeft = position } |]
@@ -59,3 +61,17 @@ let spawnEntity entityKind levelCoords engine =
             Bonuses = Array.append engine.Bonuses [| { TopLeft = position; Type = BonusType.Life } |]
         }
     | _ -> System.ArgumentOutOfRangeException("Cannot spawn this entity exist") |> raise
+    
+let getEntityPos entityKind i (engine: GameEngine)=
+    match entityKind with
+    | EntityKind.Player ->
+        engine.Player.TopLeft
+    | EntityKind.Fish ->
+        engine.Fishes[i].TopLeft
+    | EntityKind.Bomb ->
+        engine.Bombs[i].TopLeft
+    | EntityKind.StaticBonus
+    | EntityKind.Lifebuoy
+    | EntityKind.LifeBonus ->
+        engine.Bonuses[i].TopLeft
+    | _ -> System.ArgumentOutOfRangeException("Cannot get TopLeft position from entity") |> raise

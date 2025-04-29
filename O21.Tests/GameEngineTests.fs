@@ -142,7 +142,41 @@ module Player =
                 Velocity = Vector(1, 0) 
         }
         let player' = player.Update(getEmptyPlayerEnvWithLevel level, 1)
-        Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)    
+        Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
+        
+    [<Theory>]
+    [<InlineData(EntityKind.Fish)>]
+    [<InlineData(EntityKind.Bomb)>]
+    let ``Colliding with enemy kills the player and enemy``(enemy: EntityKind): unit =
+        let level = createEmptyLevel 1 2
+        
+        let engine = newEngine.ChangeLevel(level)
+        let engine = engine |> spawnEntity enemy (0, 1)
+        
+        let enemyPos = engine |> getEntityPos enemy 0
+        
+        let dist = 10
+            
+        let engine =
+            { engine with
+                GameEngine.Player.TopLeft = Point(enemyPos.X,
+                                                  enemyPos.Y - GameRules.PlayerSize.Y - dist)
+                GameEngine.Player.Velocity = Vector(0, 1) }
+            
+        let initialLives = engine.Player.Lives
+        let engine = engine |> frameUpN timeZero (dist + 1)
+        
+        let actualLives = engine.Player.Lives
+        
+        Assert.Equal(initialLives - 1, actualLives)
+        match enemy with
+        | EntityKind.Bomb ->
+            Assert.Equal(0, engine.Bombs.Length)
+        | EntityKind.Fish ->
+            // Assert.Equal(0, engine.Fishes.Length)
+            // TODO: Uncomment when fishes are implemented
+            ()
+        | _ -> failwith "Entity is not enemy"
         
 module OxygenSystem =
     
@@ -294,15 +328,7 @@ module ScoreSystem =
         
         let engine = newEngine.ChangeLevel(level)
         let engine = engine |> spawnEntity entity (1, 0)
-        let enemyPosX =
-            match entity with
-            | EntityKind.Bomb ->
-                engine.Bombs[0].TopLeft.X
-            | EntityKind.Fish ->
-                engine.Fishes[0].TopLeft.X
-            | EntityKind.StaticBonus | EntityKind.Lifebuoy | EntityKind.LifeBonus ->
-                engine.Bonuses[0].TopLeft.X
-            | _ -> failwithf $"Cannot get points for shot %s{Enum.GetName(entity)}"
+        let enemyPosX = engine |> getEntityPos entity 0 |> _.X
             
         let engine =
             { engine with
@@ -354,6 +380,23 @@ module ScoreSystem =
         let engine = engine |> frameUpN timeZero 1
         let actualLives = engine.Player.Lives
         Assert.Equal(initialLives + 1, actualLives)
+    
+    [<Fact>]  
+    let ``Picking up a life bonus adds ability to the player``(): unit =
+        let level = createEmptyLevel 1 1
+        
+        let engine = newEngine.ChangeLevel(level)
+        let engine = engine |> spawnEntity EntityKind.Lifebuoy (0, 0)
+            
+        let engine =
+            { engine with
+                GameEngine.Player.TopLeft = engine.Bonuses[0].TopLeft }
+                  
+        let initialAbilities = engine.Player.Abilities.Length
+        
+        let engine = engine |> frameUpN timeZero 1
+        let actualAbilities = engine.Player.Abilities.Length
+        Assert.Equal(initialAbilities + 1, actualAbilities)
         
 module Geometry =
     open O21.Game.Engine.Geometry
