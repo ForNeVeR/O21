@@ -1,0 +1,141 @@
+# SPDX-FileCopyrightText: 2021-2025 Friedrich von Never <friedrich@fornever.me>
+#
+# SPDX-License-Identifier: MIT
+
+name: Release
+on:
+  push:
+    branches:
+      - 'main'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - 'main'
+  schedule:
+    - cron: '0 0 * * 6'
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    env:
+      DOTNET_NOLOGO: 1
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read version from ref
+        id: version
+        shell: pwsh
+        run: echo "version=$(./scripts/Get-Version.ps1 -RefName $env:GITHUB_REF)" >> $env:GITHUB_OUTPUT
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: NuGet cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NUGET_PACKAGES }}
+          key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
+
+      - name: Publish for Linux x86-64
+        shell: pwsh
+        run: >
+          dotnet publish O21.Game --self-contained --runtime linux-x64 --configuration Release --output ./publish.linux.x86-64
+          && Set-Location ./publish.linux-x86-64
+          && zip -r ../O21-v${{ steps.version.outputs.version }}.linux-x86-64.zip *
+
+      - name: Publish for Linux AArch64
+        shell: pwsh
+        run: >
+          dotnet publish O21.Game --self-contained --runtime linux-arm64 --configuration Release --output ./publish.linux.aarch64
+          && Set-Location ./publish.linux-aarch64
+          && zip -r ../O21.Game-v${{ steps.version.outputs.version }}.linux.aarch64.zip *
+
+      - name: Publish for macOS x86-64
+        shell: pwsh
+        run: >
+          dotnet publish O21.Game --self-contained --runtime osx-x64 --configuration Release --output ./publish.osx-x86-64
+          && Set-Location ./publish.osx-x86-64
+          && zip -r ../O21.Game-v${{ steps.version.outputs.version }}.osx-x86-64.zip *
+
+      - name: Publish for macOS AArch64
+        shell: pwsh
+        run: >
+          dotnet publish O21.Game --self-contained --runtime osx-arm64 --configuration Release --output ./publish.osx-x86-64
+          && Set-Location ./publish.osx-aarch64
+          && zip -r ../O21.Game-v${{ steps.version.outputs.version }}.osx-aarch64.zip *
+
+      - name: Publish for Windows
+        shell: pwsh
+        run: >
+          dotnet publish ChangelogAutomation --self-contained --runtime win-x64 --configuration Release --output ./publish.win-x64
+          && Set-Location ./publish.win-x64
+          && zip -r ../ChangelogAutomation-v${{ steps.version.outputs.version }}.win-x64.zip *
+
+      - name: Prepare a NuGet packages
+        run: dotnet pack --configuration Release -p:Version=${{ steps.version.outputs.version }}
+
+      - name: Read changelog
+        id: changelog
+        run: dotnet run --project ChangelogAutomation -- ./CHANGELOG.md --output-file-path ./release-data.md
+
+      - name: Push an MSBuild package to NuGet
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: dotnet nuget push ./ChangelogAutomation.MSBuild/bin/Release/ChangelogAutomation.MSBuild.${{ steps.version.outputs.version }}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN }}
+
+      - name: Create release
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ChangelogAutomation v${{ steps.version.outputs.version }}
+          body_path: ./release-data.md
+
+      - name: 'Upload distribution: Linux'
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_name: ChangelogAutomation-v${{ steps.version.outputs.version }}.linux-x64.zip
+          asset_path: ./ChangelogAutomation-v${{ steps.version.outputs.version }}.linux-x64.zip
+          asset_content_type: application/zip
+      - name: 'Upload distribution: macOS'
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_name: ChangelogAutomation-v${{ steps.version.outputs.version }}.osx-x64.zip
+          asset_path: ./ChangelogAutomation-v${{ steps.version.outputs.version }}.osx-x64.zip
+          asset_content_type: application/zip
+      - name: 'Upload distribution: Windows'
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_name: ChangelogAutomation-v${{ steps.version.outputs.version }}.win-x64.zip
+          asset_path: ./ChangelogAutomation-v${{ steps.version.outputs.version }}.win-x64.zip
+          asset_content_type: application/zip
+
+      - name: Upload .nupkg file for MSBuild package
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_name: ChangelogAutomation.MSBuild.${{ steps.version.outputs.version }}.nupkg
+          asset_path: ./ChangelogAutomation.MSBuild/bin/Release/ChangelogAutomation.MSBuild.${{ steps.version.outputs.version }}.nupkg
+          asset_content_type: application/zip
