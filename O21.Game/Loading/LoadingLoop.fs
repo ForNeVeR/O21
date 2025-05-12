@@ -9,10 +9,12 @@ open System.Collections.Concurrent
 open System.Threading
 
 open JetBrains.Lifetimes
-open type Raylib_CsLo.Raylib
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Rendering.Graphics
 
 open O21.Game
 open O21.Game.U95
+open Raylib_CSharp.Windowing
 
 type private Result<'a> =
     | Success of 'a
@@ -49,7 +51,7 @@ let private processWithPumping(lt, window: WindowParameters, scene: ILoadingScen
                 result <- Some <| Success task.Result
             else if task.IsFaulted then
                 result <- Some <| Error task.Exception
-            else if WindowShouldClose() || task.IsCanceled then
+            else if Window.ShouldClose() || task.IsCanceled then
                 result <- Some Cancel
             else
                 match queue.TryDequeue() with

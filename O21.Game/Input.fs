@@ -4,9 +4,13 @@
 
 namespace O21.Game
 
+open System
 open System.Numerics
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp
+open Raylib_CSharp.Camera.Cam2D
+open Raylib_CSharp.Interact
+open type Raylib_CSharp.Interact.Input
+open type Raylib_CSharp.Raylib
 
 type Key = Left | Right | Up | Down | Fire | Pause | Restart
 
@@ -21,33 +25,33 @@ module Input =
     let keyBindings =
         Map.ofList
             [ 
-                KeyboardKey.KEY_UP, Up
-                KeyboardKey.KEY_DOWN, Down
-                KeyboardKey.KEY_LEFT, Left
-                KeyboardKey.KEY_RIGHT, Right
-                KeyboardKey.KEY_SPACE, Fire
-                KeyboardKey.KEY_F2, Restart
-                KeyboardKey.KEY_F3, Pause
+                KeyboardKey.Up, Up
+                KeyboardKey.Down, Down
+                KeyboardKey.Left, Left
+                KeyboardKey.Right, Right
+                KeyboardKey.Space, Fire
+                KeyboardKey.F2, Restart
+                KeyboardKey.F3, Pause
             ]
 
 type Input with    
 
     static member Handle(mousePosition : Vector2): Input =
         let keys = ResizeArray()
-        let mutable key = Raylib.GetKeyPressed_()
-        while key <> KeyboardKey.KEY_NULL do
+        let mutable key = GetKeyPressed()
+        while key <> int KeyboardKey.Null do
             keys.Add(key)
-            key <- Raylib.GetKeyPressed_()
+            key <- GetKeyPressed()
 
         let mouse = mousePosition
 
-        { Pressed = keys |> Seq.choose (fun k -> Map.tryFind k Input.keyBindings) |> Set.ofSeq
+        { Pressed = keys |> Seq.choose (fun k -> Map.tryFind (k |> enum<KeyboardKey>) Input.keyBindings) |> Set.ofSeq
           MouseCoords = Vector2(mouse.X, mouse.Y)
-          MouseButtonPressed = Raylib.IsMouseButtonPressed(MouseButton.MOUSE_BUTTON_LEFT)
-          MouseWheelMove = Raylib.GetMouseWheelMove() }
+          MouseButtonPressed = IsMouseButtonPressed(MouseButton.Left)
+          MouseWheelMove = GetMouseWheelMove() }
 
     static member Handle(camera : Camera2D): Input =
-        Input.Handle(GetScreenToWorld2D(Raylib.GetMousePosition(), camera))
+        Input.Handle(camera.GetScreenToWorld(GetMousePosition()))
 
     static member Handle(): Input =
-        Input.Handle(Raylib.GetMousePosition())
+        Input.Handle(GetMousePosition())

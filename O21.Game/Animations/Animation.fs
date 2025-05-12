@@ -6,7 +6,10 @@ namespace O21.Game.Animations
 
 open System
 open O21.Game.Engine
-open Raylib_CsLo
+open Raylib_CSharp
+open Raylib_CSharp.Colors
+open Raylib_CSharp.Textures
+open type Raylib_CSharp.Rendering.Graphics
 
 [<RequireQualifiedAccess>]
 type LoopTime =
@@ -19,12 +22,12 @@ type AnimationState =
     | Stopped = 2
     
 type Animation = {
-    Frames: Texture[]
+    Frames: Texture2D[]
     LoopTime: LoopTime
     TicksPerFrame: int
     CurrentFrame: int * int
 } with
-    static member Init(frames: Texture[], loop:LoopTime, ticksPerFrame: int) =
+    static member Init(frames: Texture2D[], loop:LoopTime, ticksPerFrame: int) =
         {
             Frames = frames
             LoopTime = loop
@@ -66,5 +69,4 @@ type Animation = {
         
     member this.Draw(Point(x, y)) =
         let frame, _ = this.CurrentFrame
-        Raylib.DrawTexture(this.Frames[Math.Abs(frame)], x, y, Raylib.WHITE)
-
+        DrawTexture(this.Frames[Math.Abs(frame)], x, y, Color.White)

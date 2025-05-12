@@ -6,8 +6,14 @@ namespace O21.Game
 
 open System
 open O21.Game.Engine
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+
+open Raylib_CSharp.Colors
+open Raylib_CSharp.Textures
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Rendering.Graphics
+open type Raylib_CSharp.Collision.ShapeHelper
     
 type HUD =
     {
@@ -34,33 +40,33 @@ type HUD =
         member private this.renderBonusLine(textures: HUDSprites)  =
             for i = 1 to 5 do 
                 if this.Abilities[i - 1] then
-                    DrawTexture(textures.Abilities[i], 11 + 17*(i-1), 365, WHITE)
+                    DrawTexture(textures.Abilities[i], 11 + 17*(i-1), 365, Color.White)
                 else
-                    DrawTexture(textures.Abilities[0], 11 + 17*(i-1), 365, WHITE)
+                    DrawTexture(textures.Abilities[0], 11 + 17*(i-1), 365, Color.White)
                 
         member private this.renderOxyLine (textures: HUDSprites) =
-            let blue = Color(0, 0, 255, 255)
-            DrawRectangle(254, 369, 102, 12, BLACK)
+            let blue = Color(0uy, 0uy, 255uy, 255uy)
+            DrawRectangle(254, 369, 102, 12, Color.Black)
             DrawRectangle(255, 370, this.Oxy, 10, blue)
         
         member private this.renderScoreLine (textures: HUDSprites) =
             let mutable tmp = this.Score
             for i = 6 downto 0 do
-                DrawTexture(textures.Digits[tmp % 10], 128 + 13*i, 350, WHITE)
+                DrawTexture(textures.Digits[tmp % 10], 128 + 13*i, 350, Color.White)
                 tmp <- tmp / 10
         
         member private this.renderLevel (textures: HUDSprites) =
             let mutable tmp = this.Level
             for i = 1 downto 0 do
-                DrawTexture(textures.Digits[tmp % 10], 68 + 13*i, 325, WHITE)
+                DrawTexture(textures.Digits[tmp % 10], 68 + 13*i, 325, Color.White)
                 tmp <- tmp / 10        
         
         member private this.renderLives (textures: HUDSprites) =
-            DrawTexture(textures.Digits[this.Lives % 10], 314, 320, WHITE) // what if the number of lives is a two-digit number?
+            DrawTexture(textures.Digits[this.Lives % 10], 314, 320, Color.White) // what if the number of lives is a two-digit number?
             
-        member private this.renderPause (texture: Texture) =
+        member private this.renderPause (texture: Texture2D) =
             if this.Pause then 
-                DrawTexture(texture, 262, 150, WHITE)
+                DrawTexture(texture, 262, 150, Color.White)
             
         member this.SyncWithGame(gameEngine: GameEngine) =
             { this with

@@ -9,18 +9,19 @@ open System.Threading.Tasks
 
 open JetBrains.Lifetimes
 open Oddities.Resources
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp
+open type Raylib_CSharp.Raylib
 
 open O21.Game
 open O21.Game.U95.Fish
 open O21.Game.TextureUtils
+open Raylib_CSharp.Textures
 
 type PlayerSprites =
     {
-        Left: Texture[]
-        Right: Texture[]
-        Explosion: Texture[]
+        Left: Texture2D[]
+        Right: Texture2D[]
+        Explosion: Texture2D[]
     }
 
     static member Load(lifetime: Lifetime) (images: Dib[]): PlayerSprites =
@@ -32,17 +33,17 @@ type PlayerSprites =
         { Left = left; Right = right; Explosion = explosion }
 
 type Sprites = {
-    Bricks: Map<int, Texture>
-    Background: Texture[]
-    TitleScreenBackground: Texture
+    Bricks: Map<int, Texture2D>
+    Background: Texture2D[]
+    TitleScreenBackground: Texture2D
     Fishes: Fish[]
     Bombs: Fish[]
     Player: PlayerSprites
-    Bullet: Texture
-    ExplosiveBullet: Texture
+    Bullet: Texture2D
+    ExplosiveBullet: Texture2D
     HUD: HUDSprites
     Bonuses: BonusSprites
-    BubbleParticle: Texture
+    BubbleParticle: Texture2D
 }
 
 module Sprites =
@@ -70,7 +71,7 @@ module Sprites =
             direction, CreateTransparentSprite lt colors transparency
         ) |> Map.ofSeq
     
-    let private loadBackgrounds lt (backgroundGraphics: Dib[]): Texture[] =
+    let private loadBackgrounds lt (backgroundGraphics: Dib[]): Texture2D[] =
         Array.init backgroundGraphics.Length (fun i ->
             CreateSprite lt backgroundGraphics[i]
         )

@@ -4,19 +4,26 @@
 
 module O21.Game.RaylibEnvironment
 
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp.Audio
+open Raylib_CSharp.Interact
+open Raylib_CSharp.Windowing
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Interact.Input
+open type Raylib_CSharp.Fonts.TextManager
+open type Raylib_CSharp.Rendering.Graphics
 
 let private AdjustWindowScale(currentWidth, currentHeight) =
-    let scale = GetWindowScaleDPI()
-    SetWindowSize(int <| float32 currentWidth * scale.X, int <| float32 currentHeight * scale.Y)
+    let scale = Window.GetScaleDPI()
+    Window.SetSize(int <| float32 currentWidth * scale.X, int <| float32 currentHeight * scale.Y)
 
 let private AccommodateWindowSize monitor =
-    let currentWidth, currentHeight = Raylib.GetScreenWidth(), Raylib.GetScreenHeight()
-    let monitorWidth, monitorHeight = Raylib.GetMonitorWidth monitor, Raylib.GetMonitorHeight monitor
+    let currentWidth, currentHeight = Window.GetScreenWidth(), Window.GetScreenHeight()
+    let monitorWidth, monitorHeight = Window.GetMonitorWidth monitor, Window.GetMonitorHeight monitor
     let allowedWidth, allowedHeight = min currentWidth monitorWidth, min currentHeight monitorHeight
     if allowedWidth <> currentWidth || allowedHeight <> currentHeight then
-        SetWindowSize(allowedWidth, allowedHeight)
+        Window.SetSize(allowedWidth, allowedHeight)
 
 let private InitializeWindow windowSize =
     let initialWidth, initialHeight =
@@ -26,22 +33,22 @@ let private InitializeWindow windowSize =
             let struct(w, h) = WindowParameters.DefaultWindowSizeWithoutScale
             w, h
 
-    InitWindow(initialWidth, initialHeight, "O21")
+    Window.Init(initialWidth, initialHeight, "O21")
     if Option.isNone windowSize then
         AdjustWindowScale(initialWidth, initialHeight)
 
-    AccommodateWindowSize(GetCurrentMonitor())
+    AccommodateWindowSize(Window.GetCurrentMonitor())
     WindowParameters.Init()
 
 let Run(windowSize: Option<struct(int*int)>, play: WindowParameters -> unit): unit =
-    SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE)
+    SetConfigFlags(ConfigFlags.ResizableWindow)
     let window = InitializeWindow windowSize
-    InitAudioDevice()
-    SetAudioStreamBufferSizeDefault Music.BufferSize
+    AudioDevice.Init()
+    AudioStream.SetBufferSizeDefault(Music.BufferSize)
 
-    SetMouseCursor(MouseCursor.MOUSE_CURSOR_DEFAULT)
+    SetMouseCursor(MouseCursor.Default)
     try
         play window
     finally
-        CloseAudioDevice()
-        CloseWindow()
+        AudioDevice.Close()
+        Window.Close()

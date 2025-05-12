@@ -11,12 +11,17 @@ open System.Threading
 open System.Threading.Tasks
 open JetBrains.Lifetimes
 open O21.Game.Engine
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp.Audio
+open Raylib_CSharp.Colors
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Time
+open type Raylib_CSharp.Rendering.Graphics
 
 open O21.Game.Localization.Translations
 open O21.Game.Music
 open O21.Game.Scenes
 open O21.Game.U95
+open Raylib_CSharp.Windowing
 
 type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
     let eventQueue = ConcurrentQueue<unit -> unit>()
@@ -86,15 +91,15 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
 
         for sound in state.SoundsToStartPlaying do
             let effect = state.U95Data.Sounds[sound]
-            SetSoundVolume(effect, state.Settings.SoundVolume)
-            PlaySound(effect)
+            effect.SetVolume(state.Settings.SoundVolume)
+            effect.Play()
 
         state.MusicPlayer |> Option.iter _.SetVolume(state.Settings.SoundVolume)
         state <- { state with SoundsToStartPlaying = Set.empty }
 
     member _.Draw() =       
         BeginDrawing()
-        ClearBackground(WHITE)
+        ClearBackground(Color.White)
         BeginMode2D(state.Scene.Camera)
         state.Scene.Draw(state)
         EndMode2D()
@@ -109,7 +114,7 @@ module GameLoop =
     let Run (lifetime: Lifetime, window: WindowParameters) (content: LocalContent, data: U95Data): unit =
         use game = new Game(window, content, data)
         game.Initialize lifetime
-        while not (WindowShouldClose()) do
+        while not (Window.ShouldClose()) do
             game.Update()
             window.Update()
             game.Draw()
