@@ -6,9 +6,12 @@ module O21.Game.TextureUtils
 
 open JetBrains.Lifetimes
 open Microsoft.FSharp.NativeInterop
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp
+open Raylib_CSharp.Colors
+open Raylib_CSharp.Images
+open type Raylib_CSharp.Raylib
 open Oddities.Resources
+open Raylib_CSharp.Textures
 
 let private transparentColor = struct(0xFFuy, 0xFFuy, 0xFFuy)
 let private isColor(struct(r1, g1, b1), struct(r2, g2, b2)) =
@@ -16,7 +19,7 @@ let private isColor(struct(r1, g1, b1), struct(r2, g2, b2)) =
 
 #nowarn "9"
 
-let CreateTransparentSprite (lifetime: Lifetime) (colors: Dib) (transparency: Dib): Texture =
+let CreateTransparentSprite (lifetime: Lifetime) (colors: Dib) (transparency: Dib): Texture2D =
     let width = colors.Width
     let height = colors.Height
     let colors = Array.init (width * height) (fun i ->
@@ -24,22 +27,22 @@ let CreateTransparentSprite (lifetime: Lifetime) (colors: Dib) (transparency: Di
         let y = i / width
         let isTransparent = isColor(transparency.GetPixel(x, y), transparentColor)
         if isTransparent then
-            BLANK
+            Color.Blank
         else
             let struct(r, g, b) = colors.GetPixel(x, y)
             Color(r, g, b, 255uy)
     )
     use colorsPtr = fixed colors
     let image = Image(
-        data = NativePtr.toVoidPtr colorsPtr,
-        width = width,
-        height = height,
-        format = int PixelFormat.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
-        mipmaps = 1
+        Data = NativePtr.toNativeInt colorsPtr,
+        Width = width,
+        Height = height,
+        Format = PixelFormat.UncompressedR8G8B8A8,
+        Mipmaps = 1
     )
     RaylibUtils.LoadTextureFromImage lifetime image
 
-let CreateSprite (lifetime: Lifetime) (colors: Dib): Texture =
+let CreateSprite (lifetime: Lifetime) (colors: Dib): Texture2D =
     let width = colors.Width
     let height = colors.Height
     let colors = Array.init (width * height) (fun i ->
@@ -50,10 +53,10 @@ let CreateSprite (lifetime: Lifetime) (colors: Dib): Texture =
     )
     use colorsPtr = fixed colors
     let image = Image(
-        data = NativePtr.toVoidPtr colorsPtr,
-        width = width,
-        height = height,
-        format = int PixelFormat.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
-        mipmaps = 1
+        Data = NativePtr.toNativeInt colorsPtr,
+        Width = width,
+        Height = height,
+        Format = PixelFormat.UncompressedR8G8B8A8,
+        Mipmaps = 1
     )
     RaylibUtils.LoadTextureFromImage lifetime image

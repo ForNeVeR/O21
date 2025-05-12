@@ -5,11 +5,17 @@
 namespace O21.Game.Scenes
 
 open System.Numerics
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp.Collision
+open Raylib_CSharp.Colors
+open Raylib_CSharp.Fonts
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Collision.ShapeHelper
+open type Raylib_CSharp.Rendering.Graphics
 
 open O21.Game
 open O21.Game.Localization.Translations
+open Raylib_CSharp.Rendering
+open Raylib_CSharp.Transformations
 
 [<RequireQualifiedAccess>]
 type ButtonInteractionState = Default | Hover | Clicked
@@ -25,9 +31,9 @@ type Button = {
     State: ButtonState
     Window: WindowParameters
 } with
-    static member DefaultColor = BLACK
-    static member HoverColor = DARKGRAY
-    static member ClickedColor = BLACK
+    static member DefaultColor = Color.Black
+    static member HoverColor = Color.DarkGray
+    static member ClickedColor = Color.Black
 
     static member Create(
         window: WindowParameters,
@@ -49,25 +55,25 @@ type Button = {
     member this.IsClicked = this.State.InteractionState = ButtonInteractionState.Clicked        
     
     member this.Measure(language: Language) =
-        let size = Raylib.MeasureTextEx(this.Font, language |> this.Text, float32 this.Font.baseSize, 1.0f)
+        let size = TextManager.MeasureTextEx(this.Font, language |> this.Text, float32 this.Font.BaseSize, 1.0f)
         Rectangle(this.Position.X, this.Position.Y, size.X + 22f, size.Y + 5f)
 
     member this.Draw(): unit =
         let x = int this.Position.X
         let y = int this.Position.Y
         let rectangle = this.Measure this.State.Language
-        let width = int rectangle.width 
-        let height = int rectangle.height 
+        let width = int rectangle.Width 
+        let height = int rectangle.Height 
         
-        DrawRectangle(x, y, width, height, Color(195, 195, 195, 255))
-        DrawRectangle(x-2, y-2, width, 2, WHITE)
-        DrawRectangle(x-2, y, 2, height, WHITE)
-        DrawRectangle(x-1, y+height, width+3, 2, Color(130,130,130, 255))
-        DrawRectangle(x+width, y, 2, height, Color(130, 130, 130, 255))
-        DrawRectangle(x-3, y-3, 2, height+6, BLACK)
-        DrawRectangle(x+width+2, y-3, 2, height+6, BLACK)
-        DrawRectangle(x-2, y-3, width+6, 2, BLACK)
-        DrawRectangle(x-2, y+height+2, width+6, 2, BLACK)
+        DrawRectangle(x, y, width, height, Color(195uy, 195uy, 195uy, 255uy))
+        DrawRectangle(x-2, y-2, width, 2, Color.White)
+        DrawRectangle(x-2, y, 2, height, Color.White)
+        DrawRectangle(x-1, y+height, width+3, 2, Color(130uy,130uy,130uy, 255uy))
+        DrawRectangle(x+width, y, 2, height, Color(130uy, 130uy, 130uy, 255uy))
+        DrawRectangle(x-3, y-3, 2, height+6, Color.Black)
+        DrawRectangle(x+width+2, y-3, 2, height+6, Color.Black)
+        DrawRectangle(x-2, y-3, width+6, 2, Color.Black)
+        DrawRectangle(x-2, y+height+2, width+6, 2, Color.Black)
                 
         let color =
             match this.State.InteractionState with
@@ -75,11 +81,11 @@ type Button = {
             | ButtonInteractionState.Hover -> Button.HoverColor
             | ButtonInteractionState.Clicked -> Button.ClickedColor
 
-        DrawTextEx(
+        Graphics.DrawTextEx(
             this.Font,
             this.State.Language |> this.Text,
             Vector2(float32 (x + 11), float32 (y + 2)),
-            float32 this.Font.baseSize,
+            float32 this.Font.BaseSize,
             0.0f,
             color
         )

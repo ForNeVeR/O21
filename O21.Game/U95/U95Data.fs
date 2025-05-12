@@ -8,11 +8,12 @@ open System.IO
 open System.Threading.Tasks
 
 open JetBrains.Lifetimes
-open Raylib_CsLo
+open Raylib_CSharp
 
 open O21.Game
 open O21.Game.Help
 open O21.Game.Localization.Translations
+open Raylib_CSharp.Audio
 
 type U95Data private(sprites: Sprites,
                      sounds: Map<SoundType, Sound>,
