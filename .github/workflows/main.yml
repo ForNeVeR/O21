@@ -1,78 +1,63 @@
-# SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
-#
-# SPDX-License-Identifier: MIT
-
+# This file is auto-generated.
 name: Main
 on:
   push:
     branches:
-      - main
+    - main
   pull_request:
     branches:
-      - main
+    - main
   schedule:
-    - cron: '0 0 * * 6'
-
-  workflow_dispatch:
-
+  - cron: 0 0 * * 6
+  workflow_dispatch: 
 jobs:
   main:
+    name: main.${{ matrix.config.name }}
     strategy:
-      fail-fast: false
       matrix:
         config:
-          - name: 'macos'
-            image: 'macos-14'
-          - name: 'linux'
-            image: 'ubuntu-24.04'
-          - name: 'windows'
-            image: 'windows-2022'
-
-    name: main.${{ matrix.config.name }}
+        - image: macos-14
+          name: macos
+        - image: ubuntu-24.04
+          name: linux
+        - image: windows-2022
+          name: windows
+      fail-fast: false
     runs-on: ${{ matrix.config.image }}
-
     env:
-      DOTNET_NOLOGO: 1
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: 1
       NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: NuGet cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.NUGET_PACKAGES }}
-          key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
-
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Build
-        run: dotnet build
-
-      - name: Test
-        run: dotnet test
-
-      - name: Verify translations
-        shell: pwsh
-        run: ./Scripts/Verify-Translations.ps1
-
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: NuGet cache
+      uses: actions/cache@v4
+      with:
+        key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
+        path: ${{ env.NUGET_PACKAGES }}
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+    - name: Build
+      run: dotnet build
+    - name: Test
+      run: dotnet test
+    - name: Verify translations
+      shell: pwsh
+      run: ./Scripts/Verify-Translations.ps1
   licenses:
     runs-on: ubuntu-24.04
     steps:
-      - name: Check out the sources
-        uses: actions/checkout@v4
-      - name: REUSE license check
-        uses: fsfe/reuse-action@v5
-
+    - name: Check out the sources
+      uses: actions/checkout@v4
+    - name: REUSE license check
+      uses: fsfe/reuse-action@v5
   encoding:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - name: Verify encoding
-        shell: pwsh
-        run: Scripts/Test-Encoding.ps1
+    - uses: actions/checkout@v4
+    - name: Verify encoding
+      shell: pwsh
+      run: Scripts/Test-Encoding.ps1
