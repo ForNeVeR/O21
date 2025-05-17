@@ -10,12 +10,13 @@ open System.Text
 
 open FSharp.Formatting.Markdown
 open JetBrains.Lifetimes
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp
+open type Raylib_CSharp.Raylib
 
 open O21.Game
+open Raylib_CSharp.Textures
 
-let private LoadTextureFromData lifetime (readFile: string -> byte[]) (address: string): Texture =
+let private LoadTextureFromData lifetime (readFile: string -> byte[]) (address: string): Texture2D =
     let fileName = $"|{address}"
     readFile fileName
     |> HlpFile.ExtractDibImageFromMrb

@@ -5,8 +5,13 @@
 namespace O21.Game
 
 open O21.Game.Engine
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+
+open Raylib_CSharp.Colors
+open Raylib_CSharp.Transformations
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Rendering.Graphics
+open type Raylib_CSharp.Collision.ShapeHelper
     
 type ControlType =
     | Up
@@ -43,11 +48,11 @@ type ControlButton =
             let x = int <| this.Position.X
             let y = int <| this.Position.Y
             match this.Type with
-                | Up -> DrawTexture(sprites.Controls[4], x, y, WHITE)
-                | Down -> DrawTexture(sprites.Controls[0], x, y, WHITE)
-                | Right -> DrawTexture(sprites.Controls[3], x, y, WHITE)
-                | Left -> DrawTexture(sprites.Controls[2], x, y, WHITE)
-                | Fire -> DrawTexture(sprites.Controls[1], x, y, WHITE)
+                | Up -> DrawTexture(sprites.Controls[4], x, y, Color.White)
+                | Down -> DrawTexture(sprites.Controls[0], x, y, Color.White)
+                | Right -> DrawTexture(sprites.Controls[3], x, y, Color.White)
+                | Left -> DrawTexture(sprites.Controls[2], x, y, Color.White)
+                | Fire -> DrawTexture(sprites.Controls[1], x, y, Color.White)
     
 type Controls =
     {

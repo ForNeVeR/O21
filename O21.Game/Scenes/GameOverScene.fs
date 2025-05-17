@@ -6,11 +6,16 @@ namespace O21.Game.Scenes
 
 open System.Numerics
 
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp.Camera.Cam2D
+open type Raylib_CSharp.Raylib
 
 open O21.Game
 open O21.Game.Localization.Translations
-open Raylib_CsLo
+
+open Raylib_CSharp.Colors
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Collision.ShapeHelper
+open type Raylib_CSharp.Rendering.Graphics
 
 type GameOverScene =
     {
@@ -28,11 +33,11 @@ type GameOverScene =
                 Content = content
                 MinimizeButton = MinimizeButton.Create(Vector2(193f, 134f), language)
                 Window = window 
-                Camera = Camera2D(zoom = 1f)
+                Camera = Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
             }
             
         interface IScene with
-            member this.Camera: Camera2D = this.Camera
+            member this.Camera = this.Camera
 
             member this.Draw(state) =
                 let x,y = 188, 129
@@ -43,15 +48,15 @@ type GameOverScene =
                 
                 WindowRenderer.render(x, y)
                 this.MinimizeButton.Render()
-                DrawTexture(state.U95Data.Sprites.Bonuses.LifeBonus, x+23, y+45, WHITE)
+                DrawTexture(state.U95Data.Sprites.Bonuses.LifeBonus, x+23, y+45, Color.White)
                 this.OkButton.Draw()
                 let translation = Translation state.Language
                 DrawTextEx(
                     this.Content.UiFontRegular, translation.GameOverNotification,
                     Vector2(float32 x+80f,float32 y+50f),
-                    float32 (this.Content.UiFontRegular.baseSize-5),
+                    float32 (this.Content.UiFontRegular.BaseSize-5),
                     0f,
-                    BLACK)
+                    Color.Black)
                                 
             member this.Update(input, _, state) =
                 let scene =

@@ -9,14 +9,16 @@ open System.IO
 open System.Threading.Tasks
 
 open JetBrains.Lifetimes
-open Raylib_CsLo
+open Raylib_CSharp
+open Raylib_CSharp.Fonts
+open Raylib_CSharp.Textures
 
 /// The game content that's always available locally, even if the main game resources haven't been downloaded, yet.
 type LocalContent = {
     UiFontRegular: Font
     UiFontBold: Font
-    LoadingTexture: Texture
-    PauseTexture: Texture
+    LoadingTexture: Texture2D
+    PauseTexture: Texture2D
     SoundFontPath: string
 } with
     static member Load(lifetime: Lifetime, window: WindowParameters): Task<LocalContent> = task {

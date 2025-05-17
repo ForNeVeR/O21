@@ -14,10 +14,11 @@ open Oddities.WinHelp
 open Oddities.WinHelp.Fonts
 open Oddities.WinHelp.Topics
 open Oxage.Wmf.Records
-open Raylib_CsLo
+open Raylib_CSharp
 
 open O21.Game.Help
 open O21.Game.TextureUtils
+open Raylib_CSharp.Textures
 
 let private loadFontDescriptors(content: byte[]) =
     use stream = new MemoryStream(content)
@@ -33,7 +34,7 @@ let private style = function
         | FontAttributes.Normal -> Style.Normal
         | _ -> failwith $"Unknown font attributes: {font.Attributes}"
 
-let private convertParagraphs (fonts: FontDescriptor[]) (bitmaps: int -> Texture) (items: IParagraphItem seq) = seq {
+let private convertParagraphs (fonts: FontDescriptor[]) (bitmaps: int -> Texture2D) (items: IParagraphItem seq) = seq {
     let mutable currentFont = None
     for item in items do
         match item with

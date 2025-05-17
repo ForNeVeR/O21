@@ -4,13 +4,14 @@
 
 namespace O21.Game.U95.Fish
 
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp
+open type Raylib_CSharp.Raylib
+open Raylib_CSharp.Textures
 
 type Fish = {
     Width: int
     Height: int
-    LeftDirection: Texture[]
-    RightDirection: Texture[]
-    OnDying: Texture[]
+    LeftDirection: Texture2D[]
+    RightDirection: Texture2D[]
+    OnDying: Texture2D[]
 }

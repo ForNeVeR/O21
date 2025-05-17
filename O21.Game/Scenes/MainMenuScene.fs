@@ -7,11 +7,15 @@ namespace O21.Game.Scenes
 open System.Numerics
 open System.Linq
 
-open Raylib_CsLo
+open Raylib_CSharp
 
 open O21.Game
 open O21.Game.Localization.Translations
 open O21.Game.U95
+open Raylib_CSharp.Camera.Cam2D
+open Raylib_CSharp.Colors
+open type Raylib_CSharp.Rendering.Graphics
+open Raylib_CSharp.Transformations
 
 module private MainMenuLayout =
     let private MarginUnits = 10f
@@ -30,7 +34,7 @@ module private MainMenuLayout =
         let mutable y = float32 renderTargetHeight - marginPx
         for i, b in buttons |> Seq.indexed |> Seq.rev  do
             let rect = b.Measure language
-            y <- y - rect.height - distanceBetweenButtonsPx
+            y <- y - rect.Height - distanceBetweenButtonsPx
             buttons[i] <- { b with Position = Vector2(marginPx, y) }
         buttons
         
@@ -63,7 +67,7 @@ type MainMenuScene = {
                 GameOverButton = gameOver 
                 LanguageButton = changeLanguage
                 Window = window
-                Camera = Camera2D(zoom = 1f)
+                Camera = Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
             }
             
         member this.DrawBackground() =
@@ -73,17 +77,17 @@ type MainMenuScene = {
             
             DrawSceneHelper.configureCamera this.Window &this.Camera
 
-            Raylib.DrawTexturePro(
+            DrawTexturePro(
                 texture,
-                Rectangle(0f, 0f, float32 texture.width, float32 texture.height),
+                Rectangle(0f, 0f, float32 texture.Width, float32 texture.Height),
                 Rectangle(0f, 0f, float32 renderTargetWidth, float32 renderTargetHeight),
                 Vector2(0f, 0f),
                 0f,
-                Raylib.WHITE
+                Color.White
             )
 
         interface IScene with
-            member this.Camera: Camera2D = this.Camera
+            member this.Camera = this.Camera
 
             member this.Update(input, _, state) =
                 let scene = { 

@@ -8,12 +8,16 @@ open System.Numerics
 open System.Threading.Tasks
 
 open Microsoft.FSharp.Core
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp.Camera.Cam2D
+open Raylib_CSharp.Colors
+open type Raylib_CSharp.Fonts.TextManager
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Rendering.Graphics
 
 open O21.Game
 open O21.Game.Localization
 open O21.Game.Scenes
-open Raylib_CsLo
+open Raylib_CSharp
 
 type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
     let onDiskChecker = task {
@@ -42,9 +46,9 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
             disclaimerPosition,
             window.Scale fontSizeUnits,
             0f,
-            WHITE
+            Color.White
         )
-    let mutable camera : Camera2D = Camera2D(zoom = 1f)
+    let mutable camera : Camera2D = Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
 
     let doLayout() =
         let struct (windowWidth, windowHeight) = window.RenderTargetSize
@@ -76,14 +80,14 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
         )
 
         let acceptButtonSize = acceptButton.Measure language
-        let acceptButtonWidth = acceptButtonSize.width
+        let acceptButtonWidth = acceptButtonSize.Width
         let buttonTotalWidth =
             acceptButtonWidth
             + window.Scale buttonBetweenUnits
-            + (rejectButton.Measure language).width
+            + (rejectButton.Measure language).Width
 
         let totalWidth = max disclaimerSize.X buttonTotalWidth
-        let totalHeight = disclaimerSize.Y + window.Scale buttonTopMarginUnits + acceptButtonSize.height
+        let totalHeight = disclaimerSize.Y + window.Scale buttonTopMarginUnits + acceptButtonSize.Height
 
         disclaimerPosition <- Vector2(screenWidth / 2f - totalWidth / 2f, screenHeight / 2f - totalHeight / 2f)
         let buttonTopPx = disclaimerPosition.Y + disclaimerSize.Y + window.Scale buttonTopMarginUnits
@@ -106,7 +110,7 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
             
         member _.Init newContent =
             content <- newContent
-            camera <- Camera2D(zoom = 1f)
+            camera <- Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
 
             // TODO[#98]: Update this layout on language change
             doLayout()
@@ -114,7 +118,7 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
         member this.Draw() =
             DrawSceneHelper.configureCamera window &camera
 
-            ClearBackground(BLACK)
+            ClearBackground(Color.Black)
 
             match areFilesOnDisk with
             | None | Some true -> ()

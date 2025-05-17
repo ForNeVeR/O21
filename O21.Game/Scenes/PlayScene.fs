@@ -4,10 +4,14 @@
 
 namespace O21.Game.Scenes
 
+open System.Numerics
 open Microsoft.FSharp.Core
 open O21.Game.Animations
-open type Raylib_CsLo.Raylib
-open Raylib_CsLo
+open Raylib_CSharp.Camera.Cam2D
+open Raylib_CSharp.Colors
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Collision.ShapeHelper
+open type Raylib_CSharp.Rendering.Graphics
 
 open O21.Game
 open O21.Game.Engine
@@ -79,11 +83,11 @@ type PlayScene = {
         Content = content
         Window = window
         AnimationHandler = AnimationHandler.Init data
-        Camera = Camera2D(zoom = 1f)
+        Camera = Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
     }
 
     static member private DrawSprite sprite (Point(x, y)) =
-        DrawTexture(sprite, x, y, WHITE)
+        DrawTexture(sprite, x, y, Color.White)
 
     static member private DrawBullet sprite (bullet: Bullet) =
         PlayScene.DrawSprite sprite bullet.TopLeft
@@ -109,7 +113,7 @@ type PlayScene = {
         |> Option.defaultValue game
     
     interface IScene with
-        member this.Camera: Camera2D = this.Camera
+        member this.Camera = this.Camera
         member this.Update(input, time, state) =
             let game, effects = PlayScene.UpdateGame (input, time) (state.Game, this.HUD)
             let game = PlayScene.UpdateLevelOnRequest game effects state.U95Data.Levels
@@ -142,13 +146,13 @@ type PlayScene = {
                 { this.Window with RenderTargetSize = (GameRules.GameScreenWidth, GameRules.GameScreenHeight) }
                 &this.Camera
             
-            DrawTexture(sprites.Background[game.CurrentLevel.Position], 0, 0, WHITE)
+            DrawTexture(sprites.Background[game.CurrentLevel.Position], 0, 0, Color.White)
             let map = game.CurrentLevel.LevelMap
             for i = 0 to map.Length-1 do
                 for j = 0 to map[i].Length-1 do
                     match map[i][j] with
                     | Brick b ->
-                        DrawTexture(sprites.Bricks[b], 12*j, 12*i, WHITE)
+                        DrawTexture(sprites.Bricks[b], 12*j, 12*i, Color.White)
                     | _ ->
                         ()
 
@@ -160,12 +164,12 @@ type PlayScene = {
             for i = 0 to game.Bombs.Length-1 do
                 let bomb = game.Bombs[i]
                 let sprite = sprites.Bombs[bomb.Id % sprites.Bombs.Length]
-                DrawTexture(sprite.LeftDirection[0], bomb.TopLeft.X, bomb.TopLeft.Y, WHITE)
+                DrawTexture(sprite.LeftDirection[0], bomb.TopLeft.X, bomb.TopLeft.Y, Color.White)
 
             for i = 0 to sprites.Fishes.Length-1 do
                 let fish = sprites.Fishes[i]
                 let frameNumber = state.Game.Tick % fish.LeftDirection.Length
-                DrawTexture(fish.LeftDirection[frameNumber], 60*i, 60*i, WHITE)
+                DrawTexture(fish.LeftDirection[frameNumber], 60*i, 60*i, Color.White)
                 
             for i = 0 to game.Bonuses.Length-1 do
                 let bonus = game.Bonuses[i]
@@ -173,12 +177,12 @@ type PlayScene = {
                 | BonusType.Static id ->
                     let len = sprites.Bonuses.Static.Length
                     let sprite = sprites.Bonuses.Static[id % len]
-                    DrawTexture(sprite, bonus.TopLeft.X, bonus.TopLeft.Y, WHITE)
+                    DrawTexture(sprite, bonus.TopLeft.X, bonus.TopLeft.Y, Color.White)
                 | BonusType.Life ->
                     let sprite = sprites.Bonuses.LifeBonus
-                    DrawTexture(sprite, bonus.TopLeft.X, bonus.TopLeft.Y, WHITE)
+                    DrawTexture(sprite, bonus.TopLeft.X, bonus.TopLeft.Y, Color.White)
                 | BonusType.Lifebuoy ->
                     let sprite = sprites.Bonuses.Lifebuoy[0]
-                    DrawTexture(sprite, bonus.TopLeft.X, bonus.TopLeft.Y, WHITE)
+                    DrawTexture(sprite, bonus.TopLeft.X, bonus.TopLeft.Y, Color.White)
 
             this.HUD.Render(sprites.HUD, this.Content) // Always draw the HUD on last layer

@@ -6,11 +6,15 @@ namespace O21.Game.Scenes
 
 open System.Numerics
 
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp.Colors
+open type Raylib_CSharp.Raylib
+open type Raylib_CSharp.Collision.ShapeHelper
+open type Raylib_CSharp.Rendering.Graphics
 
 open O21.Game
 open O21.Game.Localization.Translations
+open Raylib_CSharp.Rendering
+open Raylib_CSharp.Transformations
 
 type MinimizeButton =
     {
@@ -41,22 +45,22 @@ type MinimizeButton =
             
             let color =
                 match this.State.InteractionState with
-                | ButtonInteractionState.Default -> WHITE
-                | ButtonInteractionState.Hover -> GRAY
-                | ButtonInteractionState.Clicked -> BLACK
+                | ButtonInteractionState.Default -> Color.White
+                | ButtonInteractionState.Hover -> Color.Gray
+                | ButtonInteractionState.Clicked -> Color.Black
             
-            DrawRectangle(x,y, size, size, Color(130,130,130, 255))
-            DrawRectangleLines(x+3, y+8, 13, 3, BLACK)
-            DrawRectangle(x+4, y+9, 13, 3, Color(130,130,130, 100))
+            Graphics.DrawRectangle(x,y, size, size, Color(130uy,130uy,130uy,255uy))
+            DrawRectangleLines(x+3, y+8, 13, 3, Color.Black)
+            DrawRectangle(x+4, y+9, 13, 3, Color(130uy,130uy,130uy,100uy))
             DrawLine(x+4, y+10, x+15, y+10, color)
         
         member this.Update(input: Input): MinimizeButton =
             let state =
-                if Raylib.CheckCollisionPointRec(input.MouseCoords, this.Rectangle) then
+                if CheckCollisionPointRec(input.MouseCoords, this.Rectangle) then
                     if input.MouseButtonPressed then
                         ButtonInteractionState.Clicked
                     else
                         ButtonInteractionState.Hover
                 else
                     ButtonInteractionState.Default
-            { this with State = { this.State with InteractionState = state } }
+            { this with State.InteractionState = state }

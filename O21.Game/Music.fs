@@ -10,7 +10,11 @@ open System.Threading.Tasks
 
 open JetBrains.Lifetimes
 open MeltySynth
-open Raylib_CsLo
+open Microsoft.FSharp.NativeInterop
+open Raylib_CSharp
+open Raylib_CSharp.Audio
+
+#nowarn 9
 
 let private SampleRate = 44100
 let BufferSize = 4096
@@ -19,18 +23,19 @@ type MusicPlayer(buffer: int16[], stream: AudioStream, sequencer: MidiFileSequen
     let mutable soundVolume = 0.0f
 
     member _.Initialize(): unit =
-        Raylib.PlayAudioStream stream
+        stream.Play()
 
     member _.SetVolume(volume: float32): unit =
         Volatile.Write(&soundVolume, volume)
     
     member _.NeedsPlay(): bool =
-        Raylib.IsAudioStreamProcessed stream
+        stream.IsProcessed()
 
     member _.Play(): unit =
+        use bufferPtr = fixed buffer
         sequencer.RenderInterleavedInt16(buffer.AsSpan())
-        Raylib.SetAudioStreamVolume(stream, Volatile.Read(&soundVolume))
-        Raylib.UpdateAudioStream(stream, buffer.AsSpan(), BufferSize)
+        stream.SetVolume(Volatile.Read(&soundVolume))
+        stream.Update(NativePtr.toNativeInt bufferPtr, BufferSize)
 
 let CreateMusicPlayerAsync (lifetime: Lifetime) (soundFontPath: string, midiFilePath: string) : Task<MusicPlayer> =
     task {
@@ -49,10 +54,10 @@ let CreateMusicPlayerAsync (lifetime: Lifetime) (soundFontPath: string, midiFile
         sequencer.Play(midiFile, loop = true)
 
         let audioStream = lifetime.Bracket(
-            (fun () -> Raylib.LoadAudioStream(uint SampleRate, 16u, 2u)),
-                fun stream ->
-                    Raylib.StopAudioStream stream
-                    Raylib.UnloadAudioStream stream)
+            (fun () -> AudioStream.Load(uint SampleRate, 16u, 2u)),
+                fun (stream: AudioStream) ->
+                    stream.Stop()
+                    stream.Unload())
         let buffer = Array.zeroCreate(BufferSize * 2)
         return MusicPlayer(buffer, audioStream, sequencer)
     }

@@ -7,8 +7,10 @@ namespace O21.Game.U95
 open System
 open System.IO
 open System.Threading.Tasks
-open Raylib_CsLo
+open Raylib_CSharp
 open Microsoft.FSharp.NativeInterop
+open Raylib_CSharp.Audio
+open Raylib_CSharp.IO
 
 #nowarn "9"
 
@@ -28,14 +30,13 @@ type SoundType =
 
 module Sound =
     let loadWavFromFile(fileName: string): Sound =
-        let mutable dataSize = 0u
-        let fileData = Raylib.LoadFileData(fileName, &dataSize)
-        if NativePtr.isNullPtr fileData then
+        let fileData = FileManager.LoadFileData(fileName)
+        if fileData.IsEmpty then
             invalidArg (nameof fileName) $"Failed to open file: {fileName}"
-        let wave = Raylib.LoadWaveFromMemory(".wav", fileData, int dataSize)
-        let sound = Raylib.LoadSoundFromWave(wave)
-        Raylib.UnloadFileData(fileData)
-        Raylib.UnloadWave(wave)
+        let wave = Wave.LoadFromMemory(".wav", fileData)
+        let sound =  Sound.LoadFromWave(wave)
+        FileManager.UnloadFileData(fileData)
+        wave.Unload()
         sound
 
     let Load(directory: string): Task<Map<SoundType, Sound>> = task { // TODO[#102]: Proper async

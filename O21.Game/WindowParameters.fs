@@ -4,7 +4,8 @@
 
 namespace O21.Game
 
-open Raylib_CsLo
+open Raylib_CSharp
+open type Raylib_CSharp.Windowing.Window
 
 type WindowParameters =
     {
@@ -24,8 +25,8 @@ type WindowParameters =
         instance
 
     member this.Update(): unit =
-        let windowWidth, windowHeight = Raylib.GetScreenWidth(), Raylib.GetScreenHeight()
-        let scaleFactor = Raylib.GetWindowScaleDPI()
+        let windowWidth, windowHeight = GetScreenWidth(), GetScreenHeight()
+        let scaleFactor = GetScaleDPI()
         let struct (unscaledRenderTargetWidth, unscaledRenderTargetHeight) = WindowParameters.DefaultWindowSizeWithoutScale
         let renderTargetSize = struct(
             int(float32 unscaledRenderTargetWidth * scaleFactor.X),

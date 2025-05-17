@@ -4,13 +4,13 @@
 
 namespace O21.Game
 
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp.Textures
+open type Raylib_CSharp.Raylib
 
 type HUDSprites = 
     {
-        Abilities: Texture[]
-        HUDElements: Texture[]
-        Digits: Texture[]
-        Controls: Texture[]
+        Abilities: Texture2D[]
+        HUDElements: Texture2D[]
+        Digits: Texture2D[]
+        Controls: Texture2D[]
     }   

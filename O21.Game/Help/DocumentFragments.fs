@@ -4,7 +4,8 @@
 
 namespace O21.Game.Help
 
-open Raylib_CsLo
+open Raylib_CSharp
+open Raylib_CSharp.Textures
 
 type Style =
     | Normal = 0
@@ -14,4 +15,4 @@ type Style =
 type DocumentFragment =
     | Text of Style * string
     | NewParagraph
-    | Image of Texture
+    | Image of Texture2D

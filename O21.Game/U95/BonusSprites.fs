@@ -4,12 +4,13 @@
 
 namespace O21.Game.U95
 
-open Raylib_CsLo
-open type Raylib_CsLo.Raylib
+open Raylib_CSharp
+open type Raylib_CSharp.Raylib
+open Raylib_CSharp.Textures
 
 type BonusSprites =
     {
-        Static: Texture[] 
-        Lifebuoy: Texture[] 
-        LifeBonus: Texture 
+        Static: Texture2D[] 
+        Lifebuoy: Texture2D[] 
+        LifeBonus: Texture2D 
     }
