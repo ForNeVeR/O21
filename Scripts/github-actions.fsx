@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#r "nuget: Generaptor, 1.6.0"
+#r "nuget: Generaptor, 1.6.1"
 open Generaptor
 open Generaptor.GitHubActions
 open type Generaptor.GitHubActions.Commands
@@ -249,4 +249,4 @@ let workflows = [
         ]
     ]
 ]
-EntryPoint.Process fsi.CommandLineArgs workflows
+exit <| EntryPoint.Process fsi.CommandLineArgs workflows
