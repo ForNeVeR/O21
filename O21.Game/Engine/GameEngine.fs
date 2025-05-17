@@ -242,8 +242,6 @@ type GameEngine = {
                             Lives = Math.Max(engine.Player.Lives - 1, 0)
                             Oxygen = OxygenStorage.Default }
             }, if engine.Player.Lives = 1 then effects |> Array.append [|PlaySound SoundType.GameOver|] else effects
-            // TODO[#26]: Player sprite should be replaced with explosion for a while
-            // TODO[#26]: Investigate how shot cooldown and direction should behave on resurrect: are they reset or not?
             // TODO[#27]: Investigate if enemy collision should stop the player from moving
     
     static member private UpdateEnemiesHandler (timeDelta: int) : UpdateHandler =
