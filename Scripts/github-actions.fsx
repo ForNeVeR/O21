@@ -1,6 +1,9 @@
-// SPDX-FileCopyrightText: 2021-2025 O21 contributors <https://github.com/ForNeVeR/O21>
-//
-// SPDX-License-Identifier: MIT
+let licenseHeader = """
+# SPDX-FileCopyrightText: 2021-2025 O21 contributors <https://github.com/ForNeVeR/O21>
+#
+# SPDX-License-Identifier: MIT
+
+# This file is auto-generated.""".Trim()
 
 #r "nuget: Generaptor, 1.6.1"
 open Generaptor
@@ -23,6 +26,10 @@ let SupportedPlatforms = [
 ]
 
 let workflows = [
+    let workflow name body = workflow name [
+        header licenseHeader
+        yield! body
+    ]
 
     let nuGetCache() = [
         setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
