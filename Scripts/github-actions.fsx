@@ -6,7 +6,36 @@
 open Generaptor
 open Generaptor.GitHubActions
 open type Generaptor.GitHubActions.Commands
+
+type OperatingSystem =
+    | Linux
+    | Windows
+    | MacOS
+
+type Architecture =
+    | X86_64
+    | AArch64
+
+let SupportedPlatforms = [
+    Linux, X86_64
+    MacOS, AArch64
+    Windows, X86_64
+]
+
 let workflows = [
+
+    let nuGetCache() = [
+        setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
+        step(
+            name = "NuGet cache",
+            uses = "actions/cache@v4",
+            options = Map.ofList [
+                "path", "${{ env.NUGET_PACKAGES }}"
+                "key", "${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}"
+            ]
+        )
+    ]
+
     workflow "main" [
         name "Main"
         onPushTo "main"
@@ -34,19 +63,12 @@ let workflows = [
             runsOn "${{ matrix.config.image }}"
             setEnv "DOTNET_NOLOGO" "1"
             setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
-            setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
+
             step(
                 name = "Checkout",
                 uses = "actions/checkout@v4"
             )
-            step(
-                name = "NuGet cache",
-                uses = "actions/cache@v4",
-                options = Map.ofList [
-                    "path", "${{ env.NUGET_PACKAGES }}"
-                    "key", "${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}"
-                ]
-            )
+            yield! nuGetCache()
             step(
                 name = "Set up .NET SDK",
                 uses = "actions/setup-dotnet@v4",
@@ -95,11 +117,20 @@ let workflows = [
 
             setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
             setEnv "DOTNET_NOLOGO" "1"
-            setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
 
-            step(uses = "actions/checkout@v4")
-            step(uses = "actions/setup-dotnet@v4")
-            step(run = "dotnet fsi ./Scripts/github-actions.fsx verify")
+            step(
+                name = "Check out the sources",
+                uses = "actions/checkout@v4"
+            )
+            step(
+                name = "Set up .NET SDK",
+                uses = "actions/setup-dotnet@v4"
+            )
+            yield! nuGetCache()
+            step(
+                name = "Verify generated CI definition",
+                run = "dotnet fsi ./Scripts/github-actions.fsx verify"
+            )
         ]
     ]
     workflow "release" [
@@ -129,121 +160,101 @@ let workflows = [
                     "dotnet-version", "9.0.x"
                 ]
             )
-            step(
-                name = "NuGet cache",
-                uses = "actions/cache@v4",
-                options = Map.ofList [
-                    "path", "${{ env.NUGET_PACKAGES }}"
-                    "key", "${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}"
-                ]
-            )
-            step(
-                name = "Publish for Linux x86-64",
-                shell = "pwsh",
-                run = "dotnet publish O21.Game --self-contained --runtime linux-x64 --configuration Release --output ./publish.linux.x86-64 && Set-Location ./publish.linux-x86-64 && zip -r ../O21-v${{ steps.version.outputs.version }}.linux-x86-64.zip *\n"
-            )
-            step(
-                name = "Publish for Linux AArch64",
-                shell = "pwsh",
-                run = "dotnet publish O21.Game --self-contained --runtime linux-arm64 --configuration Release --output ./publish.linux.aarch64 && Set-Location ./publish.linux-aarch64 && zip -r ../O21.Game-v${{ steps.version.outputs.version }}.linux.aarch64.zip *\n"
-            )
-            step(
-                name = "Publish for macOS x86-64",
-                shell = "pwsh",
-                run = "dotnet publish O21.Game --self-contained --runtime osx-x64 --configuration Release --output ./publish.osx-x86-64 && Set-Location ./publish.osx-x86-64 && zip -r ../O21.Game-v${{ steps.version.outputs.version }}.osx-x86-64.zip *\n"
-            )
-            step(
-                name = "Publish for macOS AArch64",
-                shell = "pwsh",
-                run = "dotnet publish O21.Game --self-contained --runtime osx-arm64 --configuration Release --output ./publish.osx-x86-64 && Set-Location ./publish.osx-aarch64 && zip -r ../O21.Game-v${{ steps.version.outputs.version }}.osx-aarch64.zip *\n"
-            )
-            step(
-                name = "Publish for Windows",
-                shell = "pwsh",
-                run = "dotnet publish ChangelogAutomation --self-contained --runtime win-x64 --configuration Release --output ./publish.win-x64 && Set-Location ./publish.win-x64 && zip -r ../ChangelogAutomation-v${{ steps.version.outputs.version }}.win-x64.zip *\n"
-            )
-            step(
-                name = "Prepare a NuGet packages",
-                run = "dotnet pack --configuration Release -p:Version=${{ steps.version.outputs.version }}"
-            )
+            yield! nuGetCache()
+
+            let platformDisplayName os arch =
+                (
+                    match os with
+                    | Linux -> "Linux"
+                    | MacOS -> "macOS"
+                    | Windows -> "Windows"
+                ) + " " + (
+                    match arch with
+                    | AArch64 -> "AArch64"
+                    | X86_64 -> "x86-64"
+                )
+
+            let toDotNetRuntimeId os arch =
+                (
+                    match os with
+                    | Linux -> "linux"
+                    | MacOS -> "osx"
+                    | Windows -> "win"
+                ) + "-" + (
+                    match arch with
+                    | AArch64 -> "arm64"
+                    | X86_64 -> "x64"
+                )
+
+            let publishFolder os arch =
+                "o21." + (
+                    match os with
+                    | Linux -> "linux"
+                    | MacOS -> "macos"
+                    | Windows -> "windows"
+                ) + "." + (
+                    match arch with
+                    | AArch64 -> "aarch64"
+                    | X86_64 -> "x86-64"
+                )
+
+            let publishCommandPwsh os arch =
+                $"dotnet publish O21.Game --self-contained --runtime \"{toDotNetRuntimeId os arch}\" --configuration Release --output \"{publishFolder os arch}\""
+
+            let archiveFileName(os, arch) =
+                "o21.v${{ steps.version.outputs.version }}." + (
+                    match os with
+                    | Linux -> "linux"
+                    | MacOS -> "macos"
+                    | Windows -> "windows"
+                ) + "." + (
+                    match arch with
+                    | AArch64 -> "aarch64"
+                    | X86_64 -> "x86-64"
+                ) + ".zip"
+
+            let packCommandPwsh os arch =
+                $"Set-Location \"{publishFolder os arch}\" && zip -r \"../{archiveFileName(os, arch)}\" *"
+
+            let publishForPlatform(os, arch) =
+                step(
+                    name = $"Publish for {platformDisplayName os arch}",
+                    shell = "pwsh",
+                    run = $"{publishCommandPwsh os arch} && {packCommandPwsh os arch}"
+                )
+
+            yield! SupportedPlatforms |> List.map publishForPlatform
+
+            let releaseNotes = "./release-notes.md"
             step(
                 name = "Read changelog",
                 id = "changelog",
-                run = "dotnet run --project ChangelogAutomation -- ./CHANGELOG.md --output-file-path ./release-data.md"
+                usesSpec = Auto "ForNeVeR/ChangelogAutomation.action",
+                options = Map.ofSeq [
+                    "output", releaseNotes
+                ]
             )
+
+            let artifactsToUpload = [
+                yield releaseNotes
+                yield! SupportedPlatforms |> List.map archiveFileName
+            ]
             step(
-                name = "Push an MSBuild package to NuGet",
-                condition = "startsWith(github.ref, 'refs/tags/v')",
-                run = "dotnet nuget push ./ChangelogAutomation.MSBuild/bin/Release/ChangelogAutomation.MSBuild.${{ steps.version.outputs.version }}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN }}"
+                name = "Upload artifacts",
+                usesSpec = Auto "actions/upload-artifact",
+                options = Map.ofList [
+                    "path", artifactsToUpload |> String.concat "\n"
+                ]
             )
+
             step(
                 name = "Create release",
                 condition = "startsWith(github.ref, 'refs/tags/v')",
                 id = "release",
-                uses = "actions/create-release@v1",
-                env = Map.ofList [
-                    "GITHUB_TOKEN", "${{ secrets.GITHUB_TOKEN }}"
-                ],
+                usesSpec = Auto "softprops/action-gh-release",
                 options = Map.ofList [
-                    "tag_name", "${{ github.ref }}"
-                    "release_name", "ChangelogAutomation v${{ steps.version.outputs.version }}"
-                    "body_path", "./release-data.md"
-                ]
-            )
-            step(
-                name = "Upload distribution: Linux",
-                condition = "startsWith(github.ref, 'refs/tags/v')",
-                uses = "actions/upload-release-asset@v1",
-                env = Map.ofList [
-                    "GITHUB_TOKEN", "${{ secrets.GITHUB_TOKEN }}"
-                ],
-                options = Map.ofList [
-                    "upload_url", "${{ steps.release.outputs.upload_url }}"
-                    "asset_name", "ChangelogAutomation-v${{ steps.version.outputs.version }}.linux-x64.zip"
-                    "asset_path", "./ChangelogAutomation-v${{ steps.version.outputs.version }}.linux-x64.zip"
-                    "asset_content_type", "application/zip"
-                ]
-            )
-            step(
-                name = "Upload distribution: macOS",
-                condition = "startsWith(github.ref, 'refs/tags/v')",
-                uses = "actions/upload-release-asset@v1",
-                env = Map.ofList [
-                    "GITHUB_TOKEN", "${{ secrets.GITHUB_TOKEN }}"
-                ],
-                options = Map.ofList [
-                    "upload_url", "${{ steps.release.outputs.upload_url }}"
-                    "asset_name", "ChangelogAutomation-v${{ steps.version.outputs.version }}.osx-x64.zip"
-                    "asset_path", "./ChangelogAutomation-v${{ steps.version.outputs.version }}.osx-x64.zip"
-                    "asset_content_type", "application/zip"
-                ]
-            )
-            step(
-                name = "Upload distribution: Windows",
-                condition = "startsWith(github.ref, 'refs/tags/v')",
-                uses = "actions/upload-release-asset@v1",
-                env = Map.ofList [
-                    "GITHUB_TOKEN", "${{ secrets.GITHUB_TOKEN }}"
-                ],
-                options = Map.ofList [
-                    "upload_url", "${{ steps.release.outputs.upload_url }}"
-                    "asset_name", "ChangelogAutomation-v${{ steps.version.outputs.version }}.win-x64.zip"
-                    "asset_path", "./ChangelogAutomation-v${{ steps.version.outputs.version }}.win-x64.zip"
-                    "asset_content_type", "application/zip"
-                ]
-            )
-            step(
-                name = "Upload .nupkg file for MSBuild package",
-                condition = "startsWith(github.ref, 'refs/tags/v')",
-                uses = "actions/upload-release-asset@v1",
-                env = Map.ofList [
-                    "GITHUB_TOKEN", "${{ secrets.GITHUB_TOKEN }}"
-                ],
-                options = Map.ofList [
-                    "upload_url", "${{ steps.release.outputs.upload_url }}"
-                    "asset_name", "ChangelogAutomation.MSBuild.${{ steps.version.outputs.version }}.nupkg"
-                    "asset_path", "./ChangelogAutomation.MSBuild/bin/Release/ChangelogAutomation.MSBuild.${{ steps.version.outputs.version }}.nupkg"
-                    "asset_content_type", "application/zip"
+                    "name", "O21 v${{ steps.version.outputs.version }}"
+                    "body_path", releaseNotes
                 ]
             )
         ]

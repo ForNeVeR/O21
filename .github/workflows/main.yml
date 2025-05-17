@@ -68,10 +68,14 @@ jobs:
       DOTNET_NOLOGO: 1
       NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-      - uses: actions/cache@v4
-        with:
-          key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
-          path: ${{ env.NUGET_PACKAGES }}
-      - run: dotnet fsi Scripts/github-actions.fsx verify
+    - name: Check out the sources
+      uses: actions/checkout@v4
+    - name: Set up .NET SDK
+      uses: actions/setup-dotnet@v4
+    - name: NuGet cache
+      uses: actions/cache@v4
+      with:
+        key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
+        path: ${{ env.NUGET_PACKAGES }}
+    - name: Verify generated CI definition
+      run: dotnet fsi ./Scripts/github-actions.fsx verify
