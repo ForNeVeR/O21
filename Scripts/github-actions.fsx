@@ -2,9 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-#r "nuget: TruePath, 1.2.1"
-#r "nuget: YamlDotNet, 15.1.1"
-#r @"G:\Projects\Generaptor\Generaptor\bin\Debug\net8.0\Generaptor.dll"
+#r "nuget: Generaptor, 1.6.0"
 open Generaptor
 open Generaptor.GitHubActions
 open type Generaptor.GitHubActions.Commands
@@ -91,6 +89,17 @@ let workflows = [
                 shell = "pwsh",
                 run = "Scripts/Test-Encoding.ps1"
             )
+        ]
+        job "verify-workflows" [
+            runsOn "ubuntu-24.04"
+
+            setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
+            setEnv "DOTNET_NOLOGO" "1"
+            setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
+
+            step(uses = "actions/checkout@v4")
+            step(uses = "actions/setup-dotnet@v4")
+            step(run = "dotnet fsi ./Scripts/github-actions.fsx verify")
         ]
     ]
     workflow "release" [
