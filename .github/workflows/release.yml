@@ -17,6 +17,7 @@ jobs:
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       DOTNET_NOLOGO: 1
+      NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -35,79 +36,30 @@ jobs:
         path: ${{ env.NUGET_PACKAGES }}
     - name: Publish for Linux x86-64
       shell: pwsh
-      run: |
-        dotnet publish O21.Game --self-contained --runtime linux-x64 --configuration Release --output ./publish.linux.x86-64 && Set-Location ./publish.linux-x86-64 && zip -r ../O21-v${{ steps.version.outputs.version }}.linux-x86-64.zip *
-    - name: Publish for Linux AArch64
-      shell: pwsh
-      run: |
-        dotnet publish O21.Game --self-contained --runtime linux-arm64 --configuration Release --output ./publish.linux.aarch64 && Set-Location ./publish.linux-aarch64 && zip -r ../O21.Game-v${{ steps.version.outputs.version }}.linux.aarch64.zip *
-    - name: Publish for macOS x86-64
-      shell: pwsh
-      run: |
-        dotnet publish O21.Game --self-contained --runtime osx-x64 --configuration Release --output ./publish.osx-x86-64 && Set-Location ./publish.osx-x86-64 && zip -r ../O21.Game-v${{ steps.version.outputs.version }}.osx-x86-64.zip *
+      run: dotnet publish O21.Game --self-contained --runtime "linux-x64" --configuration Release --output "o21.linux.x86-64" && Set-Location "o21.linux.x86-64" && zip -r "../o21.v${{ steps.version.outputs.version }}.linux.x86-64.zip" *
     - name: Publish for macOS AArch64
       shell: pwsh
-      run: |
-        dotnet publish O21.Game --self-contained --runtime osx-arm64 --configuration Release --output ./publish.osx-x86-64 && Set-Location ./publish.osx-aarch64 && zip -r ../O21.Game-v${{ steps.version.outputs.version }}.osx-aarch64.zip *
-    - name: Publish for Windows
+      run: dotnet publish O21.Game --self-contained --runtime "osx-arm64" --configuration Release --output "o21.macos.aarch64" && Set-Location "o21.macos.aarch64" && zip -r "../o21.v${{ steps.version.outputs.version }}.macos.aarch64.zip" *
+    - name: Publish for Windows x86-64
       shell: pwsh
-      run: |
-        dotnet publish ChangelogAutomation --self-contained --runtime win-x64 --configuration Release --output ./publish.win-x64 && Set-Location ./publish.win-x64 && zip -r ../ChangelogAutomation-v${{ steps.version.outputs.version }}.win-x64.zip *
-    - name: Prepare a NuGet packages
-      run: dotnet pack --configuration Release -p:Version=${{ steps.version.outputs.version }}
+      run: dotnet publish O21.Game --self-contained --runtime "win-x64" --configuration Release --output "o21.windows.x86-64" && Set-Location "o21.windows.x86-64" && zip -r "../o21.v${{ steps.version.outputs.version }}.windows.x86-64.zip" *
     - id: changelog
       name: Read changelog
-      run: dotnet run --project ChangelogAutomation -- ./CHANGELOG.md --output-file-path ./release-data.md
-    - if: startsWith(github.ref, 'refs/tags/v')
-      name: Push an MSBuild package to NuGet
-      run: dotnet nuget push ./ChangelogAutomation.MSBuild/bin/Release/ChangelogAutomation.MSBuild.${{ steps.version.outputs.version }}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_TOKEN }}
+      uses: ForNeVeR/ChangelogAutomation.action@v2
+      with:
+        output: ./release-notes.md
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        path: |-
+          ./release-notes.md
+          o21.v${{ steps.version.outputs.version }}.linux.x86-64.zip
+          o21.v${{ steps.version.outputs.version }}.macos.aarch64.zip
+          o21.v${{ steps.version.outputs.version }}.windows.x86-64.zip
     - if: startsWith(github.ref, 'refs/tags/v')
       id: release
       name: Create release
-      uses: actions/create-release@v1
+      uses: softprops/action-gh-release@v2
       with:
-        body_path: ./release-data.md
-        release_name: ChangelogAutomation v${{ steps.version.outputs.version }}
-        tag_name: ${{ github.ref }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - if: startsWith(github.ref, 'refs/tags/v')
-      name: 'Upload distribution: Linux'
-      uses: actions/upload-release-asset@v1
-      with:
-        asset_content_type: application/zip
-        asset_name: ChangelogAutomation-v${{ steps.version.outputs.version }}.linux-x64.zip
-        asset_path: ./ChangelogAutomation-v${{ steps.version.outputs.version }}.linux-x64.zip
-        upload_url: ${{ steps.release.outputs.upload_url }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - if: startsWith(github.ref, 'refs/tags/v')
-      name: 'Upload distribution: macOS'
-      uses: actions/upload-release-asset@v1
-      with:
-        asset_content_type: application/zip
-        asset_name: ChangelogAutomation-v${{ steps.version.outputs.version }}.osx-x64.zip
-        asset_path: ./ChangelogAutomation-v${{ steps.version.outputs.version }}.osx-x64.zip
-        upload_url: ${{ steps.release.outputs.upload_url }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - if: startsWith(github.ref, 'refs/tags/v')
-      name: 'Upload distribution: Windows'
-      uses: actions/upload-release-asset@v1
-      with:
-        asset_content_type: application/zip
-        asset_name: ChangelogAutomation-v${{ steps.version.outputs.version }}.win-x64.zip
-        asset_path: ./ChangelogAutomation-v${{ steps.version.outputs.version }}.win-x64.zip
-        upload_url: ${{ steps.release.outputs.upload_url }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - if: startsWith(github.ref, 'refs/tags/v')
-      name: Upload .nupkg file for MSBuild package
-      uses: actions/upload-release-asset@v1
-      with:
-        asset_content_type: application/zip
-        asset_name: ChangelogAutomation.MSBuild.${{ steps.version.outputs.version }}.nupkg
-        asset_path: ./ChangelogAutomation.MSBuild/bin/Release/ChangelogAutomation.MSBuild.${{ steps.version.outputs.version }}.nupkg
-        upload_url: ${{ steps.release.outputs.upload_url }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        body_path: ./release-notes.md
+        name: O21 v${{ steps.version.outputs.version }}
