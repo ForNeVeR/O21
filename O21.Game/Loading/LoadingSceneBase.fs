@@ -9,6 +9,7 @@ open System.Numerics
 open System.Threading.Tasks
 
 open JetBrains.Lifetimes
+open O21.Game.RaylibUtils
 open Raylib_CSharp.Camera.Cam2D
 open Raylib_CSharp.Colors
 open type Raylib_CSharp.Raylib
@@ -32,9 +33,7 @@ type LoadingSceneBase<'Output>(window: WindowParameters) =
         let center = Vector2(float32 <| renderTargetWidth / 2, float32 <| renderTargetHeight / 2)
         let texCoords = GenerateSquareSector loadingProgress
         let pixelCoords = texCoords |> Array.map(fun v -> Vector2((v.X - 0.5f) * float32 texture.Width, (v.Y - 0.5f) * float32 texture.Height))
-        ()
-        // DrawTexturePoly(texture, center, pixelCoords, texCoords, texCoords.Length, Color.White)
-        // TODO: Uncomment, when Raylib_CSharp support this func
+        DrawTexturePoly texture center pixelCoords texCoords Color.White
 
     let paddingAfterImage = 5
     
