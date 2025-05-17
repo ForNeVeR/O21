@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 		global.json = global.json
 		global.json.license = global.json.license
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{85EB6EE2-17F9-4087-885A-7372F988DADF}"
@@ -45,6 +46,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{2CE7
 		Scripts\Verify-Translations.ps1 = Scripts\Verify-Translations.ps1
 		Scripts\Test-Encoding.ps1 = Scripts\Test-Encoding.ps1
 		Scripts\github-actions.fsx = Scripts\github-actions.fsx
+		Scripts\Get-Version.ps1 = Scripts\Get-Version.ps1
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "O21.CommandLine", "O21.CommandLine\O21.CommandLine.fsproj", "{82E5BCA2-7215-4BF1-9651-986505FF6054}"
