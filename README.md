@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/
 SPDX-License-Identifier: MIT
 -->
 
-O21 [![Status Enfer][status-enfer]][andivionian-status-classifier]
+O21 [![Status Ventis][status-ventis]][andivionian-status-classifier]
 ===
 
 O21 is a modern free and open-source remake of [U95][old-games.u95], a game by [NIKITA][nikita] company, released in 1995.
@@ -98,7 +98,7 @@ Acknowledgments
 - Thanks to the [OpenSAGE][open-sage] project for some ideas on the wording in the **Legal Disclaimers** section.
 
 [abandonware]: https://en.wikipedia.org/wiki/Abandonware
-[andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier#status-enfer-
+[andivionian-status-classifier]: https://andivionian.fornever.me/v1/#status-ventis-
 [docs.changelog]: CHANGELOG.md
 [docs.code-of-conduct]: CODE_OF_CONDUCT.md
 [docs.command-line]: docs/command-line.md
@@ -115,6 +115,6 @@ Acknowledgments
 [reuse.spec]: https://reuse.software/spec-3.3/
 [screenshot]: docs/screenshot.png
 [semver]: https://semver.org/spec/v2.0.0.html
-[status-enfer]: https://img.shields.io/badge/status-enfer-orange.svg
+[status-ventis]: https://img.shields.io/badge/status-ventis-yellow.svg
 [wikipedia.o21]: https://en.wikipedia.org/wiki/HNLMS_O_21
 [wikipedia.u-95]: https://en.wikipedia.org/wiki/German_submarine_U-95_(1940)
