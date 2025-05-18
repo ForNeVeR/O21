@@ -60,9 +60,20 @@ The distribution license of the original game is unknown, so the game has an unc
 
 No assets from the original game are included in this software (though it may allow the user to use any assets downloaded under the user's informed consent).
 
+Versioning Notes
+----------------
+This project's versioning follows the [Semantic Versioning 2.0.0][semver] specification.
+
+When considering compatible changes, we take the input and output data format into account, such as:
+- the command-line arguments,
+- the data pack format (the original file layout),
+- the output data (such as table of leaders) format.
+
+Note that any particular non-zero executable exit codes are not considered part of the public API.
+
 Documentation
 -------------
-
+- [Changelog][docs.changelog]
 - [Command-Line Interface][docs.command-line]
 - [Contributor Guide][docs.contributing]
   - [Original Game Resources][docs.resources]
@@ -70,12 +81,12 @@ Documentation
 
 Acknowledgments
 ---------------
-
 - Thanks to [Nikita Online][nikita] for making such a great game!
 - Thanks to the [OpenSAGE][open-sage] project for some ideas on the wording in the **Legal Disclaimers** section.
 
 [abandonware]: https://en.wikipedia.org/wiki/Abandonware
 [andivionian-status-classifier]: https://github.com/ForNeVeR/andivionian-status-classifier#status-enfer-
+[docs.changelog]: CHANGELOG.md
 [docs.code-of-conduct]: CODE_OF_CONDUCT.md
 [docs.command-line]: docs/command-line.md
 [docs.contributing]: CONTRIBUTING.md
@@ -88,6 +99,7 @@ Acknowledgments
 [open-sage]: https://github.com/OpenSAGE/OpenSAGE
 [reuse.spec]: https://reuse.software/spec-3.3/
 [screenshot]: docs/screenshot.png
+[semver]: https://semver.org/spec/v2.0.0.html
 [status-enfer]: https://img.shields.io/badge/status-enfer-orange.svg
 [wikipedia.o21]: https://en.wikipedia.org/wiki/HNLMS_O_21
 [wikipedia.u-95]: https://en.wikipedia.org/wiki/German_submarine_U-95_(1940)
