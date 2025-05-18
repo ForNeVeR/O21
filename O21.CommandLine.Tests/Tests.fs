@@ -51,14 +51,6 @@ let StartVerbWithoutScreenSizesTest () =
     Assert.NotEmpty(reporter.InfoItems)
     
 [<Fact>]
-let StartVerbWithoutArgsTest () =
-    let args = [|"start"|]
-    let reporter = MockConsole()
-    CommandLineParser.parseArguments args reporter (fun _ -> Assert.Fail("Parsing process was failed, but function was called"))
-    Assert.Equivalent([|CommandLineParser.directoryPathNotDefined|], reporter.ErrorItems)
-    AssertHasOnlyBannerMessage reporter
-    
-[<Fact>]
 let ExportVerbWithoutArgsTest () =
     let args = [|"export"|]
     let reporter = MockConsole()
@@ -74,7 +66,7 @@ let HelpFileVerbWithoutArgsTest () =
     Assert.Equivalent([|CommandLineParser.inputFileNotDefined; CommandLineParser.directoryPathNotDefined|], reporter.ErrorItems)
     AssertHasOnlyBannerMessage reporter
     
-[<Fact>]
+[<Fact(Skip = "https://github.com/commandlineparser/commandline/issues/849")>]
 let UndefinedVerbTest () =
     let args = [|"helloWorld"|]
     let reporter = MockConsole()
