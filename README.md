@@ -77,6 +77,7 @@ Documentation
 - [Command-Line Interface][docs.command-line]
 - [Contributor Guide][docs.contributing]
   - [Original Game Resources][docs.resources]
+- [Maintainer Guide][docs.maintaining]
 - [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
 
 Acknowledgments
@@ -91,6 +92,7 @@ Acknowledgments
 [docs.command-line]: docs/command-line.md
 [docs.contributing]: CONTRIBUTING.md
 [docs.license]: LICENSE.md
+[docs.maintaining]: MAINTAINING.md
 [docs.resources]: docs/resources.md
 [fornever]: https://github.com/ForNeVeR/
 [issues]: https://github.com/ForNeVeR/O21/issues
