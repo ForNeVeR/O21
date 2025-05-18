@@ -13,9 +13,14 @@ SPDX-License-Identifier: MIT
         <Touch Files="$(IntermediateOutputPath)\dotnet-tool-restore.timestamp" AlwaysCreate="true" />
     </Target>
 
-    <Target Name="ProcessSvgFiles" BeforeTargets="Build" DependsOnTargets="DotNetToolRestore"
+    <Target Name="ProcessSvgFiles" BeforeTargets="AssignTargetPaths" DependsOnTargets="DotNetToolRestore"
             Inputs="@(Svg)"
-            Outputs="@(Svg->'$(OutputPath)\Resources\Sprites%(FileName).png')">
-        <Exec Command='dotnet tool run Svg.Skia.Converter --inputFiles "@(Svg)" --outputDirectory "$(OutputPath)/Resources/Sprites"' />
+            Outputs="@(Svg->'$(OutputPath)Resources\Sprites\%(FileName).png')">
+        <Exec Command='dotnet tool run Svg.Skia.Converter --inputFiles "@(Svg)" --outputDirectory "$(OutputPath)Resources/Sprites"' />
+        <ItemGroup>
+            <ContentWithTargetPath Include="@(Svg->'$(OutputPath)Resources\Sprites\%(FileName).png')"
+                                   CopyToOutputDirectory="Always"
+                                   TargetPath="@(Svg->'Resources\Sprites\%(FileName).png')" />
+        </ItemGroup>
     </Target>
 </Project>
