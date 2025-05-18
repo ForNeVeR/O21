@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
@@ -49,9 +49,6 @@ module CommandLineParser =
                 reporter.ReportInfo(bannerMessage)
             match command.Value with
                 | :? StartGame as startCommand ->
-                    if String.IsNullOrWhiteSpace startCommand.gameDirectory then
-                        reporter.ReportError(directoryPathNotDefined)
-                        success <- false
                     match startCommand.screenSizes with
                     | NonNull collection when collection.Count <> 2 ->
                         reporter.ReportError(invalidScreenSizesOption)

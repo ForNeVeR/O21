@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 
 SPDX-License-Identifier: MIT
 -->
@@ -19,6 +19,14 @@ Execute the following shell command:
 
 ```console
 $ dotnet build
+```
+
+Run the Game
+------------
+To run the development build of the game with the custom data directory, execute the following shell command:
+
+```console
+$ dotnet run --project O21.Game start <downloaded-data-directory>
 ```
 
 Play the Original

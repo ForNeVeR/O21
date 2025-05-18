@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 
 SPDX-License-Identifier: MIT
 -->
@@ -18,16 +18,28 @@ Visit [the issue tracker][issues] if you want to know more.
 The screenshot of the currently implemented version (mind that not every element from the screenshot might be functional yet):
 ![Screenshot][screenshot]
 
+Installation
+------------
+Download the latest distribution for your platform from [the releases page][releases].
+
+For a development build, browse [the contributor guide][docs.contributing].
+
 Usage
 -----
+Just run the `O21.Game` binary from the downloaded archive.
 
-Currently, O21 is only suitable for development mode. To start the game, run the following shell command:
+When started with no arguments, it will run the game with default settings.
 
-```console
-$ dotnet run --project O21.Game start <downloaded-data-directory>
-```
+See [the documentation on command-line options][docs.command-line].
 
-See [the documentation on command line arguments][docs.command-line].
+### Data
+By default, O21 stores its data in the following directories:
+
+- **Linux**: `~/.local/share/ForNeVeR/O21`,
+- **macOS**: `~/Application Support/ForNeVeR/O21`,
+- **Windows**: `%LOCALAPPDATA%\ForNeVeR\O21`.
+
+Remember to delete these if you need to completely remove the game from your computer.
 
 Game History
 ------------
@@ -99,6 +111,7 @@ Acknowledgments
 [nikita]: https://en.wikipedia.org/wiki/Nikita_Online
 [old-games.u95]: https://www.old-games.ru/game/4676.html
 [open-sage]: https://github.com/OpenSAGE/OpenSAGE
+[releases]: https://github.com/ForNeVeR/O21/releases
 [reuse.spec]: https://reuse.software/spec-3.3/
 [screenshot]: docs/screenshot.png
 [semver]: https://semver.org/spec/v2.0.0.html

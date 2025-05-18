@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 
 SPDX-License-Identifier: MIT
 -->
@@ -12,6 +12,7 @@ SPDX-License-Identifier: MIT
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="O21Environment.fs" />
         <Compile Include="Arguments.fs" />
         <Compile Include="IConsole.fs" />
         <Compile Include="CommandLineParser.fs" />
@@ -19,6 +20,7 @@ SPDX-License-Identifier: MIT
 
     <ItemGroup>
       <PackageReference Include="CommandLineParser" Version="2.9.1" />
+      <PackageReference Include="TruePath" Version="1.7.0" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
@@ -15,11 +15,14 @@ module Arguments =
                 member this.noLogo: bool = noLogo
         end
     
-    [<Verb("start", HelpText = "Start the game")>]
-    type StartGame(gameDirectory:string, screenSizes:IList<int> | null, noLogo:bool) =
+    [<Verb("start", HelpText = "Start the game", isDefault = true)>]
+    type StartGame(gameDirectory:string | null, screenSizes:IList<int> | null, noLogo:bool) =
         inherit BaseCommand(noLogo)
         [<Value(0, HelpText = "The directory where the game will be loaded")>]
-            member this.gameDirectory : string = gameDirectory
+            member this.gameDirectory: string =
+                match gameDirectory with
+                | null -> O21Environment.PlatformDefaultDataDirectory.Value
+                | gd -> gd
         [<Option("screenSizes", HelpText = "Set up the sizes of window (width and height)")>]
             member this.screenSizes : IList<int> | null = screenSizes
     
