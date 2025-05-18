@@ -147,6 +147,7 @@ let workflows = [
         onPullRequestTo "main"
         onSchedule "0 0 * * 6"
         job "release" [
+            writeContentPermissions
             runsOn "ubuntu-24.04"
             setEnv "DOTNET_NOLOGO" "1"
             setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
