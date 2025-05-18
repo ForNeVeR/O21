@@ -35,7 +35,7 @@ let AvailableLanguages =
     let files = Directory.GetFiles(Paths.TranslationsFolder, "*.json")
     seq {
         for file in files do
-            let fileName = Path.GetFileNameWithoutExtension file
+            let fileName = nonNull <| Path.GetFileNameWithoutExtension file
             yield { 
                 Name = fileName
                 Type = TranslationLanguageType.Json

@@ -8,4 +8,10 @@ SPDX-License-Identifier: MIT
     <PropertyGroup Label="Packaging">
         <Version>0.0.0</Version>
     </PropertyGroup>
+
+    <PropertyGroup>
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <NoWarn>$(NoWarn); NU1608 <!-- Something about inconsistent packages in FSharp.Formatting --></NoWarn>
+    </PropertyGroup>
 </Project>

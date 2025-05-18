@@ -16,12 +16,12 @@ module Arguments =
         end
     
     [<Verb("start", HelpText = "Start the game")>]
-    type StartGame(gameDirectory:string, screenSizes:IList<int>, noLogo:bool) =
+    type StartGame(gameDirectory:string, screenSizes:IList<int> | null, noLogo:bool) =
         inherit BaseCommand(noLogo)
         [<Value(0, HelpText = "The directory where the game will be loaded")>]
             member this.gameDirectory : string = gameDirectory
         [<Option("screenSizes", HelpText = "Set up the sizes of window (width and height)")>]
-            member this.screenSizes : IList<int> = screenSizes
+            member this.screenSizes : IList<int> | null = screenSizes
     
     [<Verb("export", HelpText = "Export resources")>]
     type ExportResources(inputFilePath:string, outputDirectory:string, noLogo:bool) =

@@ -42,11 +42,12 @@ let main(args: string[]): int =
     let matchArgs (command:BaseCommand) =
         match command with
         | :? StartGame as startCommand ->
-            if startCommand.screenSizes <> null then
-                let width, height = (startCommand.screenSizes[0], startCommand.screenSizes[1])
+            match startCommand.screenSizes with
+            | NonNull screenSizes ->
+                let width, height = (screenSizes[0], screenSizes[1])
                 let size = struct(width, height)
                 runGame (Some size) startCommand.gameDirectory
-            else runGame None startCommand.gameDirectory
+            | _ -> runGame None startCommand.gameDirectory
         | :? ExportResources as exportCommand ->
             Async.RunSynchronously(async {
             let! resources = Async.AwaitTask(NeExeFile.LoadResources exportCommand.inputFilePath)

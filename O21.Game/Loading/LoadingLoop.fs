@@ -50,7 +50,7 @@ let private processWithPumping(lt, window: WindowParameters, scene: ILoadingScen
             if task.IsCompletedSuccessfully then
                 result <- Some <| Success task.Result
             else if task.IsFaulted then
-                result <- Some <| Error task.Exception
+                result <- Some <| Error(nonNull task.Exception)
             else if Window.ShouldClose() || task.IsCanceled then
                 result <- Some Cancel
             else

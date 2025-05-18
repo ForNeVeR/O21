@@ -23,7 +23,7 @@ let ValidVerbFullArgsTest (argsString:string) =
         match args with
         | :? StartGame as startCommand ->
             Assert.Equal("C:\\O21", startCommand.gameDirectory)
-            Assert.Equal(2, startCommand.screenSizes.Count)
+            Assert.Equal(2, (nonNull startCommand.screenSizes).Count)
             Assert.Equivalent([|1920; 1080|], startCommand.screenSizes)
         | :? ExportResources as exportArgument ->
             Assert.Equal("C:\\O21\\file.bin", exportArgument.inputFilePath)

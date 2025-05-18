@@ -52,9 +52,11 @@ module CommandLineParser =
                     if String.IsNullOrWhiteSpace startCommand.gameDirectory then
                         reporter.ReportError(directoryPathNotDefined)
                         success <- false
-                    if startCommand.screenSizes <> null && startCommand.screenSizes.Count <> 2 then
+                    match startCommand.screenSizes with
+                    | NonNull collection when collection.Count <> 2 ->
                         reporter.ReportError(invalidScreenSizesOption)
                         success <- false
+                    | _ -> ()
                 | :? ExportResources as exportCommand ->
                     if String.IsNullOrWhiteSpace exportCommand.inputFilePath then
                         reporter.ReportError(inputFileNotDefined)

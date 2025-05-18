@@ -4,7 +4,6 @@
 
 namespace O21.Game.U95
 
-open System
 open System.IO
 open System.Threading.Tasks
 
@@ -52,8 +51,8 @@ type Level = {
                 |> Seq.map(fun filePath -> task {
                     let levelCoordinates =
                         filePath
-                        |> Path.GetFileNameWithoutExtension
-                        |> fun s -> s.Split('_', 3)
+                        |> (nonNull << Path.GetFileNameWithoutExtension)
+                        |> _.Split('_', 3)
                         |> Array.skip 1
                         |> Array.map int
                         |> function | [| y; x |] -> x, y
