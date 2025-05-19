@@ -48,6 +48,8 @@ The fish has varying speed: some are fast, and some are slow, about 50/50 (hard 
 
 The "slow" ones touch the wall on 1-1 in 15 seconds after spawning on exit, the "fast" ines in 12 seconds. Which makes their speed about 4 or 5 pixels per tick.
 
+Speed of vertical fish movement seems to be the same as for the mines, 20 pixels per second. 
+
 Bomb/Medusa Behavior
 --------------------
 When a player enters a column with a bomb or medusa (actually, about 5-pixel radius around them — meaning they are possible to trigger even without being in any danger if acted accurately), they start moving upwards with a speed of about 20 pixels per second.
