@@ -19,6 +19,7 @@ Features of this release include:
 - fully functional main menu, music, most of the graphics,
 - working bonuses,
 - _somewhat_ working enemies (bombs/medusae only),
+- functional help system (using the original help file and contributed localizations),
 - Russian, English, Ukrainian localization.
 
 Thanks to our benefactors (in randomized order):
