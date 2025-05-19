@@ -46,7 +46,7 @@ If no vertical movement is possible, the fish will turn back.
 
 The fish has varying speed: some are fast, and some are slow, about 50/50 (hard to measure precisely). Sometimes, the fish change their movement speed after hitting a wall.
 
-The "slow" ones touch the wall on 1-1 in 15 seconds after spawning on exit, the "fast" ines in 12 seconds. Which makes their speed about 4 or 5 pixels per tick.
+The "slow" ones touch the wall on 1-1 in 15 seconds after spawning on exit, the "fast" in 12 seconds. Which makes their speed about 4 or 5 pixels per tick.
 
 Speed of vertical fish movement seems to be the same as for the mines, 20 pixels per second. 
 
