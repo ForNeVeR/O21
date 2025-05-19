@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 		CHANGELOG.md = CHANGELOG.md
 		MAINTAINING.md = MAINTAINING.md
+		O21.sln.license = O21.sln.license
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{85EB6EE2-17F9-4087-885A-7372F988DADF}"
@@ -34,6 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{ED5D37B9-3
 		docs\screenshot.png = docs\screenshot.png
 		docs\screenshot.png.license = docs\screenshot.png.license
 		docs\command-line.md = docs\command-line.md
+		docs\original-game-behavior.md = docs\original-game-behavior.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{58DB85EB-D5FC-4D30-9FC7-BDD95AFE31EB}"

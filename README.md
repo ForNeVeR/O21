@@ -89,6 +89,7 @@ Documentation
 - [Command-Line Interface][docs.command-line]
 - [Contributor Guide][docs.contributing]
   - [Original Game Resources][docs.resources]
+  - [Original Game Behavior][docs.behavior]
 - [Maintainer Guide][docs.maintaining]
 - [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
 
@@ -99,6 +100,7 @@ Acknowledgments
 
 [abandonware]: https://en.wikipedia.org/wiki/Abandonware
 [andivionian-status-classifier]: https://andivionian.fornever.me/v1/#status-ventis-
+[docs.behavior]: docs/original-game-behavior.md
 [docs.changelog]: CHANGELOG.md
 [docs.code-of-conduct]: CODE_OF_CONDUCT.md
 [docs.command-line]: docs/command-line.md
