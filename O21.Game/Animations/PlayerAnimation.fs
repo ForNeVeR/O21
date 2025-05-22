@@ -26,7 +26,7 @@ type PlayerAnimation = {
                                                             [|0|]
                                                             (Array.rev [|1..GameRules.MaxPlayerVelocity|]) |]
         
-    member private this.UpdateMovementAnimation(player: Player) (tick:int)=
+    member private this.UpdateMovementAnimation(player: Player) (tick: uint64)=
         let sprites =
             match player.Direction with
                 | Left -> this.Sprites.Left
@@ -35,7 +35,7 @@ type PlayerAnimation = {
             Frames = sprites
             TicksPerFrame = Array.get this.MovementAnimationSpeedRange (player.Velocity.X + GameRules.MaxPlayerVelocity) }
         
-    member private this.ExplosionAnimation (tick:int) =
+    member private this.ExplosionAnimation(tick: uint64) =
         {
             Frames = this.Sprites.Explosion
             LoopTime = LoopTime.Count 1
@@ -44,8 +44,8 @@ type PlayerAnimation = {
         }
 
     member this.Update(state: State, animations: AnimationType[]) =
-        let tick = state.Game.Tick
-        let player = state.Game.Player
+        let tick = state.Engine.ProcessedTicks
+        let player = state.Engine.Game.Player
         let mutable queue =
             if this.AnimationQueue.IsEmpty then []
             else
@@ -62,5 +62,5 @@ type PlayerAnimation = {
 
     member this.Draw(state: State) =
         match this.AnimationQueue with
-        | [] -> this.MovementAnimation.Draw(state.Game.Player.TopLeft)
-        | anim :: _ -> anim.Draw(state.Game.Player.TopLeft)
+        | [] -> this.MovementAnimation.Draw(state.Engine.Game.Player.TopLeft)
+        | anim :: _ -> anim.Draw(state.Engine.Game.Player.TopLeft)

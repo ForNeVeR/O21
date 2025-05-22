@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
@@ -6,7 +6,6 @@ namespace O21.Game.Animations
 
 open System
 open O21.Game.Engine
-open Raylib_CSharp
 open Raylib_CSharp.Colors
 open Raylib_CSharp.Textures
 open type Raylib_CSharp.Rendering.Graphics
@@ -25,14 +24,14 @@ type Animation = {
     Frames: Texture2D[]
     LoopTime: LoopTime
     TicksPerFrame: int
-    CurrentFrame: int * int
+    CurrentFrame: int * uint64
 } with
     static member Init(frames: Texture2D[], loop:LoopTime, ticksPerFrame: int) =
         {
             Frames = frames
             LoopTime = loop
             TicksPerFrame = ticksPerFrame
-            CurrentFrame = (0, 0)
+            CurrentFrame = (0, 0UL)
         }
         
     member this.GetState =
@@ -41,13 +40,13 @@ type Animation = {
         else if ticks > 0 then AnimationState.Playing
         else AnimationState.PlayingReversing
     
-    member this.Update(currentTick: int) =
+    member this.Update(currentTick: uint64) =
         if this.TicksPerFrame = 0 then Some this
         else
             let frame, frameTick = this.CurrentFrame
             let elapsed = (currentTick - frameTick)
             let frame, frameTick =
-                if elapsed >= Math.Abs(this.TicksPerFrame) then
+                if elapsed >= uint64 this.TicksPerFrame then
                     frame + Math.Clamp(this.TicksPerFrame, -1, 1), currentTick
                 else
                     frame, frameTick

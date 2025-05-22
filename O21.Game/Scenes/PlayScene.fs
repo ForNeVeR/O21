@@ -44,25 +44,25 @@ module private InputProcessor =
          )
          direction
         
-    let ProcessKeys (input:Input) (hud:HUD) (game: GameEngine) =
-        if not game.IsActive then
+    let ProcessKeys(input: Input, time: DeltaTime, hud: HUD, engine: TickEngine) =
+        if not engine.IsActive then
             if Set.contains Key.Pause input.Pressed then
-                game.ApplyCommand Activate
-            else game, Array.empty
+                engine.ApplyCommand(time, Unpause)
+            else engine, Array.empty
             
         else if Set.contains Key.Pause input.Pressed then
             if Set.contains Key.Pause input.Pressed then
-                game.ApplyCommand Suspend
-            else game, Array.empty
+                engine.ApplyCommand(time, Pause)
+            else engine, Array.empty
             
         else
             let mutable delta = ProcessDirectionKeys input.Pressed
             let mutable deltaFromHUD = ProcessHUDKeys (input, hud)
             if delta.X = 0 && delta.Y = 0 then
                 delta <- deltaFromHUD
-            let mutable game, effects = game.ApplyCommand(VelocityDelta delta)
+            let mutable game, effects = engine.ApplyCommand(time, PlayerCommand <| VelocityDelta delta)
             if Set.contains Key.Fire input.Pressed || hud.Controls.Fire.IsClicked(input) then
-                let game', effects' = game.ApplyCommand Shoot
+                let game', effects' = game.ApplyCommand(time, PlayerCommand <| Shoot)
                 game <- game'
                 effects <- Array.append effects effects'
             game, effects
@@ -95,31 +95,31 @@ type PlayScene = {
     static member private DrawParticle sprite (particle: Particle) =
         PlayScene.DrawSprite sprite particle.TopLeft
     
-    static member private UpdateGame (input, time) (gameEngine, hud) =
-        let game, inputEffects = InputProcessor.ProcessKeys input hud gameEngine
+    static member private UpdateEngine (input, time) (gameEngine, hud) =
+        let game, inputEffects = InputProcessor.ProcessKeys(input, time, hud, gameEngine)
         let game', updateEffects = game.Update time
         game', Array.concat [inputEffects; updateEffects]
         
-    static member private UpdateLevelOnRequest (game: GameEngine) (effects: ExternalEffect[]) (levels: Map<LevelCoordinates, Level>) =
+    static member private UpdateLevelOnRequest (engine: TickEngine) (effects: ExternalEffect[]) (levels: Map<LevelCoordinates, Level>) =
         effects
         |> Array.tryPick (fun e ->
             match e with
             | SwitchLevel delta ->
                 let dx, dy = delta.X, delta.Y
-                let newCoords = LevelCoordinates(game.CurrentLevel.Coordinates.X + dx,
-                                                 game.CurrentLevel.Coordinates.Y + dy)
-                Some (game.ChangeLevel levels[newCoords])
+                let newCoords = LevelCoordinates(engine.Game.CurrentLevel.Coordinates.X + dx,
+                                                 engine.Game.CurrentLevel.Coordinates.Y + dy)
+                Some (engine.ChangeLevel levels[newCoords])
             | _ -> None)
-        |> Option.defaultValue game
+        |> Option.defaultValue engine
     
     interface IScene with
         member this.Camera = this.Camera
         member this.Update(input, time, state) =
-            let game, effects = PlayScene.UpdateGame (input, time) (state.Game, this.HUD)
-            let game = PlayScene.UpdateLevelOnRequest game effects state.U95Data.Levels
-            let hud = this.HUD.SyncWithGame game
+            let engine, effects = PlayScene.UpdateEngine (input, time) (state.Engine, this.HUD)
+            let engine = PlayScene.UpdateLevelOnRequest engine effects state.U95Data.Levels
+            let hud = this.HUD.SyncWithGame engine
             let animationHandler = this.AnimationHandler.Update (state, effects)
-            let state = { state with Game = game; Scene = { this with HUD = hud; AnimationHandler = animationHandler } }
+            let state = { state with Engine = engine; Scene = { this with HUD = hud; AnimationHandler = animationHandler } }
             let sounds =
                 state.SoundsToStartPlaying +
                 (effects 
@@ -129,7 +129,7 @@ type PlayScene = {
                     |> Set.ofSeq)
             let state, navigationEvent =
                 if this.HUD.Lives <= 0 then
-                    { state with Game = fst <| state.Game.ApplyCommand(PlayerCommand.Suspend) },
+                    { state with Engine = fst <| state.Engine.ApplyCommand(time, Pause) },
                     Some (NavigateTo Scene.GameOver)
                 else if InputProcessor.RestartKeyPressed input then
                     state, Some (NavigateTo Scene.Play)
@@ -139,7 +139,8 @@ type PlayScene = {
             { state with SoundsToStartPlaying = sounds }, navigationEvent
  
         member this.Draw(state: State) =
-            let game = state.Game
+            let engine = state.Engine
+            let game = engine.Game
             let sprites = state.U95Data.Sprites
             
             DrawSceneHelper.configureCamera
@@ -168,8 +169,8 @@ type PlayScene = {
 
             for i = 0 to sprites.Fishes.Length-1 do
                 let fish = sprites.Fishes[i]
-                let frameNumber = state.Game.Tick % fish.LeftDirection.Length
-                DrawTexture(fish.LeftDirection[frameNumber], 60*i, 60*i, Color.White)
+                let frameNumber = engine.ProcessedTicks % uint64 fish.LeftDirection.Length
+                DrawTexture(fish.LeftDirection[Checked.int frameNumber], 60*i, 60*i, Color.White)
                 
             for i = 0 to game.Bonuses.Length-1 do
                 let bonus = game.Bonuses[i]

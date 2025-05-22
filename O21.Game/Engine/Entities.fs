@@ -41,14 +41,14 @@ type Player = {
     member this.Can abilityType =
         this.Abilities |> Array.exists (fun a -> a.Type = abilityType)
 
-    member this.Update(playerEnv: PlayerEnv, timeDelta: int): PlayerEffect =
+    member this.Tick(playerEnv: PlayerEnv): PlayerEffect =
         let newPlayer =
             { this with
-                TopLeft = this.TopLeft + this.Velocity * timeDelta
-                ShotCooldown = max (this.ShotCooldown - timeDelta) 0
-                FreezeTime =  max (this.FreezeTime - timeDelta) 0
-                Oxygen = this.Oxygen.Update(timeDelta)
-                Abilities = this.Abilities |> Array.choose _.Update(timeDelta)
+                TopLeft = this.TopLeft + this.Velocity
+                ShotCooldown = max (this.ShotCooldown - 1) 0
+                FreezeTime =  max (this.FreezeTime - 1) 0
+                Oxygen = this.Oxygen.Tick()
+                Abilities = this.Abilities |> Array.choose _.Tick()
             }
         newPlayer.CheckState(playerEnv)
         
@@ -125,8 +125,8 @@ and OxygenStorage = {
     
     member this.IsEmpty = this.Amount < 0
     
-    member this.Update(timeDelta: int) =
-        let timer = this.Timer.Update(timeDelta)
+    member this.Tick() =
+        let timer = this.Timer.Tick()
         if timer.HasExpired then
             let newAmount =
                 if not this.IsEmpty then
@@ -134,7 +134,7 @@ and OxygenStorage = {
                 else GameRules.MaxOxygenUnits
             {                
                 Amount = newAmount
-                Timer = timer.Reset
+                Timer = timer.Reset()
             }
         else
             { this with
@@ -164,8 +164,8 @@ and Ability = {
         Lifetime = 0
     }
     
-    member this.Update(timeDelta: int): Ability Option =
-        let newLifetime = this.Lifetime + timeDelta
+    member this.Tick(): Ability Option =
+        let newLifetime = this.Lifetime + 1
         if newLifetime > GameRules.AbilityLifetime
             then None else Some { this with Lifetime = newLifetime }
 
@@ -200,31 +200,20 @@ type Bullet = {
         |> Array.map (fun v -> { bullet with Velocity = v })
 
     
-    member this.Update(level: Level, timeDelta: int): Bullet option =
-        // Check each intermediate position of the bullet for collision:
-        let maxTimeToProcessInOneStep =
-            if this.Velocity.X <> 0
-                then GameRules.BrickSize.X / Math.Abs(this.Velocity.X)
-                else GameRules.BrickSize.Y / Math.Abs(this.Velocity.Y)
-        if maxTimeToProcessInOneStep <= 0 then failwith "maxTimeToProcessInOneStep <= 0"
-        
-        let newLifetime = this.Lifetime + timeDelta
+    member this.Tick(level: Level): Bullet option =
+        let newLifetime = this.Lifetime + 1
 
-        if timeDelta <= maxTimeToProcessInOneStep then
-            let newTopLeft =
-                this.TopLeft +
-                Vector(this.Velocity.X * timeDelta, this.Velocity.Y * timeDelta)
-            let newBullet = { this with TopLeft = newTopLeft; Lifetime = newLifetime }
-            
-            if newLifetime > GameRules.BulletLifetime then None
-            else
-                match CheckCollision level newBullet.Box [||] with
-                | Collision.None -> Some newBullet
-                | _ -> None
+        let newTopLeft =
+            this.TopLeft +
+            Vector(this.Velocity.X, this.Velocity.Y)
+        let newBullet = { this with TopLeft = newTopLeft; Lifetime = newLifetime }
+
+        if newLifetime > GameRules.BulletLifetime then None
         else
-            this.Update(level, maxTimeToProcessInOneStep)
-            |> Option.bind _.Update(level, timeDelta - maxTimeToProcessInOneStep)
-            
+            match CheckCollision level newBullet.Box [||] with
+            | Collision.None -> Some newBullet
+            | _ -> None
+
 and BulletsPattern =
     | Circle of count: int
     
@@ -234,10 +223,10 @@ type Particle = {
 } with
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.ParticleSize }
     
-    member this.Update(level: Level, timeDelta: int): Particle option =
+    member this.Tick(level: Level): Particle option =
         let newPosition =
             this.TopLeft +
-            Vector(0, VerticalDirection.Up * this.Speed * timeDelta)
+            Vector(0, VerticalDirection.Up * this.Speed)
         let newParticle = { this with TopLeft = newPosition }
         match CheckCollision level newParticle.Box [||] with
         | Collision.OutOfBounds -> None
@@ -282,7 +271,7 @@ type Bomb = {
         
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.BombSize }
        
-    member this.Update(bombEnv: EnemyEnv, timeDelta: int): Bomb EnemyEffect =
+    member this.Tick(bombEnv: EnemyEnv): Bomb EnemyEffect =
         let level = bombEnv.Level
         let player = bombEnv.PlayerCollider
         let bullets = bombEnv.BulletColliders
@@ -301,23 +290,14 @@ type Bomb = {
             | Collision.None -> EnemyEffect.Update updated
             | _ -> EnemyEffect.Die
         | BombState.Active velocity ->
-            // Check each intermediate position of the bomb for collision:
-            let maxTimeToProcessInOneStep = GameRules.PlayerSize.Y / Math.Abs(velocity.Y)
-            if maxTimeToProcessInOneStep <= 0 then failwith "maxTimeToProcessInOneStep <= 0"
-            if timeDelta <= maxTimeToProcessInOneStep then
-                let newBomb =
-                    { this with
-                        TopLeft = this.TopLeft + velocity * timeDelta }
-                match CheckCollision level this.Box allEntities with
-                | Collision.CollidesObject _ -> EnemyEffect.PlayerHit this.Id
-                | Collision.None -> EnemyEffect.Update newBomb
-                | _ -> EnemyEffect.Die
-            else
-                let effect = this.Update(bombEnv, maxTimeToProcessInOneStep)
-                match effect with
-                | EnemyEffect.Update newBomb -> newBomb.Update(bombEnv, timeDelta - maxTimeToProcessInOneStep)
-                | _ -> effect
-            
+            let newBomb =
+                { this with
+                    TopLeft = this.TopLeft + velocity }
+            match CheckCollision level this.Box allEntities with
+            | Collision.CollidesObject _ -> EnemyEffect.PlayerHit this.Id
+            | Collision.None -> EnemyEffect.Update newBomb
+            | _ -> EnemyEffect.Die
+
 and [<RequireQualifiedAccess>] BombState =
     | Sleep of trigger: Trigger
     | Active of velocity: Vector

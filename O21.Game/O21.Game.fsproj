@@ -65,6 +65,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="Engine\ExternalEffect.fs" />
         <Compile Include="Engine\ParticlesSource.fs" />
         <Compile Include="Engine\GameEngine.fs" />
+        <Compile Include="Engine\TickEngine.fs" />
         <Compile Include="HUDRenderer.fs" />
         <Compile Include="Controls.fs" />
         <Compile Include="HUD.fs" />

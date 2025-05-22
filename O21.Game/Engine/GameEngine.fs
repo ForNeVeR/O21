@@ -10,15 +10,24 @@ open O21.Game.U95
 open O21.Game.Animations
 open O21.Game.Engine.Environments
 
-type Time = {
-    Total: float
-    Delta: float32
-}
+[<Struct>]
+type Instant =
+    { TotalSeconds: float }
+
+    member this.AddTicks(ticks: uint64): Instant =
+        let time = this
+        { time with TotalSeconds = this.TotalSeconds + 1.0 / GameRules.TicksPerSecond * float ticks }
+
+[<Struct>]
+type DeltaTime =
+    {
+        Total: float
+        Delta: float32
+    }
+
+    member this.ToInstant(): Instant = { TotalSeconds = this.Total }
 
 type GameEngine = {
-    StartTime: Time
-    Tick: int
-    SuspendedTick: int
     CurrentLevel: Level
     Player: Player
     Bullets: Bullet[]
@@ -26,13 +35,9 @@ type GameEngine = {
     Bombs: Bomb[]
     Bonuses: Bonus[]
     ParticlesSource: ParticlesSource
-    IsActive: bool
 } with
-    static member Create(time: Time, level: Level): GameEngine =
+    static member Create(level: Level): GameEngine =
         let engine = {
-            StartTime = time
-            Tick = 0
-            SuspendedTick = 0
             CurrentLevel = Level.Empty
             Player = Player.Default
             Bullets = Array.empty
@@ -40,33 +45,24 @@ type GameEngine = {
             Bombs = Array.empty
             Bonuses = Array.empty
             ParticlesSource = ParticlesSource.Default
-            IsActive = true
         }
         engine.ChangeLevel(level);
     
-    member this.Update(time: Time): GameEngine * ExternalEffect[] =
+    member this.Tick(): GameEngine * ExternalEffect[] =
         let (>->) = GameEngine.compose
-        let newTick = int <| (time.Total - this.StartTime.Total) * GameRules.TicksPerSecond
-        let timeDelta = newTick - this.Tick - this.SuspendedTick
-                                 
-        if not this.IsActive then { this with SuspendedTick = timeDelta + this.SuspendedTick }, Array.empty
-        else                     
-            let timeDelta = timeDelta
-            
-            let mainHandler: UpdateHandler = (GameEngine.UpdatePlayerWithoutEnemyCollisionHandler timeDelta)
-                                                    >-> GameEngine.UpdateBonusesHandler()
-                                                    >-> (GameEngine.UpdatePlayerHandler 0)
-                                                    >-> (GameEngine.UpdateEnemiesHandler timeDelta)
-                                                    >-> (GameEngine.UpdateBulletsHandler timeDelta)
-            let finalHandler =
-                (fun (engine: GameEngine) ->
-                    { engine with
-                        Tick = newTick
-                        ParticlesSource = this.ParticlesSource.Update(this.CurrentLevel, this.Player, timeDelta)
-                        SuspendedTick = 0
-                    }, [||])
-                
-            (mainHandler >-> finalHandler) this
+        let mainHandler: UpdateHandler =
+            GameEngine.UpdatePlayerWithoutEnemyCollisionHandler
+            >-> GameEngine.UpdateBonusesHandler
+            >-> GameEngine.UpdatePlayerHandler
+            >-> GameEngine.UpdateEnemiesHandler
+            >-> GameEngine.UpdateBulletsHandler
+        let finalHandler =
+            (fun (engine: GameEngine) ->
+                { engine with
+                    ParticlesSource = this.ParticlesSource.Tick(this.CurrentLevel, this.Player)
+                }, [||])
+
+        (mainHandler >-> finalHandler) this
             
             
     member this.GetPlayerEnv() : PlayerEnv =
@@ -197,9 +193,6 @@ type GameEngine = {
                     Bullets = Array.append this.Bullets (newBullets |> Seq.toArray) // TODO[#130]: Make more efficient (persistent vector?)
                 }, [| PlaySound SoundType.Shot |]
             else this, Array.empty
-        
-        | Suspend -> { this with IsActive = false }, Array.empty
-        | Activate -> { this with IsActive = true }, Array.empty
 
     static member private compose (upd1: UpdateHandler) (upd2: UpdateHandler) : UpdateHandler =
         fun (engine: GameEngine) ->
@@ -207,18 +200,18 @@ type GameEngine = {
             let engine, effects2 = upd2 engine
             engine, (Array.append effects1 effects2)
     
-    static member private UpdatePlayerWithoutEnemyCollisionHandler (timeDelta: int) : UpdateHandler =
+    static member private UpdatePlayerWithoutEnemyCollisionHandler : UpdateHandler =
         fun (engine: GameEngine) ->
             let playerEnv = { engine.GetPlayerEnv() with
                                 BombColliders = Array.empty
                                 FishColliders = Array.empty }
-            let effect = engine.Player.Update(playerEnv, timeDelta)
+            let effect = engine.Player.Tick(playerEnv)
             GameEngine.ProcessPlayerEffect(effect) engine
             
-    static member private UpdatePlayerHandler (timeDelta: int) : UpdateHandler =
+    static member private UpdatePlayerHandler : UpdateHandler =
         fun (engine: GameEngine) ->
             let playerEnv = engine.GetPlayerEnv()
-            let effect = engine.Player.Update(playerEnv, timeDelta)
+            let effect = engine.Player.Tick playerEnv
             GameEngine.ProcessPlayerEffect(effect) engine
             
     static member private ProcessPlayerEffect effect (engine: GameEngine) =
@@ -244,12 +237,12 @@ type GameEngine = {
             }, if engine.Player.Lives = 1 then effects |> Array.append [|PlaySound SoundType.GameOver|] else effects
             // TODO[#27]: Investigate if enemy collision should stop the player from moving
     
-    static member private UpdateEnemiesHandler (timeDelta: int) : UpdateHandler =
+    static member private UpdateEnemiesHandler : UpdateHandler =
         fun (engine: GameEngine) ->
             let enemyEnv = engine.GetEnemyEnv()
             let bombs, externalEffects =
                 engine.Bombs
-                |> Array.map _.Update(enemyEnv, timeDelta)
+                |> Array.map _.Tick(enemyEnv)
                 |> Array.map (GameEngine.ProcessEnemyEffect true)
                 |> Array.unzip
             let externalEffects = externalEffects |> Array.collect id
@@ -266,7 +259,7 @@ type GameEngine = {
                                                PlayAnimation (AnimationType.Die, EntityType.Enemy id) |]
         | EnemyEffect.Die -> None, Array.empty
         
-    static member private UpdateBonusesHandler() : UpdateHandler =
+    static member private UpdateBonusesHandler : UpdateHandler =
         fun (engine: GameEngine) ->
             let bonusEnv = engine.GetBonusEnv()
             let bonuses, externalEffects =
@@ -296,7 +289,7 @@ type GameEngine = {
         | BonusEffect.Update b ->
             Some b, Array.empty
             
-    static member private UpdateBulletsHandler (timeDelta: int): UpdateHandler =
+    static member private UpdateBulletsHandler: UpdateHandler =
         fun (engine: GameEngine) ->
             let level = engine.CurrentLevel
             let fromExplosiveBullets =
@@ -304,7 +297,7 @@ type GameEngine = {
                 |> Array.fold (fun acc b ->
                     if b.Explosive
                         then
-                            if b.Update(level, timeDelta).IsNone then
+                            if b.Tick(level).IsNone then
                                 Array.append acc
                                     (Bullet.SpawnBulletsInPattern (BulletsPattern.Circle 8)
                                         { b with
@@ -315,7 +308,7 @@ type GameEngine = {
                             acc) [||]
             { engine with
                 Bullets = Array.append
-                    (engine.Bullets |> Array.choose(_.Update(level, timeDelta)))
+                    (engine.Bullets |> Array.choose _.Tick(level))
                     fromExplosiveBullets } , [||]
 and
     UpdateResult = GameEngine * ExternalEffect[]

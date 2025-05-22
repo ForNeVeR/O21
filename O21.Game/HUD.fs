@@ -68,15 +68,15 @@ type HUD =
             if this.Pause then 
                 DrawTexture(texture, 262, 150, Color.White)
             
-        member this.SyncWithGame(gameEngine: GameEngine) =
+        member this.SyncWithGame(engine: TickEngine) =
             { this with
-                Lives = gameEngine.Player.Lives
-                Score = gameEngine.Player.Score
-                Oxy = gameEngine.Player.OxygenAmount
-                Pause = not gameEngine.IsActive
-                Level = gameEngine.CurrentLevel.Position
+                Lives = engine.Game.Player.Lives
+                Score = engine.Game.Player.Score
+                Oxy = engine.Game.Player.OxygenAmount
+                Pause = not engine.IsActive
+                Level = engine.Game.CurrentLevel.Position
                 Abilities = Array.init 5 (fun i ->
-                    gameEngine.Player.Abilities
+                    engine.Game.Player.Abilities
                     |> Array.exists (fun a -> a.Type = (enum i)))
             }
             

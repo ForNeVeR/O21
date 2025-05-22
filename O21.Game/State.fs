@@ -24,7 +24,7 @@ type Scene =
 type SceneEvent = NavigateTo of Scene
 
 type IScene =
-    abstract member Update: Input * Time * State -> State * SceneEvent option
+    abstract member Update: Input * DeltaTime * State -> State * SceneEvent option
     abstract member Draw: State -> unit
     abstract member Camera: Camera2D with get
 
@@ -34,6 +34,6 @@ and State = {
     U95Data: U95Data
     SoundsToStartPlaying: Set<SoundType>
     Language: Language
-    Game: GameEngine
+    Engine: TickEngine
     MusicPlayer: MusicPlayer option
 }
