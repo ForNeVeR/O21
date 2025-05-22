@@ -17,6 +17,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="Helpers.fs" />
         <Compile Include="GeometryUtilsTests.fs" />
         <Compile Include="GameEngineTests.fs" />
+        <Compile Include="TickEngineTests.fs" />
     </ItemGroup>
 
     <ItemGroup>

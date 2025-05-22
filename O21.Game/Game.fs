@@ -11,7 +11,6 @@ open System.Threading
 open System.Threading.Tasks
 open JetBrains.Lifetimes
 open O21.Game.Engine
-open Raylib_CSharp.Audio
 open Raylib_CSharp.Colors
 open type Raylib_CSharp.Raylib
 open type Raylib_CSharp.Time
@@ -35,7 +34,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         U95Data = data
         SoundsToStartPlaying = Set.empty
         Language = DefaultLanguage
-        Game = GameEngine.Create({ Total = GetTime(); Delta = GetFrameTime() }, data.Levels[GameRules.StartingLevel])
+        Engine = TickEngine.Create({ TotalSeconds = GetTime() }, data.Levels[GameRules.StartingLevel])
         MusicPlayer = None
     }
 
@@ -60,7 +59,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         
     member _.Restart(): unit =
         state <- { initialState with
-                    Game = GameEngine.Create({ Total = GetTime(); Delta = GetFrameTime() }, data.Levels[GameRules.StartingLevel])
+                    Engine = TickEngine.Create({ TotalSeconds = GetTime() }, data.Levels[GameRules.StartingLevel])
                     Language = state.Language }
 
     member this.Update() =
