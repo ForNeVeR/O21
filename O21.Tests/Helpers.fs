@@ -75,3 +75,6 @@ let getEntityPos entityKind i (engine: GameEngine)=
     | EntityKind.LifeBonus ->
         engine.Bonuses[i].TopLeft
     | _ -> System.ArgumentOutOfRangeException("Cannot get TopLeft position from entity") |> raise
+
+let EmptyLevel: Level =
+    createEmptyLevel GameRules.LevelSizeInTiles.X GameRules.LevelSizeInTiles.Y

@@ -14,9 +14,15 @@ open O21.Game.Engine.Environments
 type Instant =
     { TotalSeconds: float }
 
-    member this.AddTicks(ticks: uint64): Instant =
+    member this.AddSeconds(sec: float): Instant =
         let time = this
-        { time with TotalSeconds = this.TotalSeconds + 1.0 / GameRules.TicksPerSecond * float ticks }
+        { time with TotalSeconds = this.TotalSeconds + sec }
+
+    member this.AddTicks(ticks: uint64): Instant =
+        this.AddSeconds(1.0 / GameRules.TicksPerSecond * float ticks)
+
+    static member Zero: Instant = { TotalSeconds = 0.0 }
+    static member OfSeconds(sec: float): Instant = { TotalSeconds = sec }
 
 [<Struct>]
 type DeltaTime =
@@ -205,7 +211,7 @@ type GameEngine = {
             let playerEnv = { engine.GetPlayerEnv() with
                                 BombColliders = Array.empty
                                 FishColliders = Array.empty }
-            let effect = engine.Player.Tick(playerEnv)
+            let effect = engine.Player.CheckState(playerEnv)
             GameEngine.ProcessPlayerEffect(effect) engine
             
     static member private UpdatePlayerHandler : UpdateHandler =

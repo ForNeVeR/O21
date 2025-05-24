@@ -52,7 +52,7 @@ type Player = {
             }
         newPlayer.CheckState(playerEnv)
         
-    member private this.CheckState(playerEnv: PlayerEnv) =
+    member this.CheckState(playerEnv: PlayerEnv) =
         let level = playerEnv.Level
         let enemies = playerEnv.EnemyColliders |> Seq.toArray
         

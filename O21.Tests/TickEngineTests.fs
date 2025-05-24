@@ -4,35 +4,40 @@
 
 module O21.Tests.TickEngineTests
 
-open System
 open O21.Game.Engine
 open Xunit
 
+let private EmptyEngine = TickEngine.Create(Instant.Zero, Helpers.EmptyLevel)
+
 [<Fact>]
 let ``Time increment``(): unit =
-    let engine = TickEngine.Create()
-    let quarterOfTick = TimeSpan.FromSeconds(1.0) / GameRules.TicksPerSecond / 4.0
-    let engine = engine.Update quarterOfTick
-    Assert.Equal(quarterOfTick, engine.TotalTime)
-    Assert.Equal(0UL, engine.TotalTicks)
-    let engine = engine.Update quarterOfTick
-    Assert.Equal(quarterOfTick * 2.0, engine.TotalTime)
-    Assert.Equal(0UL, engine.TotalTicks)
+    let engine = EmptyEngine
+    let quarterOfTick = Instant.OfSeconds(1.0 / GameRules.TicksPerSecond / 4.0)
+    let engine, _ = engine.Update quarterOfTick
+    Assert.Equal(0UL, engine.ProcessedTicks)
+    let engine, _ = engine.Update(quarterOfTick.AddSeconds(quarterOfTick.TotalSeconds))
+    Assert.Equal(0UL, engine.ProcessedTicks)
 
 [<Fact>]
 let ``Single tick increment``(): unit =
-    let engine = TickEngine.Create()
-    let halfTick = TimeSpan.FromSeconds(1.0) / GameRules.TicksPerSecond / 2.0
-    let engine = engine.Update halfTick
-    Assert.Equal(0UL, engine.TotalTicks)
-    let engine = engine.Update halfTick
-    Assert.Equal(halfTick * 2.0, engine.TotalTime)
-    Assert.Equal(1UL, engine.TotalTicks)
+    let engine = EmptyEngine
+    let halfTick = Instant.OfSeconds(1.0 / GameRules.TicksPerSecond / 2.0)
+    let engine, _ = engine.Update halfTick
+    Assert.Equal(0UL, engine.ProcessedTicks)
+    let engine, _ = engine.Update(halfTick.AddSeconds(halfTick.TotalSeconds))
+    Assert.Equal(1UL, engine.ProcessedTicks)
 
 [<Fact>]
 let ``Multi-tick increment``(): unit =
-    let engine = TickEngine.Create()
-    let fiveTicks = TimeSpan.FromSeconds(1.0) / GameRules.TicksPerSecond * 5.0
-    let engine = engine.Update fiveTicks
-    Assert.Equal(fiveTicks, engine.TotalTime)
-    Assert.Equal(5UL, engine.TotalTicks)
+    let engine = EmptyEngine
+    let fiveTicks = Instant.OfSeconds(1.0 / GameRules.TicksPerSecond * 5.0)
+    let engine, _ = engine.Update fiveTicks
+    Assert.Equal(5UL, engine.ProcessedTicks)
+
+[<Fact>]
+let ``TickEngine increments last ticks when not active``(): unit =
+    let engine, _ = EmptyEngine.ApplyCommand(Instant.Zero, Pause)
+    Assert.False engine.IsActive
+    let unpauseTime = Instant.OfSeconds 100500.0
+    let engine, _ = engine.Update unpauseTime
+    Assert.Equal(unpauseTime, engine.LastProcessedTickTime)

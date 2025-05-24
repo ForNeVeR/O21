@@ -4,7 +4,6 @@
 
 module O21.Tests.GameEngineTests
 
-open System
 open O21.Game.U95
 open O21.Game.U95.Parser
 open Xunit
@@ -12,46 +11,25 @@ open Xunit
 open O21.Game.Engine
 open O21.Tests.Helpers
 
-let private frameUp time =
-    let mutable currentTime = time
-    fun (gameEngine: GameEngine) ->
-        let newTime = { Total = currentTime.Total + 0.1; Delta = 0.1f }
-        let gameEngine, _ = gameEngine.Update newTime
-        gameEngine
+let private frameUp(gameEngine: GameEngine) =
+    let newEngine, _ = gameEngine.Tick()
+    newEngine
 
-let private frameUpN time n gameEngine =
-    let mutable newTime = time
+let private frameUpN n gameEngine =
     let mutable gameEngine = gameEngine
-    for i in 1..n do
-        newTime <- { Total = newTime.Total + 0.1; Delta = 0.1f }
-        gameEngine <- frameUp newTime gameEngine
+    for _ in 1..n do
+        gameEngine <- frameUp gameEngine
     gameEngine
 
-let private timeZero = { Total = 0.0; Delta = 0.0f }
+let private newEngine = GameEngine.Create EmptyLevel
 
-let private emptyLevel = createEmptyLevel
-                                 GameRules.LevelSizeInTiles.X
-                                 GameRules.LevelSizeInTiles.Y
-let private newEngine = GameEngine.Create(timeZero, emptyLevel)
-
-module Ticks =
-
-    [<Fact>]
-    let ``GameEngine increments frame``(): unit =
-        let frameUp = frameUp timeZero
-        let gameEngine = newEngine
-        Assert.Equal(0, gameEngine.Tick)
-        let gameEngine = gameEngine |> frameUp
-        Assert.Equal(1, gameEngine.Tick)
-        
-    [<Fact>]
-    let ``GameEngine increments SuspendedTick when not active``(): unit =
-        let gameEngine = { frameUpN timeZero 100 newEngine with IsActive = false }
-        Assert.Equal(0, gameEngine.SuspendedTick)
-        let gameEngine = frameUpN timeZero 101 gameEngine
-        Assert.Equal(1, gameEngine.SuspendedTick)
-        
 module Timer =
+
+    let private tickN ticks (timer: GameTimer) =
+        let mutable timer = timer
+        for _ in 1..ticks do
+            timer <- timer.Tick()
+        timer
     
     [<Fact>]
     let ``GameTimer expired by period``(): unit =
@@ -59,7 +37,7 @@ module Timer =
         let timer = { GameTimer.Default with Period = period }
         
         Assert.False(timer.HasExpired)
-        let timer = timer.Update(period)
+        let timer = tickN period timer
         Assert.True(timer.HasExpired)
         
     [<Fact>]
@@ -69,7 +47,7 @@ module Timer =
         
         let timer = { GameTimer.Default with Period = period }
         Assert.Equal(timer.ExpirationCount, 0)
-        let timer = timer.Update(period * expirationCount + period - 1)
+        let timer = tickN (period * expirationCount + period - 1) timer
         Assert.Equal(timer.ExpirationCount, expirationCount)
     
     [<Fact>]
@@ -78,10 +56,9 @@ module Timer =
         let expirationCount = 10
         
         let timer = { GameTimer.Default with Period = period }
-                        .Update(period * expirationCount)
-                        .ResetN 5
-        Assert.Equal(timer.ExpirationCount, 5)
-        let timer = timer.Reset
+                    |> tickN(period * expirationCount)
+        Assert.Equal(timer.ExpirationCount, 10)
+        let timer = timer.Reset()
         Assert.Equal(timer.ExpirationCount, 0)
 
 module Movement =
@@ -89,9 +66,9 @@ module Movement =
     [<Fact>]
     let ``GameEngine reacts to the speed change``(): unit =
         let gameEngine = newEngine
-        let frameUp = frameUp timeZero
         Assert.Equal(GameRules.PlayerStartingPosition, gameEngine.Player.TopLeft)
         let gameEngine, _ = gameEngine.ApplyCommand <| VelocityDelta(Vector(1, 0))
+        Assert.Equal(GameRules.PlayerStartingPosition, gameEngine.Player.TopLeft)
         let gameEngine = frameUp gameEngine
         Assert.Equal(GameRules.PlayerStartingPosition + Vector(1, 0), gameEngine.Player.TopLeft)
 
@@ -107,7 +84,6 @@ module Shooting =
     [<Fact>]
     let ``GameEngine disallows to shoot faster``(): unit =
         let gameEngine = newEngine
-        let frameUp = frameUp timeZero
         let gameEngine, _ = gameEngine.ApplyCommand Shoot
         let gameEngine = frameUp gameEngine
         let gameEngine, _ = gameEngine.ApplyCommand Shoot
@@ -118,7 +94,7 @@ module Shooting =
         let gameEngine = newEngine
         let gameEngine, _ = gameEngine.ApplyCommand Shoot
         Assert.Single gameEngine.Bullets |> ignore
-        let gameEngine = frameUpN timeZero GameRules.ShotCooldownTicks gameEngine
+        let gameEngine = frameUpN GameRules.ShotCooldownTicks gameEngine
          // Don't hardcode the bullet count because I've no idea if the cooldown is more or less than the bullet lifetime,
          // and the test should not care either. Just verify that a new bullet has been added.
         let bulletCount = gameEngine.Bullets.Length
@@ -129,19 +105,19 @@ module Player =
     [<Fact>]
     let ``Moving towards a brick kills the player``(): unit =
         let level =
-            { emptyLevel with
+            { EmptyLevel with
                 LevelMap = [|
                     [| Empty; Brick 0 |]
                 |] }
         let player = { Player.Default with TopLeft = Point(GameRules.BrickSize.X - GameRules.PlayerSize.X, 0) }
-        let player' = player.Update(getEmptyPlayerEnvWithLevel level, 1)
+        let player' = player.Tick(getEmptyPlayerEnvWithLevel level)
         Assert.True(match player' with | PlayerEffect.Update _ -> true | _ -> false)
         
         let player = {
             player with
                 Velocity = Vector(1, 0) 
         }
-        let player' = player.Update(getEmptyPlayerEnvWithLevel level, 1)
+        let player' = player.Tick(getEmptyPlayerEnvWithLevel level)
         Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
         
     [<Theory>]
@@ -164,7 +140,7 @@ module Player =
                 GameEngine.Player.Velocity = Vector(0, 1) }
             
         let initialLives = engine.Player.Lives
-        let engine = engine |> frameUpN timeZero (dist + 1)
+        let engine = engine |> frameUpN (dist + 1)
         
         let actualLives = engine.Player.Lives
         
@@ -183,12 +159,11 @@ module OxygenSystem =
     [<Fact>]
     let ``Oxygen amount decreases over period``(): unit =
         let gameEngine = { newEngine with GameEngine.Player.TopLeft = Point(50, 50) }
-        let frameUp = frameUp timeZero
         let gameEngine = frameUp gameEngine
         let period = gameEngine.Player.Oxygen.Timer.Period
         
         let expected = gameEngine.Player.OxygenAmount - 1
-        let gameEngine = frameUpN timeZero period gameEngine
+        let gameEngine = frameUpN period gameEngine
         Assert.Equal(expected, gameEngine.Player.OxygenAmount)
         
     [<Fact>]
@@ -197,11 +172,11 @@ module OxygenSystem =
         let player = Player.Default
         
         let player = { player with Player.Oxygen.Amount = 1 }
-        let player' = player.Update(getEmptyPlayerEnvWithLevel level, 0);
+        let player' = player.Tick(getEmptyPlayerEnvWithLevel level)
         Assert.True(match player' with | PlayerEffect.Update _ -> true | _ -> false)
         
         let player = { player with Player.Oxygen.Amount = -1 }
-        let player' = player.Update(getEmptyPlayerEnvWithLevel level, 0)
+        let player' = player.Tick(getEmptyPlayerEnvWithLevel level)
         Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
         
 module ParticleSystem =
@@ -209,14 +184,13 @@ module ParticleSystem =
     [<Fact>]
     let ``Generator create particles by period``(): unit =
         let gameEngine = { newEngine with GameEngine.Player.TopLeft = Point(50, 50) }
-        let frameUp = frameUp timeZero
         let gameEngine = frameUp gameEngine
         let period = gameEngine.ParticlesSource.Timer.Period
         let timeElapsed = gameEngine.ParticlesSource.Timer.TimeElapsed
         
-        let gameEngine = frameUpN timeZero (period - timeElapsed - 1) gameEngine
+        let gameEngine = frameUpN (period - timeElapsed - 1) gameEngine
         let particlesCount = gameEngine.ParticlesSource.Particles.Length
-        let gameEngine = frameUpN timeZero period gameEngine
+        let gameEngine = frameUpN period gameEngine
         Assert.Equal(particlesCount + 1, gameEngine.ParticlesSource.Particles.Length)
        
     [<Theory>]
@@ -237,8 +211,7 @@ module ParticleSystem =
                         TopLeft = Point(50, 50) 
                 }
             }
-        let frameUp = frameUp timeZero
-        
+
         let gameEngine = frameUp { commonGameEngine with GameEngine.Player.Velocity = submarineSurfacing }       
         let expectedSpeed = GameRules.ParticleSpeed - submarineSurfacing.Y
         let actualSpeed = gameEngine.ParticlesSource.Particles[0].Speed
@@ -257,36 +230,42 @@ module Bullets =
             Velocity = Vector(GameRules.BulletVelocity, 0)
             Explosive = false
         }
-    
+
+    let private tickN n (bullet: Bullet) level =
+        let mutable bullet = Some bullet
+        for _ in 1..n do
+            bullet <- bullet |> Option.bind _.Tick(level)
+        bullet
+
     [<Fact>]
     let ``Bullet is destroyed on a brick collision``(): unit =
         let level =
-            { emptyLevel with
+            { EmptyLevel with
                 LevelMap = [|
                     [| Empty; Brick 0 |]
                 |] }
         let bullet = defaultBullet
         let ticksToMove = GameRules.BrickSize.X / GameRules.BulletVelocity
-        Assert.Equal(None, bullet.Update(level, ticksToMove))
+        Assert.Equal(None, tickN ticksToMove bullet level)
         
     [<Fact>]    
     let ``Bullet doesn't pierce through a brick``(): unit =
         let level =
-            { emptyLevel with
+            { EmptyLevel with
                 LevelMap = [|
                     [| Empty; Brick 0 |]
                 |] }
         let bullet = defaultBullet
         let ticksToMove = GameRules.BrickSize.X * 3 / GameRules.BulletVelocity
-        Assert.Equal(None, bullet.Update(level, ticksToMove))
+        Assert.Equal(None, tickN ticksToMove bullet level)
         
     [<Fact>]
     let ``Bullet is destroyed after the expiration of its lifetime``(): unit =
         let level = createEmptyLevel 1 1
         let bullet = defaultBullet
         let ticksToMove = GameRules.BulletLifetime
-        Assert.True(bullet.Update(level, ticksToMove).IsSome)      
-        Assert.Equal(None, bullet.Update(level, ticksToMove + 1))
+        Assert.True((tickN ticksToMove bullet level).IsSome)
+        Assert.Equal(None, tickN (ticksToMove + 1) bullet level)
         
     [<Theory>]
     [<InlineData("Left")>]
@@ -305,7 +284,6 @@ module Bullets =
                         TopLeft = Point(50, 50) 
                 }
             }
-        let frameUp = frameUp timeZero
         let bulletVelocity = Vector(direction * GameRules.BulletVelocity, 0)
         
         for velocity in submarineMoves do
@@ -340,8 +318,7 @@ module ScoreSystem =
         let initialPoints = engine.Player.Score
         
         let engine, _ = engine.ApplyCommand PlayerCommand.Shoot
-        let engine = engine |> frameUpN timeZero
-                                   ((enemyPosX - engine.Bullets[0].Box.TopRight.X) / GameRules.BulletVelocity + 1)
+        let engine = engine |> frameUpN ((enemyPosX - engine.Bullets[0].Box.TopRight.X) / GameRules.BulletVelocity + 1)
         let actualPoints = engine.Player.Score
         Assert.Equal(initialPoints + pointsForHit, actualPoints + GameRules.SubtractPointsForShot)
         
@@ -360,7 +337,7 @@ module ScoreSystem =
                   
         let initialPoints = engine.Player.Score
         
-        let engine = engine |> frameUpN timeZero 1
+        let engine = engine |> frameUp
         let actualPoints = engine.Player.Score
         Assert.Equal(initialPoints + pointsForPickup, actualPoints)
         
@@ -377,7 +354,7 @@ module ScoreSystem =
                   
         let initialLives = engine.Player.Lives
         
-        let engine = engine |> frameUpN timeZero 1
+        let engine = engine |> frameUp
         let actualLives = engine.Player.Lives
         Assert.Equal(initialLives + 1, actualLives)
     
@@ -394,7 +371,7 @@ module ScoreSystem =
                   
         let initialAbilities = engine.Player.Abilities.Length
         
-        let engine = engine |> frameUpN timeZero 1
+        let engine = engine |> frameUp
         let actualAbilities = engine.Player.Abilities.Length
         Assert.Equal(initialAbilities + 1, actualAbilities)
         
@@ -403,7 +380,7 @@ module Geometry =
     
     [<Fact>]
     let ``Out of bounds check``(): unit =
-        let level = emptyLevel
+        let level = EmptyLevel
         let box1 = { TopLeft = Point(-1, -1); Size = Vector(1, 1) }
         Assert.Equal(Collision.OutOfBounds, CheckCollision level box1 [||])
         
@@ -413,7 +390,7 @@ module Geometry =
     [<Fact>]
     let ``Brick collision check``(): unit =
         let level =
-            { emptyLevel with
+            { EmptyLevel with
                 LevelMap = [|
                     [| Empty; Brick 0 |]
                 |] }
