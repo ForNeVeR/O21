@@ -45,6 +45,7 @@ module private InputProcessor =
          direction
         
     let ProcessKeys(input: Input, time: DeltaTime, hud: HUD, engine: TickEngine) =
+        let time = time.ToInstant()
         if not engine.IsActive then
             if Set.contains Key.Pause input.Pressed then
                 engine.ApplyCommand(time, Unpause)
@@ -97,7 +98,7 @@ type PlayScene = {
     
     static member private UpdateEngine (input, time) (gameEngine, hud) =
         let game, inputEffects = InputProcessor.ProcessKeys(input, time, hud, gameEngine)
-        let game', updateEffects = game.Update time
+        let game', updateEffects = game.Update(time.ToInstant())
         game', Array.concat [inputEffects; updateEffects]
         
     static member private UpdateLevelOnRequest (engine: TickEngine) (effects: ExternalEffect[]) (levels: Map<LevelCoordinates, Level>) =
@@ -129,7 +130,7 @@ type PlayScene = {
                     |> Set.ofSeq)
             let state, navigationEvent =
                 if this.HUD.Lives <= 0 then
-                    { state with Engine = fst <| state.Engine.ApplyCommand(time, Pause) },
+                    { state with Engine = fst <| state.Engine.ApplyCommand(time.ToInstant(), Pause) },
                     Some (NavigateTo Scene.GameOver)
                 else if InputProcessor.RestartKeyPressed input then
                     state, Some (NavigateTo Scene.Play)

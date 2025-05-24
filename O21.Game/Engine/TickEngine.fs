@@ -24,32 +24,35 @@ type TickEngine =
         IsActive = true
     }
 
-    member this.Update(time: DeltaTime): TickEngine * ExternalEffect[] =
-        let secondsPassedSinceLastProcessedTick = time.Total - this.LastProcessedTickTime.TotalSeconds
-        let passedTicks = uint64(secondsPassedSinceLastProcessedTick * GameRules.TicksPerSecond)
-        let lastProcessedTickTime = this.LastProcessedTickTime.AddTicks passedTicks
+    member this.Update(time: Instant): TickEngine * ExternalEffect[] =
+        if this.IsActive then
+            let secondsPassedSinceLastProcessedTick = time.TotalSeconds - this.LastProcessedTickTime.TotalSeconds
+            let passedTicks = uint64(secondsPassedSinceLastProcessedTick * GameRules.TicksPerSecond)
+            let lastProcessedTickTime = this.LastProcessedTickTime.AddTicks passedTicks
 
-        let processTicks (engine: GameEngine) ticks =
-            let effects = ResizeArray()
-            let mutable engine = engine
-            for _ in 0UL..ticks do
-                let newEngine, newEffects = engine.Tick()
-                engine <- newEngine
-                effects.AddRange newEffects
+            let processTicks (engine: GameEngine) ticks =
+                let effects = ResizeArray()
+                let mutable engine = engine
+                for _ in 1UL..ticks do
+                    let newEngine, newEffects = engine.Tick()
+                    engine <- newEngine
+                    effects.AddRange newEffects
 
-            engine, Seq.toArray effects
+                engine, Seq.toArray effects
 
-        let engine, effects = processTicks this.Game passedTicks
-        { this with
-            LastProcessedTickTime = lastProcessedTickTime
-            ProcessedTicks = this.ProcessedTicks + passedTicks
-            Game = engine
-        }, effects
+            let engine, effects = processTicks this.Game passedTicks
+            { this with
+                LastProcessedTickTime = lastProcessedTickTime
+                ProcessedTicks = this.ProcessedTicks + passedTicks
+                Game = engine
+            }, effects
+        else
+            { this with LastProcessedTickTime = time }, Array.empty
 
-    member this.ApplyCommand(time: DeltaTime, command: GameCommand): TickEngine * ExternalEffect[] =
+    member this.ApplyCommand(time: Instant, command: GameCommand): TickEngine * ExternalEffect[] =
         match command with
         | Pause -> { this with IsActive = false }, Array.empty
-        | Unpause -> { this with IsActive = true; LastProcessedTickTime = time.ToInstant() }, Array.empty
+        | Unpause -> { this with IsActive = true; LastProcessedTickTime = time }, Array.empty
         | PlayerCommand command ->
             let engine, effects = this.Game.ApplyCommand command
             { this with Game = engine }, effects
