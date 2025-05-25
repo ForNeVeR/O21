@@ -211,13 +211,13 @@ type GameEngine = {
             let playerEnv = { engine.GetPlayerEnv() with
                                 BombColliders = Array.empty
                                 FishColliders = Array.empty }
-            let effect = engine.Player.CheckState(playerEnv)
+            let effect = engine.Player.Tick playerEnv
             GameEngine.ProcessPlayerEffect(effect) engine
             
     static member private UpdatePlayerHandler : UpdateHandler =
         fun (engine: GameEngine) ->
             let playerEnv = engine.GetPlayerEnv()
-            let effect = engine.Player.Tick playerEnv
+            let effect = engine.Player.CheckState playerEnv
             GameEngine.ProcessPlayerEffect(effect) engine
             
     static member private ProcessPlayerEffect effect (engine: GameEngine) =
