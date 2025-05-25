@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
@@ -24,7 +24,7 @@ type Scene =
 type SceneEvent = NavigateTo of Scene
 
 type IScene =
-    abstract member Update: Input * DeltaTime * State -> State * SceneEvent option
+    abstract member Update: Input * Instant * State -> State * SceneEvent option
     abstract member Draw: State -> unit
     abstract member Camera: Camera2D with get
 
