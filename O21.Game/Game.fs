@@ -13,7 +13,6 @@ open JetBrains.Lifetimes
 open O21.Game.Engine
 open Raylib_CSharp.Colors
 open type Raylib_CSharp.Raylib
-open type Raylib_CSharp.Time
 open type Raylib_CSharp.Rendering.Graphics
 
 open O21.Game.Localization.Translations
@@ -34,7 +33,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         U95Data = data
         SoundsToStartPlaying = Set.empty
         Language = DefaultLanguage
-        Engine = TickEngine.Create({ TotalSeconds = GetTime() }, data.Levels[GameRules.StartingLevel])
+        Engine = TickEngine.Create(Instant.Now(), data.Levels[GameRules.StartingLevel])
         MusicPlayer = None
     }
 
@@ -59,12 +58,12 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         
     member _.Restart(): unit =
         state <- { initialState with
-                    Engine = TickEngine.Create({ TotalSeconds = GetTime() }, data.Levels[GameRules.StartingLevel])
+                    Engine = TickEngine.Create(Instant.Now(), data.Levels[GameRules.StartingLevel])
                     Language = state.Language }
 
     member this.Update() =
         let input = Input.Handle(state.Scene.Camera)
-        let time = { Total = GetTime(); Delta = GetFrameTime() }
+        let time = Instant.Now()
 
         pumpQueue()
 

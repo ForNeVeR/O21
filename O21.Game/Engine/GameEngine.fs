@@ -9,6 +9,7 @@ open Microsoft.FSharp.Collections
 open O21.Game.U95
 open O21.Game.Animations
 open O21.Game.Engine.Environments
+open Raylib_CSharp
 
 [<Struct>]
 type Instant =
@@ -24,14 +25,7 @@ type Instant =
     static member Zero: Instant = { TotalSeconds = 0.0 }
     static member OfSeconds(sec: float): Instant = { TotalSeconds = sec }
 
-[<Struct>]
-type DeltaTime =
-    {
-        Total: float
-        Delta: float32
-    }
-
-    member this.ToInstant(): Instant = { TotalSeconds = this.Total }
+    static member Now(): Instant = Instant.OfSeconds(Time.GetTime())
 
 type GameEngine = {
     CurrentLevel: Level
