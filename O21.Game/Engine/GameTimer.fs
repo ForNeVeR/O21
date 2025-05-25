@@ -11,10 +11,7 @@ type GameTimer = {
     Period: int
 } with
     member this.HasExpired = this.TimeElapsed >= this.Period
-    member this.ExpirationCount =
-        if this.Period > 0 then this.TimeElapsed / this.Period
-        else 0
-    
+
     member this.Tick() =
         let newElapsed = this.TimeElapsed + 1
         let timer = this

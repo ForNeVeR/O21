@@ -41,25 +41,15 @@ module Timer =
         Assert.True(timer.HasExpired)
         
     [<Fact>]
-    let ``GameTimer can expire many times``(): unit =
-        let period = 10
-        let expirationCount = 10
-        
-        let timer = { GameTimer.Default with Period = period }
-        Assert.Equal(timer.ExpirationCount, 0)
-        let timer = tickN (period * expirationCount + period - 1) timer
-        Assert.Equal(timer.ExpirationCount, expirationCount)
-    
-    [<Fact>]
     let ``GameTimer resetting``(): unit =
         let period = 10
         let expirationCount = 10
         
         let timer = { GameTimer.Default with Period = period }
                     |> tickN(period * expirationCount)
-        Assert.Equal(timer.ExpirationCount, 10)
+        Assert.True timer.HasExpired
         let timer = timer.Reset()
-        Assert.Equal(timer.ExpirationCount, 0)
+        Assert.False timer.HasExpired
 
 module Movement =
 
