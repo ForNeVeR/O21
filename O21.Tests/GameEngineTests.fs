@@ -180,7 +180,7 @@ module ParticleSystem =
         
         let gameEngine = frameUpN (period - timeElapsed - 1) gameEngine
         let particlesCount = gameEngine.ParticlesSource.Particles.Length
-        let gameEngine = frameUpN period gameEngine
+        let gameEngine = frameUp gameEngine
         Assert.Equal(particlesCount + 1, gameEngine.ParticlesSource.Particles.Length)
        
     [<Theory>]
