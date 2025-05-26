@@ -4,6 +4,7 @@
 
 namespace O21.Game.Animations
 
+open System
 open O21.Game
 open O21.Game.Engine
 open O21.Game.U95
@@ -18,28 +19,32 @@ type PlayerAnimation = {
         {
             Sprites = data.Sprites.Player
             AnimationQueue = []
-            MovementAnimation = Animation.Init(data.Sprites.Player.Right, LoopTime.Infinity, 0)
+            MovementAnimation = Animation.Init(data.Sprites.Player.Right, LoopTime.Infinity, 0UL, AnimationDirection.Forward)
         }
-        
-    member private this.MovementAnimationSpeedRange = Array.concat [|
-                                                            (Array.rev [|-GameRules.MaxPlayerVelocity..(-1)|])
-                                                            [|0|]
-                                                            (Array.rev [|1..GameRules.MaxPlayerVelocity|]) |]
         
     member private this.UpdateMovementAnimation(player: Player) (tick: uint64)=
         let sprites =
             match player.Direction with
                 | Left -> this.Sprites.Left
                 | Right -> this.Sprites.Right
+        let velocity = player.Velocity.X |> (Math.Abs >> uint64)
         { this.MovementAnimation.Update(tick).Value with
             Frames = sprites
-            TicksPerFrame = Array.get this.MovementAnimationSpeedRange (player.Velocity.X + GameRules.MaxPlayerVelocity) }
+            TicksPerFrame =
+                if velocity = 0UL
+                    then 0UL
+                    else uint64 (GameRules.MaxPlayerVelocity + 1) - velocity
+            Direction =
+                if player.Velocity.X < 0
+                    then AnimationDirection.Backward
+                    else AnimationDirection.Forward }
         
-    member private this.ExplosionAnimation(tick: uint64) =
+    member private this.ExplosionAnimation(tick: uint64): Animation =
         {
             Frames = this.Sprites.Explosion
             LoopTime = LoopTime.Count 1
-            TicksPerFrame = 2
+            Direction = AnimationDirection.Forward
+            TicksPerFrame = 2UL
             CurrentFrame = (0, tick)
         }
 

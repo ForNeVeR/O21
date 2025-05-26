@@ -313,6 +313,46 @@ module ScoreSystem =
         Assert.Equal(initialPoints + pointsForHit, actualPoints + GameRules.SubtractPointsForShot)
         
     [<Theory>]
+    [<InlineData("default", GameRules.SubtractPointsForShot)>]
+    [<InlineData("with explosive", GameRules.SubtractPointsForShotByExplosiveBullet + GameRules.SubtractPointsForShot)>]
+    let ``Subtract points for shot``(bType, subtract): unit =
+        let level = createEmptyLevel 1 1
+        
+        let engine = newEngine.ChangeLevel(level)
+        let engine =
+            { engine with
+                GameEngine.Player.TopLeft = Point(0, 0)
+                GameEngine.Player.Score = 100 }
+                  
+        let initialPoints = engine.Player.Score
+        
+        let engine =
+            match bType with
+            | "default" -> engine
+            | "with explosive" -> { engine with Player = engine.Player |> giveAbilities [| AbilityType.ExplosiveBullet |] }
+            | _ -> failwith "Unknown bullet type"
+        
+        let engine, _ = engine.ApplyCommand PlayerCommand.Shoot
+        let engine = engine |> frameUp
+        let actualPoints = engine.Player.Score
+        Assert.Equal(initialPoints - subtract, actualPoints)
+        
+    [<Fact>]
+    let ``Scores cannot less than 0``(): unit =
+        let level = createEmptyLevel 1 1
+        
+        let engine = newEngine.ChangeLevel(level)
+        let engine =
+            { engine with
+                GameEngine.Player.TopLeft = Point(0, 0)
+                GameEngine.Player.Score = 0 }
+                        
+        let engine, _ = engine.ApplyCommand PlayerCommand.Shoot
+        let engine = engine |> frameUp
+        let actualPoints = engine.Player.Score
+        Assert.True(actualPoints >= 0, "Score cannot be less than 0")
+        
+    [<Theory>]
     [<InlineData(EntityKind.StaticBonus, GameRules.GivePointsForStaticBonus)>]
     [<InlineData(EntityKind.Lifebuoy, GameRules.GivePointsForLifebuoy)>]
     let ``Adding points for pickup bonus`` (bonus, pointsForPickup): unit =

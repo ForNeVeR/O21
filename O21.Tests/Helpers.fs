@@ -78,3 +78,7 @@ let getEntityPos entityKind i (engine: GameEngine)=
 
 let EmptyLevel: Level =
     createEmptyLevel GameRules.LevelSizeInTiles.X GameRules.LevelSizeInTiles.Y
+
+let giveAbilities (abilities: AbilityType[]) (player: Player) =
+    { player with
+        Abilities = (abilities |> Array.map Ability.CreateAbility) }

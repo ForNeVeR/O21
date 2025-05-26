@@ -187,9 +187,11 @@ type GameEngine = {
                                     if player.Can AbilityType.BulletZeroCooldown
                                         then GameRules.ShotCooldownTicksWithZeroCooldownAbility
                                         else GameRules.ShotCooldownTicks
-                                Score = player.Score
+                                Score =
+                                    Math.Max(
+                                        player.Score
                                         - GameRules.SubtractPointsForShot
-                                        - subtractPointsForExplosiveBullet }
+                                        - subtractPointsForExplosiveBullet, 0) }
                     Bullets = Array.append this.Bullets (newBullets |> Seq.toArray) // TODO[#130]: Make more efficient (persistent vector?)
                 }, [| PlaySound SoundType.Shot |]
             else this, Array.empty

@@ -19,35 +19,55 @@ type AnimationState =
     | Playing = 0
     | PlayingReversing = 1
     | Stopped = 2
-    
+
+[<RequireQualifiedAccess>]
+type AnimationDirection =
+    | Forward
+    | Backward
+
 type Animation = {
     Frames: Texture2D[]
     LoopTime: LoopTime
-    TicksPerFrame: int
+    Direction: AnimationDirection
+    TicksPerFrame: uint64
     CurrentFrame: int * uint64
 } with
-    static member Init(frames: Texture2D[], loop:LoopTime, ticksPerFrame: int) =
+    static member Init(frames: Texture2D[], loop: LoopTime, ticksPerFrame: uint64, direction: AnimationDirection) =
         {
             Frames = frames
             LoopTime = loop
+            Direction = direction
             TicksPerFrame = ticksPerFrame
             CurrentFrame = (0, 0UL)
         }
         
     member this.GetState =
         let ticks = this.TicksPerFrame
-        if ticks = 0 then AnimationState.Stopped
-        else if ticks > 0 then AnimationState.Playing
+        if ticks = 0UL then AnimationState.Stopped
+        else if ticks > 0UL then AnimationState.Playing
         else AnimationState.PlayingReversing
     
     member this.Update(currentTick: uint64) =
-        if this.TicksPerFrame = 0 then Some this
+        if this.TicksPerFrame = 0UL then Some this
         else
             let frame, frameTick = this.CurrentFrame
             let elapsed = (currentTick - frameTick)
             let frame, frameTick =
-                if elapsed >= uint64 this.TicksPerFrame then
-                    frame + Math.Clamp(this.TicksPerFrame, -1, 1), currentTick
+                if elapsed >= this.TicksPerFrame then
+                    let frame =
+                        if frame = this.Frames.Length then
+                            match this.Direction with
+                            | AnimationDirection.Forward -> 0
+                            | AnimationDirection.Backward -> frame - 1
+                        elif frame = -1 then
+                            match this.Direction with
+                            | AnimationDirection.Backward -> this.Frames.Length - 1
+                            | AnimationDirection.Forward -> frame + 1
+                        else
+                            match this.Direction with
+                            | AnimationDirection.Forward -> frame + 1
+                            | AnimationDirection.Backward -> frame - 1
+                    frame, currentTick
                 else
                     frame, frameTick
             match this.LoopTime with

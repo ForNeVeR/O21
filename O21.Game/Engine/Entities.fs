@@ -164,6 +164,11 @@ and Ability = {
         Lifetime = 0
     }
     
+    static member CreateAbility(abilityType: AbilityType) = {
+        Type = abilityType
+        Lifetime = 0
+    }
+    
     member this.Tick(): Ability Option =
         let newLifetime = this.Lifetime + 1
         if newLifetime > GameRules.AbilityLifetime
