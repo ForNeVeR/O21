@@ -33,7 +33,7 @@ type PlayerAnimation = {
             TicksPerFrame =
                 if velocity = 0UL
                     then 0UL
-                    else uint64 (GameRules.MaxPlayerVelocity + 1) - velocity
+                    else Checked.uint64 (GameRules.MaxPlayerVelocity + 1) - velocity
             Direction =
                 if player.Velocity.X < 0
                     then AnimationDirection.Backward
