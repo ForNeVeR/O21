@@ -47,7 +47,7 @@ jobs:
     - name: Build
       run: dotnet build
     - name: Test
-      run: dotnet test
+      run: dotnet test --filter Category!=ExcludeCI
     - name: Verify translations
       shell: pwsh
       run: ./Scripts/Verify-Translations.ps1

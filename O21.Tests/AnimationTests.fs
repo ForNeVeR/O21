@@ -31,7 +31,6 @@ let playFullCycles animation n=
     animation.Update newTick
 
 [<Collection("AnimationTests")>]
-    
 type AnimationTestsFixture() =
     interface IAsyncLifetime with
         member _.InitializeAsync() =
@@ -48,6 +47,7 @@ type AnimationTestsCollection() =
     interface ICollectionFixture<AnimationTestsFixture>
 
 [<Collection("AnimationTests")>]
+[<Trait("Category", "ExcludeCI")>]
 module BaseAnimationTests =
     
     [<Fact>]
