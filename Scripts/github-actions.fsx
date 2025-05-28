@@ -89,7 +89,7 @@ let workflows = [
             )
             step(
                 name = "Test",
-                run = "dotnet test"
+                run = "dotnet test --filter Category!=ExcludeCI"
             )
             step(
                 name = "Verify translations",
