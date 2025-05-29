@@ -167,11 +167,13 @@ type PlayScene = {
                 let sprite = sprites.Bombs[bomb.Id % sprites.Bombs.Length]
                 DrawTexture(sprite.LeftDirection[0], bomb.TopLeft.X, bomb.TopLeft.Y, Color.White)
 
-            for i = 0 to sprites.Fishes.Length-1 do
-                let fish = sprites.Fishes[i]
-                let frameNumber = engine.ProcessedTicks % uint64 fish.LeftDirection.Length
-                DrawTexture(fish.LeftDirection[Checked.int frameNumber], 60*i, 60*i, Color.White)
-                
+            for fish in game.Fishes do
+                let (Point(x, y)) = fish.TopLeft
+                let sprite = sprites.Fishes[fish.Type]
+                let frameNumber = engine.ProcessedTicks % uint64 sprite.LeftDirection.Length
+                let directionalTexture = sprite.Direction fish.Direction
+                DrawTexture(directionalTexture[Checked.int frameNumber], x, y, Color.White)
+
             for i = 0 to game.Bonuses.Length-1 do
                 let bonus = game.Bonuses[i]
                 match bonus.Type with

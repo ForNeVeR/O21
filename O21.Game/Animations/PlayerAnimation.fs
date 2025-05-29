@@ -25,8 +25,8 @@ type PlayerAnimation = {
     member private this.UpdateMovementAnimation(player: Player) (tick: uint64)=
         let sprites =
             match player.Direction with
-                | Left -> this.Sprites.Left
-                | Right -> this.Sprites.Right
+                | HorizontalDirection.Left -> this.Sprites.Left
+                | HorizontalDirection.Right -> this.Sprites.Right
         let velocity = player.Velocity.X |> (Math.Abs >> uint64)
         { this.MovementAnimation.Update(tick).Value with
             Frames = sprites

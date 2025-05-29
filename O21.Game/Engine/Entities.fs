@@ -7,6 +7,7 @@ namespace O21.Game.Engine
 open System
 open System.Linq
 open Microsoft.FSharp.Core
+open O21.Game
 open O21.Game.Engine.Environments
 open O21.Game.U95
 open O21.Game.Engine.Geometry

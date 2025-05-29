@@ -5,6 +5,7 @@
 module O21.Game.Engine.GameRules
 
 open System
+open O21.Game
 open O21.Game.U95
 
 // ----------------------- Screen Constants -----------------------
