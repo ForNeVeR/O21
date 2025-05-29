@@ -4,6 +4,8 @@
 
 namespace O21.Game.Engine
 
+open O21.Game
+
 [<Struct>]
 type Point =
     | Point of int * int
@@ -42,15 +44,6 @@ type Box =
 type Trigger =
     | VerticalTrigger of X:int
     | HorizontalTrigger of Y:int
-
-[<Struct>]
-type HorizontalDirection =
-    | Left
-    | Right
-    static member (*) (direction: HorizontalDirection, value: int) =
-        match direction with
-        | Left -> -value
-        | Right -> value
 
 [<Struct>]
 type VerticalDirection =

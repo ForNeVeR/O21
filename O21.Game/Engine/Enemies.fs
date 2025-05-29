@@ -5,6 +5,7 @@
 namespace O21.Game.Engine
 
 open System
+open O21.Game
 open O21.Game.Engine.Environments
 open O21.Game.Engine.Geometry
 open O21.Game.U95

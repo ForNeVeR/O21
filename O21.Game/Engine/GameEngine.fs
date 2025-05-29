@@ -6,6 +6,7 @@ namespace O21.Game.Engine
 
 open System
 open Microsoft.FSharp.Collections
+open O21.Game
 open O21.Game.U95
 open O21.Game.Animations
 open O21.Game.Engine.Environments
