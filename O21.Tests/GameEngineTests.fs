@@ -21,7 +21,7 @@ let private frameUpN n gameEngine =
         gameEngine <- frameUp gameEngine
     gameEngine
 
-let private newEngine = GameEngine.Create(DefaultRandom, EmptyLevel)
+let private newEngine = GameEngine.Create(DefaultRandom, EmptyLevel, spawnEnemies = false)
 
 module Timer =
 

@@ -36,8 +36,9 @@ type GameEngine = {
     Bombs: Bomb[]
     Bonuses: Bonus[]
     ParticlesSource: ParticlesSource
+    SpawnEnemies: bool // for tests
 } with
-    static member Create(random: ReproducibleRandom, level: Level): GameEngine =
+    static member Create(random: ReproducibleRandom, level: Level, ?spawnEnemies: bool): GameEngine =
         let engine = {
             Random = random
             CurrentLevel = Level.Empty
@@ -47,6 +48,7 @@ type GameEngine = {
             Bombs = Array.empty
             Bonuses = Array.empty
             ParticlesSource = ParticlesSource.Default
+            SpawnEnemies = Option.defaultValue true spawnEnemies
         }
         engine.ChangeLevel(level);
     
@@ -129,9 +131,8 @@ type GameEngine = {
             { this.Player with
                 TopLeft = this.Player.TopLeft % Point(GameRules.LevelWidth, GameRules.LevelHeight) }
 
-        let random, fishes = Fish.SpawnOnLevelEntry(this.Random, level, player)
+        let fishes = if this.SpawnEnemies then Fish.SpawnOnLevelEntry(this.Random, level, player) else Array.empty
         { this with
-            Random = random
             CurrentLevel = level
             Player = player
             Bombs = bombs

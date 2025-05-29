@@ -116,6 +116,10 @@ let FishSizes = [|Vector(25, 25); Vector(25, 25); Vector(25, 25); Vector(25, 25)
 let BombSize = Vector(20, 20)
 let BonusSize = Vector(30, 30)
 
+// ------------------------------ Enemy Constants ------------------------------
+let FishKinds: int = FishSizes.Length
+let LevelEntryFishSpawnProbability: float = 0.00363 // 0.363%
+
 // ----------------------- Functions -----------------------
 
 /// Relative position of the bullet sprite's top left corner to the player sprite's top corner (from the shooting side)

@@ -33,12 +33,37 @@ type Fish = {
         Direction = HorizontalDirection.Right
     }
 
+    static member private Random(position, random: ReproducibleRandom) = {
+        TopLeft = position
+        Type = random.NextExcluding GameRules.FishKinds
+        Velocity = Vector(0, 0) // TODO[#27]: Fish movement
+        Direction = if random.NextBool() then HorizontalDirection.Left else HorizontalDirection.Right
+    }
+
     static member SpawnOnLevelEntry(
         random: ReproducibleRandom,
         level: Level,
         player: Player
-    ): ReproducibleRandom * Fish[] =
-        random, Array.empty
+    ): Fish[] =
+
+        let playerExclusiveZones =
+            let box = player.Box
+            {
+                TopLeft = Point(0, box.TopLeft.Y)
+                Size = Vector(GameRules.LevelWidth, box.Size.Y)
+            }
+        let allowedToSpawn(fish: Fish) =
+            CheckCollision level fish.Box [| playerExclusiveZones |] = Collision.None
+
+        [|
+            // TODO: Pick the actual level size instead of hardcoding here. In the future, we might wish to have levels
+            // of different sizes in the same game. This will require the level to be aware of its contents, though.
+            for x in 0 .. GameRules.BrickSize.X .. GameRules.LevelWidth - 1 do
+                for y in 0 .. GameRules.BrickSize.Y .. GameRules.LevelHeight - 1 do
+                    let fish = Fish.Random(Point(x, y), random)
+                    if allowedToSpawn fish && random.Chance GameRules.LevelEntryFishSpawnProbability then
+                        yield fish
+        |]
 
 type Bomb = {
     Id: int
