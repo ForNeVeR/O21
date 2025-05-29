@@ -83,5 +83,5 @@ let giveAbilities (abilities: AbilityType[]) (player: Player) =
     { player with
         Abilities = (abilities |> Array.map Ability.CreateAbility) }
 
-let DefaultRandom: ReproducibleRandom =
+let DefaultRandom(): ReproducibleRandom =
     ReproducibleRandom.FromSeed 0
