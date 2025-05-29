@@ -16,6 +16,7 @@ SPDX-License-Identifier: MIT
     <ItemGroup>
         <Compile Include="AnimationTests.fs" />
         <Compile Include="Helpers.fs" />
+        <Compile Include="EnemyTests.fs" />
         <Compile Include="GeometryUtilsTests.fs" />
         <Compile Include="GameEngineTests.fs" />
         <Compile Include="TickEngineTests.fs" />
