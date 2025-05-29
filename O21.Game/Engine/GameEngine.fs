@@ -28,6 +28,7 @@ type Instant =
     static member Now(): Instant = Instant.OfSeconds(Time.GetTime())
 
 type GameEngine = {
+    Random: ReproducibleRandom
     CurrentLevel: Level
     Player: Player
     Bullets: Bullet[]
@@ -36,8 +37,9 @@ type GameEngine = {
     Bonuses: Bonus[]
     ParticlesSource: ParticlesSource
 } with
-    static member Create(level: Level): GameEngine =
+    static member Create(random: ReproducibleRandom, level: Level): GameEngine =
         let engine = {
+            Random = random
             CurrentLevel = Level.Empty
             Player = Player.Default
             Bullets = Array.empty
@@ -126,14 +128,16 @@ type GameEngine = {
         let player =
             { this.Player with
                 TopLeft = this.Player.TopLeft % Point(GameRules.LevelWidth, GameRules.LevelHeight) }
-        
+
+        let random, fishes = Fish.SpawnOnLevelEntry(this.Random, level, player)
         { this with
+            Random = random
             CurrentLevel = level
             Player = player
             Bombs = bombs
             Bonuses = Array.collect id [| bonuses; lifebuoy; lifeBonus |]
             Bullets = Array.empty
-            Fishes = Array.empty
+            Fishes = fishes
             ParticlesSource = ParticlesSource.Default }
 
     member this.ApplyCommand(command: PlayerCommand): GameEngine * ExternalEffect[] =

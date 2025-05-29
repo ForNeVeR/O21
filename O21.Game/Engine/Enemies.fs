@@ -7,6 +7,7 @@ namespace O21.Game.Engine
 open System
 open O21.Game.Engine.Environments
 open O21.Game.Engine.Geometry
+open O21.Game.U95
 
 [<RequireQualifiedAccess>]
 type EnemyEffect<'e> =
@@ -31,6 +32,13 @@ type Fish = {
         Velocity = Vector(0, 0)
         Direction = HorizontalDirection.Right
     }
+
+    static member SpawnOnLevelEntry(
+        random: ReproducibleRandom,
+        level: Level,
+        player: Player
+    ): ReproducibleRandom * Fish[] =
+        random, Array.empty
 
 type Bomb = {
     Id: int
