@@ -17,10 +17,10 @@ type TickEngine =
         IsActive: bool
     }
 
-    static member Create(startTime: Instant, level: Level): TickEngine = {
+    static member Create(startTime: Instant, random: ReproducibleRandom, level: Level): TickEngine = {
         LastProcessedTickTime = startTime
         ProcessedTicks = 0UL
-        Game = GameEngine.Create(level)
+        Game = GameEngine.Create(random, level)
         IsActive = true
     }
 

@@ -26,14 +26,16 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
     let context = new QueueSynchronizationContext(eventQueue)
     let prevContext = SynchronizationContext.Current
     do SynchronizationContext.SetSynchronizationContext(context)
-    
+
+    let newRandom() = ReproducibleRandom.FromSeed(ReproducibleRandom.ChooseRandomSeed())
+
     let initialState = {
         Scene = MainMenuScene.Init(window, content, data)
         Settings = { SoundVolume = 0.1f }
         U95Data = data
         SoundsToStartPlaying = Set.empty
         Language = DefaultLanguage
-        Engine = TickEngine.Create(Instant.Now(), data.Levels[GameRules.StartingLevel])
+        Engine = TickEngine.Create(Instant.Now(), newRandom(), data.Levels[GameRules.StartingLevel])
         MusicPlayer = None
     }
 
@@ -58,7 +60,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         
     member _.Restart(): unit =
         state <- { initialState with
-                    Engine = TickEngine.Create(Instant.Now(), data.Levels[GameRules.StartingLevel])
+                    Engine = TickEngine.Create(Instant.Now(), newRandom(), data.Levels[GameRules.StartingLevel])
                     Language = state.Language }
 
     member this.Update() =

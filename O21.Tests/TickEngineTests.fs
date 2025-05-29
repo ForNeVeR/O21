@@ -7,7 +7,7 @@ module O21.Tests.TickEngineTests
 open O21.Game.Engine
 open Xunit
 
-let private EmptyEngine = TickEngine.Create(Instant.Zero, Helpers.EmptyLevel)
+let private EmptyEngine = TickEngine.Create(Instant.Zero, Helpers.DefaultRandom, Helpers.EmptyLevel)
 
 [<Fact>]
 let ``Time increment``(): unit =
