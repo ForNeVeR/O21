@@ -1,5 +1,6 @@
 module O21.Tests.EnemyTests
 
+open O21.Game
 open O21.Game.Engine
 open Xunit
 
@@ -13,18 +14,18 @@ let ``Basic fish get spawned on level``(): unit =
         [| { TopLeft = Point (60, 240)
              Type = 1
              Velocity = Vector (0, 0)
-             Direction = Right }
+             Direction = HorizontalDirection.Right }
            { TopLeft = Point (72, 252)
              Type = 3
              Velocity = Vector (0, 0)
-             Direction = Left }
+             Direction = HorizontalDirection.Left }
            { TopLeft = Point (240, 204)
              Type = 2
              Velocity = Vector (0, 0)
-             Direction = Left }
+             Direction = HorizontalDirection.Left }
            { TopLeft = Point (528, 192)
              Type = 4
              Velocity = Vector (0, 0)
-             Direction = Left } |],
+             Direction = HorizontalDirection.Left } |],
         fish
     )
