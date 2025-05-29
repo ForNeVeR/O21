@@ -61,6 +61,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="Engine\Geometry.fs" />
         <Compile Include="Engine\Environments.fs" />
         <Compile Include="Engine\Entities.fs" />
+        <Compile Include="Engine\Enemies.fs" />
         <Compile Include="Engine\PlayerCommand.fs" />
         <Compile Include="Engine\ExternalEffect.fs" />
         <Compile Include="Engine\ParticlesSource.fs" />
