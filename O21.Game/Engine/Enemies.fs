@@ -15,6 +15,8 @@ type EnemyEffect<'e> =
     | Update of 'e
     | PlayerHit of id: int
     | Die
+    /// For enemies that leave the screen without being destroyed.
+    | Despawn
 
 type Fish = {
     TopLeft: Point
@@ -24,8 +26,20 @@ type Fish = {
 } with
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.FishSizes[this.Type] }
 
-    member this.Update(fishEnv: EnemyEnv, timeDelta: int): Fish EnemyEffect = // TODO[#27]: Fish behavior
-        EnemyEffect.Die
+    member this.Tick(fishEnv: EnemyEnv): Fish EnemyEffect =
+        let newPosition = this.TopLeft + this.Velocity
+        let newFish = { this with TopLeft = newPosition }
+        match CheckCollision fishEnv.Level newFish.Box Array.empty with // TODO[#27]: Player and bullet collision
+        | Collision.None -> EnemyEffect.Update newFish
+        | Collision.OutOfBounds -> EnemyEffect.Despawn
+        | Collision.CollidesBrick ->
+            // TODO[#27]: Fish behavior: up/down
+            // TODO[#27]: Fish behavior: turn
+            // TODO[#27]: Fish behavior: randomize speed
+            EnemyEffect.Update this
+        | Collision.CollidesObject count ->
+            // TODO[#27]: Player and bullet collision
+            EnemyEffect.Update newFish
 
     static member Default = {
         TopLeft = Point(0, 0)
@@ -34,12 +48,14 @@ type Fish = {
         Direction = HorizontalDirection.Right
     }
 
-    static member private Random(position, random: ReproducibleRandom) = {
-        TopLeft = position
-        Type = random.NextExcluding GameRules.FishKinds
-        Velocity = Vector(0, 0) // TODO[#27]: Fish movement
-        Direction = if random.NextBool() then HorizontalDirection.Left else HorizontalDirection.Right
-    }
+    static member private Random(position, random: ReproducibleRandom) =
+        let direction = if random.NextBool() then HorizontalDirection.Left else HorizontalDirection.Right
+        {
+            TopLeft = position
+            Type = random.NextExcluding GameRules.FishKinds
+            Velocity = Vector(direction * GameRules.FishBaseVelocity, 0)
+            Direction = direction
+        }
 
     static member SpawnOnLevelEntry(
         random: ReproducibleRandom,

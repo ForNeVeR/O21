@@ -48,7 +48,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="U95\Background.fs" />
         <Compile Include="U95\HUDSprites.fs" />
         <Compile Include="U95\BonusSprites.fs" />
-        <Compile Include="U95\Fish.fs" />
+        <Compile Include="U95\FishSprite.fs" />
         <Compile Include="U95\NeExeFile.fs" />
         <Compile Include="U95\Sprites.fs" />
         <Compile Include="U95\Sound.fs" />
