@@ -8,7 +8,7 @@ open O21.Game
 open type Raylib_CSharp.Raylib
 open Raylib_CSharp.Textures
 
-type Fish =
+type FishSprite =
     {
         Width: int
         Height: int
