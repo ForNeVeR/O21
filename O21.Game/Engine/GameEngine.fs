@@ -248,15 +248,21 @@ type GameEngine = {
     static member private UpdateEnemiesHandler : UpdateHandler =
         fun (engine: GameEngine) ->
             let enemyEnv = engine.GetEnemyEnv()
-            let bombs, externalEffects =
+            let bombs, bombEffects =
                 engine.Bombs
                 |> Array.map _.Tick(enemyEnv)
-                |> Array.map (GameEngine.ProcessEnemyEffect true)
+                |> Array.map (fun x -> GameEngine.ProcessEnemyEffect(true, x))
                 |> Array.unzip
-            let externalEffects = externalEffects |> Array.collect id
-            { engine with Bombs = Array.choose id bombs }, externalEffects
+            let fish, fishEffects =
+                engine.Fishes
+                |> Array.map _.Tick(enemyEnv)
+                |> Array.map (fun x -> GameEngine.ProcessEnemyEffect(false, x))
+                |> Array.unzip
+            let externalEffects = Array.concat [| bombEffects; fishEffects |] |> Array.collect id
+            { engine with Bombs = Array.choose id bombs
+                          Fishes = Array.choose id fish }, externalEffects
             
-    static member private ProcessEnemyEffect isStationary effect =
+    static member private ProcessEnemyEffect<'a>(isStationary: bool, effect: EnemyEffect<'a>): 'a option * ExternalEffect[] =
         let soundTypeDestroyed =
             if isStationary
                 then SoundType.StationaryEnemyDestroyed
@@ -265,8 +271,9 @@ type GameEngine = {
         | EnemyEffect.Update enemy -> Some enemy, Array.empty
         | EnemyEffect.PlayerHit id -> None, [| PlaySound soundTypeDestroyed
                                                PlayAnimation (AnimationType.Die, EntityType.Enemy id) |]
-        | EnemyEffect.Die -> None, Array.empty
-        
+        | EnemyEffect.Die -> None, Array.empty // TODO: death animation
+        | EnemyEffect.Despawn -> None, Array.empty
+
     static member private UpdateBonusesHandler : UpdateHandler =
         fun (engine: GameEngine) ->
             let bonusEnv = engine.GetBonusEnv()
