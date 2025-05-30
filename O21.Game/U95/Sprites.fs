@@ -9,7 +9,6 @@ open System.Threading.Tasks
 
 open JetBrains.Lifetimes
 open Oddities.Resources
-open Raylib_CSharp
 open type Raylib_CSharp.Raylib
 
 open O21.Game
@@ -36,8 +35,8 @@ type Sprites = {
     Bricks: Map<int, Texture2D>
     Background: Texture2D[]
     TitleScreenBackground: Texture2D
-    Fishes: Fish[]
-    Bombs: Fish[]
+    Fishes: FishSprite[]
+    Bombs: FishSprite[]
     Player: PlayerSprites
     Bullet: Texture2D
     ExplosiveBullet: Texture2D
@@ -76,17 +75,17 @@ module Sprites =
             CreateSprite lt backgroundGraphics[i]
         )
         
-    let private createFish lt (index: int) (fishGraphics: Dib[]): Fish =
+    let private createFish lt (index: int) (fishGraphics: Dib[]): FishSprite =
         let shift = index * 9
         {
             Width = fishGraphics[index * 9].Width
             Height = fishGraphics[index * 9].Height
             
-            LeftDirection = Array.init 8 (fun i ->
+            RightDirection = Array.init 8 (fun i ->
                 CreateTransparentSprite lt fishGraphics[shift + i + 45] fishGraphics[shift + i]
             )
             
-            RightDirection = Array.init 8 (fun i ->
+            LeftDirection = Array.init 8 (fun i ->
                 CreateTransparentSprite lt fishGraphics[shift + i + 135] fishGraphics[shift + i + 90]
             )
             
@@ -123,12 +122,12 @@ module Sprites =
             |]
         }
                
-    let private loadFishes lt (fishGraphics: Dib[]): Fish[] =
+    let private loadFishes lt (fishGraphics: Dib[]): FishSprite[] =
         Array.init (fishGraphics.Length / 36) ( fun i ->
             createFish lt i fishGraphics
         )
         
-    let private loadBombs lt (bombsGraphics: Dib[]): Fish[] =
+    let private loadBombs lt (bombsGraphics: Dib[]): FishSprite[] =
         Array.init 5 (fun i ->
             createBomb lt i bombsGraphics
         )
