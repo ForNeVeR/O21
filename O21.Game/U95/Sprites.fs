@@ -12,7 +12,6 @@ open Oddities.Resources
 open type Raylib_CSharp.Raylib
 
 open O21.Game
-open O21.Game.U95.Fish
 open O21.Game.TextureUtils
 open Raylib_CSharp.Textures
 
@@ -35,8 +34,8 @@ type Sprites = {
     Bricks: Map<int, Texture2D>
     Background: Texture2D[]
     TitleScreenBackground: Texture2D
-    Fishes: FishSprite[]
-    Bombs: FishSprite[]
+    Fishes: FishSprites[]
+    Bombs: FishSprites[]
     Player: PlayerSprites
     Bullet: Texture2D
     ExplosiveBullet: Texture2D
@@ -75,7 +74,7 @@ module Sprites =
             CreateSprite lt backgroundGraphics[i]
         )
         
-    let private createFish lt (index: int) (fishGraphics: Dib[]): FishSprite =
+    let private createFish lt (index: int) (fishGraphics: Dib[]): FishSprites =
         let shift = index * 9
         {
             Width = fishGraphics[index * 9].Width
@@ -122,12 +121,12 @@ module Sprites =
             |]
         }
                
-    let private loadFishes lt (fishGraphics: Dib[]): FishSprite[] =
+    let private loadFishes lt (fishGraphics: Dib[]): FishSprites[] =
         Array.init (fishGraphics.Length / 36) ( fun i ->
             createFish lt i fishGraphics
         )
         
-    let private loadBombs lt (bombsGraphics: Dib[]): FishSprite[] =
+    let private loadBombs lt (bombsGraphics: Dib[]): FishSprites[] =
         Array.init 5 (fun i ->
             createBomb lt i bombsGraphics
         )
