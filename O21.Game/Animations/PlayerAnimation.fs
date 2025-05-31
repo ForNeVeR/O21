@@ -13,13 +13,13 @@ open O21.Game.U95
 type PlayerAnimation = {
     Sprites: PlayerSprites
     AnimationQueue: Animation list
-    MovementAnimation: Animation
+    Movement: Animation
 } with
     static member Init(data: U95Data) =
         {
             Sprites = data.Sprites.Player
             AnimationQueue = []
-            MovementAnimation = Animation.Init(data.Sprites.Player.Right, LoopTime.Infinity, 0UL, AnimationDirection.Forward)
+            Movement = Animation.Init(data.Sprites.Player.Right, LoopTime.Infinity, 0UL, AnimationDirection.Forward)
         }
         
     member private this.UpdateMovementAnimation(player: Player) (tick: uint64)=
@@ -28,7 +28,7 @@ type PlayerAnimation = {
                 | HorizontalDirection.Left -> this.Sprites.Left
                 | HorizontalDirection.Right -> this.Sprites.Right
         let velocity = player.Velocity.X |> (Math.Abs >> uint64)
-        { this.MovementAnimation.Update(tick).Value with
+        { this.Movement.Update(tick).Value with
             Frames = sprites
             TicksPerFrame =
                 if velocity = 0UL
@@ -39,8 +39,8 @@ type PlayerAnimation = {
                     then AnimationDirection.Backward
                     else AnimationDirection.Forward }
         
-    member private this.ExplosionAnimation(tick: uint64): Animation =
-        {
+    member private this.ExplosionAnimation(tick: uint64): Animation Lazy =
+        lazy {
             Frames = this.Sprites.Explosion
             LoopTime = LoopTime.Count 1
             Direction = AnimationDirection.Forward
@@ -59,13 +59,13 @@ type PlayerAnimation = {
                 | Some updated -> updated :: this.AnimationQueue.Tail
             
         if Array.contains AnimationType.Die animations then
-            queue <- this.ExplosionAnimation tick :: queue
+            queue <- (this.ExplosionAnimation tick).Value :: queue
             
         { this with
             AnimationQueue = queue
-            MovementAnimation = this.UpdateMovementAnimation player tick }
+            Movement = this.UpdateMovementAnimation player tick }
 
     member this.Draw(state: State) =
         match this.AnimationQueue with
-        | [] -> this.MovementAnimation.Draw(state.Engine.Game.Player.TopLeft)
+        | [] -> this.Movement.Draw(state.Engine.Game.Player.TopLeft)
         | anim :: _ -> anim.Draw(state.Engine.Game.Player.TopLeft)
