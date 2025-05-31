@@ -77,9 +77,10 @@ SPDX-License-Identifier: MIT
         <Compile Include="DrawSceneHelper.fs" />
         
         <Compile Include="Animations\Animation.fs" />
-        
         <Compile Include="Animations\PlayerAnimation.fs" />
-        
+        <Compile Include="Animations\FishAnimation.fs" />
+        <Compile Include="Animations\BombAnimation.fs" />
+        <Compile Include="Animations\LifebuoyAnimation.fs" />
         <Compile Include="Animations\AnimationHandler.fs" />
 
         <Compile Include="Scenes\Button.fs" />
