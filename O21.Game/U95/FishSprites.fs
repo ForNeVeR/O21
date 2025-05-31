@@ -2,13 +2,13 @@
 //
 // SPDX-License-Identifier: MIT
 
-namespace O21.Game.U95.Fish
+namespace O21.Game.U95
 
 open O21.Game
 open type Raylib_CSharp.Raylib
 open Raylib_CSharp.Textures
 
-type FishSprite =
+type FishSprites =
     {
         Width: int
         Height: int
