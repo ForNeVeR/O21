@@ -86,31 +86,3 @@ type Level = {
         member this.BombsCoordinates() = this.EntitiesCoordinatesLazy.Value.Bombs
         
         member this.StaticBonusesCoordinates() = this.EntitiesCoordinatesLazy.Value.Bonuses
-        member this.GetRandomEmptyPosition eps =
-            let height = this.LevelMap.Length
-            let width = this.LevelMap[0].Length
-
-            let isWithinBounds i j =
-                i >= 0 && i < height && j >= 0 && j < width
-
-            let isSurroundingEmpty i j =
-                let offsets = [|-eps..eps|]
-                offsets |> Array.forall (fun di ->
-                    offsets |> Array.forall (fun dj ->
-                        let ni, nj = i + di, j + dj
-                        isWithinBounds ni nj && this.LevelMap[ni].[nj].IsEmpty
-                    )
-                )
-            
-            let validEmptyPositions = ResizeArray()
-            
-            this.LevelMap
-            |> Array.iteri (fun i row ->
-                row
-                |> Array.iteri (fun j e ->
-                    if e.IsEmpty && isSurroundingEmpty i j then
-                        validEmptyPositions.Add (j, i)
-                    ))
-
-            if validEmptyPositions.Count = 0
-                then None else Some (Seq.randomChoice validEmptyPositions)

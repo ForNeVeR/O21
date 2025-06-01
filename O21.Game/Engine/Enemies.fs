@@ -13,12 +13,13 @@ open O21.Game.U95
 [<RequireQualifiedAccess>]
 type EnemyEffect<'e> =
     | Update of 'e
-    | PlayerHit of id: int
+    | PlayerHit of id: Guid
     | Die
     /// For enemies that leave the screen without being destroyed.
     | Despawn
 
 type Fish = {
+    Id: Guid
     TopLeft: Point
     Type: int
     Velocity: Vector
@@ -42,6 +43,7 @@ type Fish = {
             EnemyEffect.Update newFish
 
     static member Default = {
+        Id = Guid.Empty
         TopLeft = Point(0, 0)
         Type = 0
         Velocity = Vector(0, 0)
@@ -51,6 +53,7 @@ type Fish = {
     static member private Random(position, random: ReproducibleRandom) =
         let direction = if random.NextBool() then HorizontalDirection.Left else HorizontalDirection.Right
         {
+            Id = Guid.NewGuid()
             TopLeft = position
             Type = random.NextExcluding GameRules.FishKinds
             Velocity = Vector(direction * GameRules.FishBaseVelocity, 0)
@@ -83,13 +86,15 @@ type Fish = {
         |]
 
 type Bomb = {
-    Id: int
+    Id: Guid
+    Type: int
     TopLeft: Point
     State: BombState
 } with
-    static member Create(position: Point) =
+    static member Create (random: ReproducibleRandom) (position: Point)=
         {
-            Id = Random.Shared.Next(1, 1000000)
+            Id = Guid.NewGuid()
+            Type = random.NextExcluding GameRules.BombKinds
             TopLeft = position
             State = BombState.Sleep(VerticalTrigger(position.X + GameRules.BombTriggerOffset))
         }

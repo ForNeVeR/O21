@@ -82,7 +82,7 @@ type PlayScene = {
         HUD = HUD.Init()
         Content = content
         Window = window
-        AnimationHandler = AnimationHandler.Init data
+        AnimationHandler = AnimationHandler.Init data.Sprites
         Camera = Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
     }
 
@@ -161,18 +161,6 @@ type PlayScene = {
             game.Bullets |> Seq.iter(fun b ->
                 PlayScene.DrawBullet (if b.Explosive then sprites.ExplosiveBullet else sprites.Bullet) b)
             game.ParticlesSource.Particles |> Seq.iter(PlayScene.DrawParticle sprites.BubbleParticle)
-            
-            for i = 0 to game.Bombs.Length-1 do
-                let bomb = game.Bombs[i]
-                let sprite = sprites.Bombs[bomb.Id % sprites.Bombs.Length]
-                DrawTexture(sprite.LeftDirection[0], bomb.TopLeft.X, bomb.TopLeft.Y, Color.White)
-
-            for fish in game.Fishes do
-                let (Point(x, y)) = fish.TopLeft
-                let sprite = sprites.Fishes[fish.Type]
-                let frameNumber = engine.ProcessedTicks % uint64 sprite.LeftDirection.Length
-                let directionalTexture = sprite.Direction fish.Direction
-                DrawTexture(directionalTexture[Checked.int frameNumber], x, y, Color.White)
 
             for i = 0 to game.Bonuses.Length-1 do
                 let bonus = game.Bonuses[i]
@@ -184,8 +172,7 @@ type PlayScene = {
                 | BonusType.Life ->
                     let sprite = sprites.Bonuses.LifeBonus
                     DrawTexture(sprite, bonus.TopLeft.X, bonus.TopLeft.Y, Color.White)
-                | BonusType.Lifebuoy ->
-                    let sprite = sprites.Bonuses.Lifebuoy[0]
-                    DrawTexture(sprite, bonus.TopLeft.X, bonus.TopLeft.Y, Color.White)
+                | _ ->
+                    ()
 
-            this.HUD.Render(sprites.HUD, this.Content) // Always draw the HUD on last layer
+            this.HUD.Render(sprites.HUD, this.Content) // Always draw the HUD on the last layer

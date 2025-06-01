@@ -3,18 +3,22 @@
 // SPDX-License-Identifier: MIT
 module O21.Tests.Helpers
 
+open System
 open O21.Game.Engine
 open O21.Game.U95
 open O21.Game.Engine.Environments
 open O21.Game.U95.Parser
 
-type EntityKind =
+type EntityKindEnum =
     | Player = 0
     | Fish = 1
     | Bomb = 2
     | StaticBonus = 3
     | Lifebuoy = 4
     | LifeBonus = 5
+
+let DefaultRandom(): ReproducibleRandom =
+    ReproducibleRandom.FromSeed 0
 
 let getEmptyPlayerEnvWithLevel (level: Level) =
     {
@@ -36,43 +40,43 @@ let spawnEntity entityKind levelCoords engine =
     let position = levelCoords |> GameRules.GetLevelPosition engine.CurrentLevel
     
     match entityKind with
-    | EntityKind.Player ->
+    | EntityKindEnum.Player ->
         { engine with
             GameEngine.Player.TopLeft = position
         }
-    | EntityKind.Fish ->
+    | EntityKindEnum.Fish ->
         { engine with
             Fishes = Array.append engine.Fishes [| { Fish.Default with TopLeft = position } |]
         }
-    | EntityKind.Bomb ->
+    | EntityKindEnum.Bomb ->
         { engine with
-            Bombs = Array.append engine.Bombs [| Bomb.Create position |]
+            Bombs = Array.append engine.Bombs [| Bomb.Create (DefaultRandom()) position |]
         }
-    | EntityKind.StaticBonus ->
+    | EntityKindEnum.StaticBonus ->
         { engine with
-            Bonuses = Array.append engine.Bonuses [| Bonus.CreateRandomStaticBonus position |]
+            Bonuses = Array.append engine.Bonuses [| Bonus.CreateRandomStaticBonus (DefaultRandom()) position |]
         }
-    | EntityKind.Lifebuoy ->
+    | EntityKindEnum.Lifebuoy ->
         { engine with
-            Bonuses = Array.append engine.Bonuses [| { TopLeft = position; Type = BonusType.Lifebuoy } |]
+            Bonuses = Array.append engine.Bonuses [| Bonus.Create(position, BonusType.Lifebuoy) |]
         }
-    | EntityKind.LifeBonus ->
+    | EntityKindEnum.LifeBonus ->
         { engine with
-            Bonuses = Array.append engine.Bonuses [| { TopLeft = position; Type = BonusType.Life } |]
+            Bonuses = Array.append engine.Bonuses [| Bonus.Create(position, BonusType.Life) |]
         }
-    | _ -> System.ArgumentOutOfRangeException("Cannot spawn this entity exist") |> raise
+    | _ -> ArgumentOutOfRangeException("Cannot spawn this entity exist") |> raise
     
 let getEntityPos entityKind i (engine: GameEngine)=
     match entityKind with
-    | EntityKind.Player ->
+    | EntityKindEnum.Player ->
         engine.Player.TopLeft
-    | EntityKind.Fish ->
+    | EntityKindEnum.Fish ->
         engine.Fishes[i].TopLeft
-    | EntityKind.Bomb ->
+    | EntityKindEnum.Bomb ->
         engine.Bombs[i].TopLeft
-    | EntityKind.StaticBonus
-    | EntityKind.Lifebuoy
-    | EntityKind.LifeBonus ->
+    | EntityKindEnum.StaticBonus
+    | EntityKindEnum.Lifebuoy
+    | EntityKindEnum.LifeBonus ->
         engine.Bonuses[i].TopLeft
     | _ -> System.ArgumentOutOfRangeException("Cannot get TopLeft position from entity") |> raise
 
@@ -82,6 +86,3 @@ let EmptyLevel: Level =
 let giveAbilities (abilities: AbilityType[]) (player: Player) =
     { player with
         Abilities = (abilities |> Array.map Ability.CreateAbility) }
-
-let DefaultRandom(): ReproducibleRandom =
-    ReproducibleRandom.FromSeed 0

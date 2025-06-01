@@ -1,6 +1,7 @@
 namespace O21.Game.Engine
 
 open System
+open O21.Game.U95
 
 type ReproducibleRandom private (backend: Random) = // TODO: Not really reproducible for now. Make it so.
     /// Creates a reproducible instance that's guaranteed
@@ -24,3 +25,38 @@ type ReproducibleRandom private (backend: Random) = // TODO: Not really reproduc
 
     member _.Chance(probability: float): bool =
         backend.NextDouble() < probability
+        
+    member _.RandomChoice<'a> (choices: seq<'a>): 'a =
+        if Seq.isEmpty choices then
+            failwith "Cannot choose a random element from an empty sequence."
+        let index = backend.Next(Seq.length choices)
+        Seq.item index choices
+
+    member _.GetRandomEmptyPosition (level: Level) eps =
+        let height = level.LevelMap.Length
+        let width = level.LevelMap[0].Length
+
+        let isWithinBounds i j =
+            i >= 0 && i < height && j >= 0 && j < width
+
+        let isSurroundingEmpty i j =
+            let offsets = [|-eps..eps|]
+            offsets |> Array.forall (fun di ->
+                offsets |> Array.forall (fun dj ->
+                    let ni, nj = i + di, j + dj
+                    isWithinBounds ni nj && level.LevelMap[ni].[nj].IsEmpty
+                )
+            )
+        
+        let validEmptyPositions = ResizeArray()
+        
+        level.LevelMap
+        |> Array.iteri (fun i row ->
+            row
+            |> Array.iteri (fun j e ->
+                if e.IsEmpty && isSurroundingEmpty i j then
+                    validEmptyPositions.Add (j, i)
+                ))
+
+        if validEmptyPositions.Count = 0
+            then None else Some (Seq.randomChoice validEmptyPositions)

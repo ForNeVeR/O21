@@ -1,5 +1,6 @@
 module O21.Tests.EnemyTests
 
+open System
 open O21.Game
 open O21.Game.Engine
 open O21.Game.Engine.Environments
@@ -11,21 +12,27 @@ let ``Basic fish get spawned on level``(): unit =
     let level = Helpers.EmptyLevel
     let player = Player.Default
     let random = ReproducibleRandom.FromSeed 412
-    let fish = Fish.SpawnOnLevelEntry(random, level, player)
+    let fish =
+        Fish.SpawnOnLevelEntry(random, level, player)
+        |> Array.map (fun f -> { f with Id = Guid.Empty }) // Ignore IDs for comparison
     Assert.Equal<Fish>(
-        [| { TopLeft = Point (60, 240)
+        [| { Id = Guid.Empty
+             TopLeft = Point (60, 240)
              Type = 0
              Velocity = Vector (4, 0)
              Direction = HorizontalDirection.Right }
-           { TopLeft = Point (72, 252)
+           { Id = Guid.Empty
+             TopLeft = Point (72, 252)
              Type = 2
              Velocity = Vector (-4, 0)
              Direction = HorizontalDirection.Left }
-           { TopLeft = Point (240, 204)
+           { Id = Guid.Empty
+             TopLeft = Point (240, 204)
              Type = 2
              Velocity = Vector (-4, 0)
              Direction = HorizontalDirection.Left }
-           { TopLeft = Point (528, 192)
+           { Id = Guid.Empty
+             TopLeft = Point (528, 192)
              Type = 3
              Velocity = Vector (-4, 0)
              Direction = HorizontalDirection.Left } |],
@@ -41,6 +48,7 @@ let private DefaultEnemyEnv = {
 [<Fact>]
 let ``Fish should move forward``(): unit =
     let fish1 = {
+        Id = Guid.NewGuid()
         TopLeft = Point(60, 240)
         Type = 1
         Velocity = Vector(GameRules.FishBaseVelocity, 0)
@@ -53,6 +61,7 @@ let ``Fish should move forward``(): unit =
 [<Fact>]
 let ``Fish should stop when sees a wall``(): unit =
     let fish1 = {
+        Id = Guid.NewGuid()
         TopLeft = Point(GameRules.BrickSize.X, 0)
         Type = 1
         Velocity = Vector(-GameRules.FishBaseVelocity, 0)

@@ -56,14 +56,15 @@ SPDX-License-Identifier: MIT
         <Compile Include="U95\Level.fs" />
         <Compile Include="U95\U95Data.fs" />
         <Compile Include="AnimationType.fs" />
+        <Compile Include="Engine\ReproducibleRandom.fs" />
         <Compile Include="Engine\GameTimer.fs" />
         <Compile Include="Engine\GameField.fs" />
         <Compile Include="Engine\GameRules.fs" />
         <Compile Include="Engine\Geometry.fs" />
         <Compile Include="Engine\Environments.fs" />
         <Compile Include="Engine\Entities.fs" />
-        <Compile Include="Engine\ReproducibleRandom.fs" />
         <Compile Include="Engine\Enemies.fs" />
+        <Compile Include="Engine\EntityInfo.fs" />
         <Compile Include="Engine\PlayerCommand.fs" />
         <Compile Include="Engine\ExternalEffect.fs" />
         <Compile Include="Engine\ParticlesSource.fs" />
@@ -78,8 +79,9 @@ SPDX-License-Identifier: MIT
         
         <Compile Include="Animations\Animation.fs" />
         <Compile Include="Animations\PlayerAnimation.fs" />
-        <Compile Include="Animations\FishAnimation.fs" />
-        <Compile Include="Animations\BombAnimation.fs" />
+        <Compile Include="Animations\FishAnimations.fs" />
+        <Compile Include="Animations\BombAnimations.fs" />
+        <Compile Include="Animations\OnDyingAnimation.fs" />
         <Compile Include="Animations\LifebuoyAnimation.fs" />
         <Compile Include="Animations\AnimationHandler.fs" />
 

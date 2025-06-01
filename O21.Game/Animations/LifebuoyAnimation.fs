@@ -7,35 +7,32 @@ namespace O21.Game.Animations
 open O21.Game
 open O21.Game.Engine
 open O21.Game.U95
-open O21.Game.U95.Fish
 open Raylib_CSharp.Textures
 
 type LifebuoyAnimation = {
     Sprites: Texture2D[]
-    AnimationQueue: Animation list
     Idle: Animation
 } with
-    static member Init(data: U95Data) = 
-        let sprites = data.Sprites.Bonuses.Lifebuoy
+    static member private SetCorrectSequence (sprites: Texture2D[]) =
+        Array.collect id [|
+            Array.take 2 sprites
+            Array.skip 4 sprites |> Array.take 8
+            Array.skip 2 sprites |> Array.take 2
+        |]
+    
+    static member Init(data: Sprites) = 
+        let sprites =
+            data.Bonuses.Lifebuoy
+            |> LifebuoyAnimation.SetCorrectSequence
         {
             Sprites = sprites
-            AnimationQueue = []
-            Idle = Animation.Init(sprites, LoopTime.Infinity, 0UL, AnimationDirection.Forward)
+            Idle = Animation.Init(sprites, LoopTime.Infinity, 1UL, AnimationDirection.Forward)
         }
 
-    member this.Update(state: State, animations: AnimationType[]) =
-        let tick = state.Engine.ProcessedTicks
-        let mutable queue =
-            if this.AnimationQueue.IsEmpty then []
-            else
-                match this.AnimationQueue.Head.Update tick with
-                | None -> this.AnimationQueue.Tail
-                | Some updated -> updated :: this.AnimationQueue.Tail
-        
+    member this.Update(engine: TickEngine) =
+        let tick = engine.ProcessedTicks
         { this with
-            AnimationQueue = queue }
+            Idle = (this.Idle.Update tick).Value }
 
     member this.Draw(bonus: Bonus) =
-        match this.AnimationQueue with
-        | [] -> this.Idle.Draw(bonus.TopLeft)
-        | anim :: _ -> anim.Draw(bonus.TopLeft)
+        this.Idle.Draw(bonus.TopLeft)

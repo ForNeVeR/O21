@@ -240,12 +240,20 @@ type Particle = {
         | _ -> Some newParticle
 
 type Bonus = {
+    Id: Guid
     TopLeft: Point
     Type: BonusType
 } with
-    static member CreateRandomStaticBonus(position: Point) = {
+    static member Create (position: Point, bonusType: BonusType)= {
+        Id = Guid.NewGuid()
         TopLeft = position
-        Type = BonusType.Static <| Random.Shared.Next(1, 1000000)
+        Type = bonusType
+    }
+    
+    static member CreateRandomStaticBonus (random: ReproducibleRandom) (position: Point) = {
+        Id = Guid.NewGuid()
+        TopLeft = position
+        Type = BonusType.Static <| random.NextExcluding GameRules.StaticBonusKinds
     }
     
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.BonusSize }
@@ -257,6 +265,27 @@ type Bonus = {
         | Collision.CollidesObject _, Collision.None -> BonusEffect.Pickup this.Type
         | _, Collision.CollidesObject _ -> BonusEffect.Die
         | _ -> BonusEffect.Update this
+        
+    static member TrySpawnOnLevelEntry(
+        random: ReproducibleRandom,
+        level: Level,
+        player: Player,
+        bonusType: BonusType
+    ): Bonus Option =
+        let playerExclusiveZones =
+            let box = player.Box
+            {
+                TopLeft = Point(0, box.TopLeft.Y)
+                Size = Vector(GameRules.LevelWidth, box.Size.Y)
+            }
+            
+        let allowedToSpawn(bonus: Bonus) =
+            CheckCollision level bonus.Box [| playerExclusiveZones |] = Collision.None
+            
+        random.GetRandomEmptyPosition level 2 |> Option.map (GameRules.GetLevelPosition level)
+        |> Option.bind (fun position ->
+            let bonus = Bonus.Create(position, bonusType)
+            if allowedToSpawn bonus then Some bonus else None)
             
 and [<RequireQualifiedAccess>] BonusType =
     | Static of id: int

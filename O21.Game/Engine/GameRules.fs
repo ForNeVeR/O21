@@ -121,6 +121,7 @@ let BonusSize = Vector(30, 30)
 let FishKinds: int = FishSizes.Length
 let LevelEntryFishSpawnProbability: float = 0.00363 // 0.363%
 let FishBaseVelocity = 4
+let BombKinds: int = 5
 
 // ----------------------- Functions -----------------------
 
@@ -141,9 +142,6 @@ let ClampVelocity(Vector(x, y)): Vector =
        Math.Clamp(x, -MaxPlayerVelocity, MaxPlayerVelocity),
        Math.Clamp(y, -MaxPlayerVelocity, MaxPlayerVelocity)
    )
-   
-let IsEventOccurs chance =
-    Random.Shared.NextDouble() <= chance
     
 let GetLevelPosition level (coordinates: int * int)  =
             Point(LevelWidth / level.LevelMap[0].Length * fst coordinates,
@@ -155,9 +153,11 @@ let StartingLevel = LevelCoordinates(1, 1)
 let PlayerStartingPosition = Point(200, 140)
 let LevelSizeInTiles = Vector(50, 25)
 let BombTriggerOffset = -15
-let LifebuoySpawnChance = 0.2 // TODO[#237]: Compare with the original
-let LifeBonusSpawnChance = seq {
+let LifebuoySpawnProbability = 0.2 // TODO[#237]: Compare with the original
+let LifeBonusSpawnProbability = seq {
     yield! [|0.25; 0.125;|]
     yield! Array.create 7 0.0625
     while true do yield 0.
 } // TODO[#238]: Compare with the original
+
+let StaticBonusKinds = 10
