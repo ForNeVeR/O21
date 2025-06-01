@@ -1,6 +1,7 @@
 namespace O21.Game.Engine
 
 open System
+open System.Collections.Generic
 open O21.Game.U95
 
 type ReproducibleRandom private (backend: Random) = // TODO: Not really reproducible for now. Make it so.
@@ -26,11 +27,11 @@ type ReproducibleRandom private (backend: Random) = // TODO: Not really reproduc
     member _.Chance(probability: float): bool =
         backend.NextDouble() < probability
         
-    member _.RandomChoice<'a> (choices: seq<'a>): 'a =
-        if Seq.isEmpty choices then
+    member _.RandomChoice<'a> (choices: IList<'a>): 'a =
+        if choices.Count = 0 then
             failwith "Cannot choose a random element from an empty sequence."
-        let index = backend.Next(Seq.length choices)
-        Seq.item index choices
+        let index = backend.Next choices.Count
+        choices[index]
 
     member _.GetRandomEmptyPosition (level: Level) eps =
         let height = level.LevelMap.Length
