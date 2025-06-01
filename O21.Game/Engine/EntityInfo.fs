@@ -32,7 +32,7 @@ type EntityInfo = {
             Kind = EntityKind.Fish
             Box = fish.Box
             Type = fish.Type
-            Direction = fish.Direction
+            Direction = fish.HorizontalDirection
         }
         
     static member OfPlayer(player: Player) =
