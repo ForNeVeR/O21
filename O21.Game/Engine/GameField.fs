@@ -19,7 +19,16 @@ type Point =
 
     member this.X: int = let (Point(x, _)) = this in x
     member this.Y: int = let (Point(_, y)) = this in y
-    
+
+    member this.Move(direction: HorizontalDirection, distance: int): Point =
+        Point(this.X + direction * distance, this.Y)
+
+    member this.Move(direction: VerticalDirection, distance: int): Point =
+        Point(this.X, this.Y + direction * distance)
+
+    member this.Up(distance: int): Point = this.Move(VerticalDirection.Up, distance)
+    member this.Down(distance: int): Point = this.Move(VerticalDirection.Down, distance)
+
 and [<Struct>] Vector =
     | Vector of int * int
 
@@ -46,15 +55,6 @@ type Trigger =
     | HorizontalTrigger of Y:int
 
 [<Struct>]
-type VerticalDirection =
-    | Up
-    | Down
-    static member (*) (direction: VerticalDirection, value: int) =
-        match direction with
-        | Up -> -value
-        | Down -> value
-    
-[<Struct>]  
 type ObliqueDirection = {
     XDirection: HorizontalDirection
     YDirection: VerticalDirection

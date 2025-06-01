@@ -19,23 +19,27 @@ let ``Basic fish get spawned on level``(): unit =
         [| { Id = Guid.Empty
              TopLeft = Point (60, 240)
              Type = 0
-             Velocity = Vector (4, 0)
-             Direction = HorizontalDirection.Right }
+             AbsoluteVelocity = 4
+             HorizontalDirection = HorizontalDirection.Right
+             VerticalDirection = VerticalDirection.Up }
            { Id = Guid.Empty
              TopLeft = Point (72, 252)
              Type = 2
-             Velocity = Vector (-4, 0)
-             Direction = HorizontalDirection.Left }
+             AbsoluteVelocity = 4
+             HorizontalDirection = HorizontalDirection.Left
+             VerticalDirection = VerticalDirection.Up }
            { Id = Guid.Empty
              TopLeft = Point (240, 204)
              Type = 2
-             Velocity = Vector (-4, 0)
-             Direction = HorizontalDirection.Left }
+             AbsoluteVelocity = 4
+             HorizontalDirection = HorizontalDirection.Left
+             VerticalDirection = VerticalDirection.Up }
            { Id = Guid.Empty
              TopLeft = Point (528, 192)
              Type = 3
-             Velocity = Vector (-4, 0)
-             Direction = HorizontalDirection.Left } |],
+             AbsoluteVelocity = 4
+             HorizontalDirection = HorizontalDirection.Left
+             VerticalDirection = VerticalDirection.Up } |],
         fish
     )
 
@@ -47,26 +51,25 @@ let private DefaultEnemyEnv = {
 
 [<Fact>]
 let ``Fish should move forward``(): unit =
-    let fish1 = {
-        Id = Guid.NewGuid()
-        TopLeft = Point(60, 240)
-        Type = 1
-        Velocity = Vector(GameRules.FishBaseVelocity, 0)
-        Direction = HorizontalDirection.Right
-    }
+    let fish1 = Fish.SpawnNew(
+        Point(60, 240),
+        1,
+        GameRules.FishBaseVelocity,
+        HorizontalDirection.Right
+    )
     match fish1.Tick DefaultEnemyEnv with
-    | EnemyEffect.Update fish2 -> Assert.Equal(fish1.TopLeft + fish1.Velocity, fish2.TopLeft)
+    | EnemyEffect.Update fish2 ->
+        Assert.Equal(fish1.TopLeft.Move(fish1.HorizontalDirection, fish1.AbsoluteVelocity), fish2.TopLeft)
     | effect -> Assert.Fail $"Incorrect effect: {effect}."
 
 [<Fact>]
-let ``Fish should stop when sees a wall``(): unit =
-    let fish1 = {
-        Id = Guid.NewGuid()
-        TopLeft = Point(GameRules.BrickSize.X, 0)
-        Type = 1
-        Velocity = Vector(-GameRules.FishBaseVelocity, 0)
-        Direction = HorizontalDirection.Left
-    }
+let ``Fish should move upwards when hits a wall``(): unit =
+    let fish1 = Fish.SpawnNew(
+        Point(GameRules.BrickSize.X, 0),
+        1,
+        GameRules.FishBaseVelocity,
+        HorizontalDirection.Left
+    )
     let level =
         { Helpers.EmptyLevel with
             LevelMap = [|
@@ -74,5 +77,34 @@ let ``Fish should stop when sees a wall``(): unit =
             |]
         }
     match fish1.Tick { DefaultEnemyEnv with Level = level } with
-    | EnemyEffect.Update fish2 -> Assert.Equal(fish1.TopLeft, fish2.TopLeft)
+    | EnemyEffect.Update fish2 ->
+        Assert.Equal(fish1.TopLeft.Up(GameRules.FishBaseVelocity), fish2.TopLeft)
+        Assert.Equal(VerticalDirection.Up, fish2.VerticalDirection)
+    | effect -> Assert.Fail $"Incorrect effect: {effect}."
+
+[<Fact>]
+let ``Fish should move downwards if no place upwards``(): unit =
+    let fish1 = Fish.SpawnNew(
+        Point(GameRules.BrickSize.X, GameRules.BrickSize.Y),
+        1,
+        GameRules.FishBaseVelocity,
+        HorizontalDirection.Left
+    )
+    let level =
+        { Helpers.EmptyLevel with
+            LevelMap = [|
+                [| Brick 0; Brick 0 |]
+                [| Brick 0; Empty |]
+            |]
+        }
+    match fish1.Tick { DefaultEnemyEnv with Level = level } with
+    | EnemyEffect.Update fish2 ->
+        Assert.Equal(fish1.TopLeft.Down(GameRules.FishBaseVelocity), fish2.TopLeft)
+        Assert.Equal(VerticalDirection.Down, fish2.VerticalDirection)
+
+        match fish2.Tick { DefaultEnemyEnv with Level = level } with
+        | EnemyEffect.Update fish3 ->
+            Assert.Equal(fish1.TopLeft.Down(GameRules.FishBaseVelocity * 2), fish3.TopLeft)
+            Assert.Equal(VerticalDirection.Down, fish3.VerticalDirection)
+        | effect -> Assert.Fail $"Incorrect effect: {effect}."
     | effect -> Assert.Fail $"Incorrect effect: {effect}."

@@ -7,7 +7,6 @@ namespace O21.Game.Animations
 open O21.Game
 open O21.Game.Engine
 open O21.Game.U95
-open Raylib_CSharp.Textures
 
 module FishAnimations =
 
@@ -16,7 +15,7 @@ module FishAnimations =
         Movement: Animation
     } with
         static member private GetMovementSprites (sprites: FishSprites) (fish: Fish) =
-            match fish.Direction with
+            match fish.HorizontalDirection with
             | HorizontalDirection.Left -> sprites.LeftDirection
             | HorizontalDirection.Right -> sprites.RightDirection
         

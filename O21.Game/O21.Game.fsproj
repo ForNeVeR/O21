@@ -43,7 +43,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="GeometryUtils.fs" />
         <Compile Include="Input.fs" />
         <Compile Include="Loader.fs" />
-        <Compile Include="HorizontalDirection.fs" />
+        <Compile Include="Direction.fs" />
 
         <Compile Include="U95\Background.fs" />
         <Compile Include="U95\HUDSprites.fs" />

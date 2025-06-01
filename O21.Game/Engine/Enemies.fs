@@ -22,14 +22,15 @@ type Fish = {
     Id: Guid // TODO: Think about some better identifier mechanism.
     TopLeft: Point
     Type: int
-    Velocity: Vector
-    Direction: HorizontalDirection
+    /// The current velocity the fish will be moving in the designated direction.
+    AbsoluteVelocity: int
+    HorizontalDirection: HorizontalDirection
+    VerticalDirection: VerticalDirection
 } with
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.FishSizes[this.Type] }
 
     member this.Tick(fishEnv: EnemyEnv): Fish EnemyEffect =
-        let newPosition = this.TopLeft + this.Velocity
-        let newFish = { this with TopLeft = newPosition }
+        let newFish = this.WithNextPosition fishEnv.Level
         match CheckCollision fishEnv.Level newFish.Box Array.empty with // TODO[#27]: Player and bullet collision
         | Collision.None -> EnemyEffect.Update newFish
         | Collision.OutOfBounds -> EnemyEffect.Despawn
@@ -38,27 +39,70 @@ type Fish = {
             // TODO[#27]: Fish behavior: turn
             // TODO[#27]: Fish behavior: randomize speed
             EnemyEffect.Update this
-        | Collision.CollidesObject count ->
+        | Collision.CollidesObject _ ->
             // TODO[#27]: Player and bullet collision
             EnemyEffect.Update newFish
+
+    member private this.WithNextPosition level: Fish =
+        // TODO: Stick to the wall if there's any space
+        let checkState(state: Fish) =
+            match CheckCollision level state.Box Array.empty with
+            | Collision.CollidesBrick -> None
+            | _ -> Some state
+
+        let moveHorizontally keepDirection =
+            let newDirection = if keepDirection then this.HorizontalDirection else this.HorizontalDirection.Invert()
+            let newState = {
+                this with
+                    TopLeft = this.TopLeft.Move(newDirection, this.AbsoluteVelocity)
+                    HorizontalDirection = newDirection
+            }
+            checkState newState
+
+        let moveVertically keepDirection =
+            let newDirection = if keepDirection then this.VerticalDirection else this.VerticalDirection.Invert()
+            let newState = {
+                this with
+                    TopLeft = this.TopLeft.Move(newDirection, this.AbsoluteVelocity)
+                    VerticalDirection = newDirection
+            }
+            checkState newState
+
+        moveHorizontally true
+        |> Option.orElseWith(fun () -> moveVertically true)
+        |> Option.orElseWith(fun () -> moveVertically false)
+        |> Option.orElseWith(fun () -> moveHorizontally false)
+        |> Option.defaultValue this
+
 
     static member Default = {
         Id = Guid.Empty
         TopLeft = Point(0, 0)
         Type = 0
-        Velocity = Vector(0, 0)
-        Direction = HorizontalDirection.Right
+        AbsoluteVelocity = GameRules.FishBaseVelocity
+        HorizontalDirection = HorizontalDirection.Right
+        VerticalDirection = VerticalDirection.Up
     }
 
     static member private Random(position, random: ReproducibleRandom) =
         let direction = if random.NextBool() then HorizontalDirection.Left else HorizontalDirection.Right
         {
-            Id = Guid.NewGuid()
-            TopLeft = position
-            Type = random.NextExcluding GameRules.FishKinds
-            Velocity = Vector(direction * GameRules.FishBaseVelocity, 0)
-            Direction = direction
+            Fish.Default with
+                Id = Guid.NewGuid()
+                TopLeft = position
+                Type = random.NextExcluding GameRules.FishKinds
+                AbsoluteVelocity = GameRules.FishBaseVelocity
+                HorizontalDirection = direction
         }
+
+    static member SpawnNew(topLeft: Point, ``type``: int, velocity: int, direction: HorizontalDirection): Fish = {
+        Fish.Default with
+            Id = Guid.NewGuid()
+            TopLeft = topLeft
+            Type = ``type``
+            AbsoluteVelocity = velocity
+            HorizontalDirection = direction
+    }
 
     static member SpawnOnLevelEntry(
         random: ReproducibleRandom,
