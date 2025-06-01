@@ -102,24 +102,21 @@ type GameEngine = {
         
         let bombs =
             level.BombsCoordinates()
-                |> Array.map (getLevelPosition >> Bomb.Create)
+                |> Array.map (getLevelPosition >> Bomb.Create this.Random)
                 
         let bonuses =
             level.StaticBonusesCoordinates()
-                |> Array.map (getLevelPosition >> Bonus.CreateRandomStaticBonus)
+                |> Array.map (getLevelPosition >> Bonus.CreateRandomStaticBonus this.Random)
                 
         let trySpawnSpecialBonus bonusType =
-            let chance =
+            let probability =
                 match bonusType with
-                | BonusType.Lifebuoy -> GameRules.LifebuoySpawnChance
-                | BonusType.Life -> Seq.item this.Player.Lives GameRules.LifeBonusSpawnChance
+                | BonusType.Lifebuoy -> GameRules.LifebuoySpawnProbability
+                | BonusType.Life -> Seq.item this.Player.Lives GameRules.LifeBonusSpawnProbability
                 | _ -> 0
-            if GameRules.IsEventOccurs chance
+            if this.Random.Chance probability
                 then
-                    let emptyPos = level.GetRandomEmptyPosition 2 |> Option.map getLevelPosition
-                    match emptyPos with
-                    | Some topLeft -> Some { TopLeft = topLeft; Type = bonusType }
-                    | None -> None
+                    Bonus.TrySpawnOnLevelEntry(this.Random, level, this.Player, bonusType)
                 else None
                 
         let lifebuoy =
@@ -201,6 +198,20 @@ type GameEngine = {
                     Bullets = Array.append this.Bullets (newBullets |> Seq.toArray) // TODO[#130]: Make more efficient (persistent vector?)
                 }, [| PlaySound SoundType.Shot |]
             else this, Array.empty
+            
+    member this.GetEntityInfoById(id: Guid): EntityInfo option =
+        let bomb = this.Bombs |> Array.tryFind (fun b -> b.Id = id)
+        match bomb with
+        | Some b -> Some (EntityInfo.OfBomb b)
+        | None ->
+            let fish = this.Fishes |> Array.tryFind (fun f -> f.Id = id)
+            match fish with
+            | Some f -> Some (EntityInfo.OfFish f)
+            | None ->
+                let bonus = this.Bonuses |> Array.tryFind (fun b -> b.Id = id)
+                match bonus with
+                | Some b -> Some (EntityInfo.OfBonus b)
+                | None -> None
 
     static member private compose (upd1: UpdateHandler) (upd2: UpdateHandler) : UpdateHandler =
         fun (engine: GameEngine) ->
@@ -251,18 +262,18 @@ type GameEngine = {
             let bombs, bombEffects =
                 engine.Bombs
                 |> Array.map _.Tick(enemyEnv)
-                |> Array.map (fun x -> GameEngine.ProcessEnemyEffect(true, x))
+                |> Array.map (fun x -> GameEngine.ProcessEnemyEffect(true, x, engine))
                 |> Array.unzip
             let fish, fishEffects =
                 engine.Fishes
                 |> Array.map _.Tick(enemyEnv)
-                |> Array.map (fun x -> GameEngine.ProcessEnemyEffect(false, x))
+                |> Array.map (fun x -> GameEngine.ProcessEnemyEffect(false, x, engine))
                 |> Array.unzip
             let externalEffects = Array.concat [| bombEffects; fishEffects |] |> Array.collect id
             { engine with Bombs = Array.choose id bombs
                           Fishes = Array.choose id fish }, externalEffects
             
-    static member private ProcessEnemyEffect<'a>(isStationary: bool, effect: EnemyEffect<'a>): 'a option * ExternalEffect[] =
+    static member private ProcessEnemyEffect<'a>(isStationary: bool, effect: EnemyEffect<'a>, game: GameEngine): 'a option * ExternalEffect[] =
         let soundTypeDestroyed =
             if isStationary
                 then SoundType.StationaryEnemyDestroyed
@@ -270,7 +281,9 @@ type GameEngine = {
         match effect with
         | EnemyEffect.Update enemy -> Some enemy, Array.empty
         | EnemyEffect.PlayerHit id -> None, [| PlaySound soundTypeDestroyed
-                                               PlayAnimation (AnimationType.Die, EntityType.Enemy id) |]
+                                               PlayAnimation (AnimationType.Die,
+                                                              EnemyDie(game.GetEntityInfoById id
+                                                                       |> _.Value)) |]
         | EnemyEffect.Die -> None, Array.empty // TODO: death animation
         | EnemyEffect.Despawn -> None, Array.empty
 

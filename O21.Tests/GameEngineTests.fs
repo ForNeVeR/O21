@@ -112,9 +112,9 @@ module Player =
         Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
         
     [<Theory>]
-    [<InlineData(EntityKind.Fish)>]
-    [<InlineData(EntityKind.Bomb)>]
-    let ``Colliding with enemy kills the player and enemy``(enemy: EntityKind): unit =
+    [<InlineData(EntityKindEnum.Fish)>]
+    [<InlineData(EntityKindEnum.Bomb)>]
+    let ``Colliding with enemy kills the player and enemy``(enemy: EntityKindEnum): unit =
         let level = createEmptyLevel 1 2
         
         let engine = newEngine.ChangeLevel(level)
@@ -137,9 +137,9 @@ module Player =
         
         Assert.Equal(initialLives - 1, actualLives)
         match enemy with
-        | EntityKind.Bomb ->
+        | EntityKindEnum.Bomb ->
             Assert.Equal(0, engine.Bombs.Length)
-        | EntityKind.Fish ->
+        | EntityKindEnum.Fish ->
             // Assert.Equal(0, engine.Fishes.Length)
             // TODO[#27]: Uncomment when fishes are implemented
             ()
@@ -287,11 +287,11 @@ module Bullets =
 module ScoreSystem =
     
     [<Theory>]
-    [<InlineData(EntityKind.Bomb, GameRules.GivePointsForBomb)>]
-    [<InlineData(EntityKind.Fish, GameRules.GivePointsForFish)>]
-    [<InlineData(EntityKind.StaticBonus, - GameRules.SubtractPointsForShotBonus)>]
-    [<InlineData(EntityKind.Lifebuoy, - GameRules.SubtractPointsForShotBonus)>]
-    [<InlineData(EntityKind.LifeBonus, - GameRules.SubtractPointsForShotBonus)>]
+    [<InlineData(EntityKindEnum.Bomb, GameRules.GivePointsForBomb)>]
+    [<InlineData(EntityKindEnum.Fish, GameRules.GivePointsForFish)>]
+    [<InlineData(EntityKindEnum.StaticBonus, - GameRules.SubtractPointsForShotBonus)>]
+    [<InlineData(EntityKindEnum.Lifebuoy, - GameRules.SubtractPointsForShotBonus)>]
+    [<InlineData(EntityKindEnum.LifeBonus, - GameRules.SubtractPointsForShotBonus)>]
     let ``Adding points for shot entity``(entity, pointsForHit): unit =
         let level = createEmptyLevel 2 1
         
@@ -354,8 +354,8 @@ module ScoreSystem =
         Assert.True(actualPoints >= 0, "Score cannot be less than 0")
         
     [<Theory>]
-    [<InlineData(EntityKind.StaticBonus, GameRules.GivePointsForStaticBonus)>]
-    [<InlineData(EntityKind.Lifebuoy, GameRules.GivePointsForLifebuoy)>]
+    [<InlineData(EntityKindEnum.StaticBonus, GameRules.GivePointsForStaticBonus)>]
+    [<InlineData(EntityKindEnum.Lifebuoy, GameRules.GivePointsForLifebuoy)>]
     let ``Adding points for pickup bonus`` (bonus, pointsForPickup): unit =
         let level = createEmptyLevel 1 1
         
@@ -377,7 +377,7 @@ module ScoreSystem =
         let level = createEmptyLevel 1 1
         
         let engine = newEngine.ChangeLevel(level)
-        let engine = engine |> spawnEntity EntityKind.LifeBonus (0, 0)
+        let engine = engine |> spawnEntity EntityKindEnum.LifeBonus (0, 0)
             
         let engine =
             { engine with
@@ -394,7 +394,7 @@ module ScoreSystem =
         let level = createEmptyLevel 1 1
         
         let engine = newEngine.ChangeLevel(level)
-        let engine = engine |> spawnEntity EntityKind.Lifebuoy (0, 0)
+        let engine = engine |> spawnEntity EntityKindEnum.Lifebuoy (0, 0)
             
         let engine =
             { engine with

@@ -15,11 +15,11 @@ type PlayerAnimation = {
     AnimationQueue: Animation list
     Movement: Animation
 } with
-    static member Init(data: U95Data) =
+    static member Init(data: Sprites) =
         {
-            Sprites = data.Sprites.Player
+            Sprites = data.Player
             AnimationQueue = []
-            Movement = Animation.Init(data.Sprites.Player.Right, LoopTime.Infinity, 0UL, AnimationDirection.Forward)
+            Movement = Animation.Init(data.Player.Right, LoopTime.Infinity, 0UL, AnimationDirection.Forward)
         }
         
     member private this.UpdateMovementAnimation(player: Player) (tick: uint64)=
@@ -48,9 +48,9 @@ type PlayerAnimation = {
             CurrentFrame = (0, tick)
         }
 
-    member this.Update(state: State, animations: AnimationType[]) =
-        let tick = state.Engine.ProcessedTicks
-        let player = state.Engine.Game.Player
+    member this.Update(engine: TickEngine, animations: AnimationType[]) =
+        let tick = engine.ProcessedTicks
+        let player = engine.Game.Player
         let mutable queue =
             if this.AnimationQueue.IsEmpty then []
             else

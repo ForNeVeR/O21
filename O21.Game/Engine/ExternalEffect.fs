@@ -4,12 +4,15 @@
 
 namespace O21.Game.Engine
 
+open System
+open O21.Game
 open O21.Game.Animations
 open O21.Game.U95
 
 type EntityType =
     | Player
-    | Enemy of id: int
+    | Enemy of id: Guid
+    | EnemyDie of EntityInfo
     
 type ExternalEffect =
     | PlaySound of SoundType
