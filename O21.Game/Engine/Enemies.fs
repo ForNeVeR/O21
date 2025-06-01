@@ -19,7 +19,7 @@ type EnemyEffect<'e> =
     | Despawn
 
 type Fish = {
-    Id: Guid
+    Id: Guid // TODO: Think about some better identifier mechanism.
     TopLeft: Point
     Type: int
     Velocity: Vector
@@ -86,7 +86,7 @@ type Fish = {
         |]
 
 type Bomb = {
-    Id: Guid
+    Id: Guid // TODO: Think about some better identifier mechanism.
     Type: int
     TopLeft: Point
     State: BombState
