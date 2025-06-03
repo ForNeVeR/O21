@@ -8,6 +8,13 @@ Original Game Behavior
 ======================
 This documents the behavior we observe in the original game.
 
+Player
+----------------
+
+Player can move left and right, and can also move up and down when not collides any brick.
+
+When player dies, it freezes for a 6 ticks (0.6 seconds) and cannot move or shoot during this time. But during this time, the player can still be hit by enemies.
+
 Initial Fish Spawn
 ------------------
 Restarted the original level 1 for 30 times, got the following number of enemies on screen:

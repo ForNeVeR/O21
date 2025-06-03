@@ -65,12 +65,12 @@ type Player = {
                                             |> _.IsCollidesObject
                                             then 1 else 0 }
         
-        if this.Oxygen.IsEmpty then PlayerEffect.Die
+        if this.Oxygen.IsEmpty then PlayerEffect.DieOnce
         else
             match CheckCollision level this.Box enemies with
             | Collision.OutOfBounds -> PlayerEffect.OutOfBounds this
-            | Collision.CollidesBrick -> PlayerEffect.Die
-            | Collision.CollidesObject _ -> PlayerEffect.Die
+            | Collision.CollidesBrick -> PlayerEffect.DieOnce
+            | Collision.CollidesObject count -> PlayerEffect.Die count
             | Collision.None -> PlayerEffect.Update newPlayer
             
     member private this.CalculateScoreChange(playerEnv: PlayerEnv): int
@@ -150,7 +150,9 @@ and OxygenStorage = {
 and [<RequireQualifiedAccess>] PlayerEffect =
     | Update of Player
     | OutOfBounds of Player
-    | Die
+    | Die of count: int
+    with
+        static member DieOnce = Die 1
     
 and Ability = {
     Type: AbilityType
