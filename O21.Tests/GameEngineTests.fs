@@ -109,7 +109,7 @@ module Player =
                 Velocity = Vector(1, 0) 
         }
         let player' = player.Tick(getEmptyPlayerEnvWithLevel level)
-        Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
+        Assert.True(match player' with | PlayerEffect.Die 1 -> true | _ -> false)
         
     [<Theory>]
     [<InlineData(EntityKindEnum.Fish)>]
@@ -140,10 +140,35 @@ module Player =
         | EntityKindEnum.Bomb ->
             Assert.Equal(0, engine.Bombs.Length)
         | EntityKindEnum.Fish ->
-            // Assert.Equal(0, engine.Fishes.Length)
-            // TODO[#27]: Uncomment when fishes are implemented
-            ()
+            Assert.Equal(0, engine.Fishes.Length)
         | _ -> failwith "Entity is not enemy"
+        
+    [<Fact>]
+    let ``Player can die many times in one tick from enemies``(): unit =
+        let level = createEmptyLevel 1 2
+        
+        let engine = newEngine.ChangeLevel(level)
+        let engine = engine |> spawnEntity EntityKindEnum.Fish (0, 1)
+        let engine = engine |> spawnEntity EntityKindEnum.Bomb (0, 1)
+        
+        let enemyPos = engine |> getEntityPos EntityKindEnum.Fish 0
+        
+        let dist = 10
+            
+        let engine =
+            { engine with
+                GameEngine.Player.TopLeft = Point(enemyPos.X,
+                                                  enemyPos.Y - GameRules.PlayerSize.Y - dist)
+                GameEngine.Player.Velocity = Vector(0, 1) }
+            
+        let initialLives = engine.Player.Lives
+        let engine = engine |> frameUpN (dist + 1)
+        
+        let actualLives = engine.Player.Lives
+        
+        Assert.Equal(initialLives - 2, actualLives)
+        Assert.Equal(0, engine.Bombs.Length)
+        Assert.Equal(0, engine.Fishes.Length)
         
 module OxygenSystem =
     
@@ -168,7 +193,7 @@ module OxygenSystem =
         
         let player = { player with Player.Oxygen.Amount = -1 }
         let player' = player.Tick(getEmptyPlayerEnvWithLevel level)
-        Assert.True(match player' with | PlayerEffect.Die -> true | _ -> false)
+        Assert.True(match player' with | PlayerEffect.Die 1 -> true | _ -> false)
         
 module ParticleSystem =
     
@@ -312,6 +337,29 @@ module ScoreSystem =
         let engine = engine |> frameUpN ((enemyPosX - engine.Bullets[0].Box.TopRight.X) / GameRules.BulletVelocity + 1)
         let actualPoints = engine.Player.Score
         Assert.Equal(initialPoints + pointsForHit, actualPoints + GameRules.SubtractPointsForShot)
+        
+    [<Fact>]
+    let ``Adding points for shot many entities in one tick``(): unit =
+        let level = createEmptyLevel 2 1
+        
+        let engine = newEngine.ChangeLevel(level)
+        let engine = engine |> spawnEntity EntityKindEnum.Bomb (1, 0)
+        let engine = engine |> spawnEntity EntityKindEnum.Fish (1, 0)
+        let enemyPosX = engine |> getEntityPos EntityKindEnum.Bomb 0 |> _.X
+            
+        let engine =
+            { engine with
+                GameEngine.Player.TopLeft = Point(enemyPosX
+                                                - GameRules.PlayerSize.X - GameRules.BulletSize.X,
+                                                - GameRules.PlayerSize.Y / 2)
+                GameEngine.Player.Score = 100 }
+                  
+        let initialPoints = engine.Player.Score
+        
+        let engine, _ = engine.ApplyCommand PlayerCommand.Shoot
+        let engine = engine |> frameUpN ((enemyPosX - engine.Bullets[0].Box.TopRight.X) / GameRules.BulletVelocity + 1)
+        let actualPoints = engine.Player.Score
+        Assert.Equal(initialPoints + GameRules.GivePointsForBomb + GameRules.GivePointsForFish, actualPoints + GameRules.SubtractPointsForShot)
         
     [<Theory>]
     [<InlineData("default", GameRules.SubtractPointsForShot)>]

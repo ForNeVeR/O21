@@ -30,18 +30,21 @@ type Fish = {
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.FishSizes[this.Type] }
 
     member this.Tick(fishEnv: EnemyEnv): Fish EnemyEffect =
-        let newFish = this.WithNextPosition fishEnv.Level
-        match CheckCollision fishEnv.Level newFish.Box Array.empty with // TODO[#27]: Player and bullet collision
-        | Collision.None -> EnemyEffect.Update newFish
-        | Collision.OutOfBounds -> EnemyEffect.Despawn
+        let entities =
+            Array.append [|fishEnv.PlayerCollider|] fishEnv.BulletColliders
+        match CheckCollision fishEnv.Level this.Box entities with
+        | Collision.None ->
+            let newFish = this.WithNextPosition fishEnv.Level
+            EnemyEffect.Update newFish
+        | Collision.OutOfBounds ->
+            EnemyEffect.Despawn
         | Collision.CollidesBrick ->
             // TODO[#27]: Fish behavior: up/down
             // TODO[#27]: Fish behavior: turn
             // TODO[#27]: Fish behavior: randomize speed
             EnemyEffect.Update this
         | Collision.CollidesObject _ ->
-            // TODO[#27]: Player and bullet collision
-            EnemyEffect.Update newFish
+            EnemyEffect.PlayerHit this.Id
 
     member private this.WithNextPosition level: Fish =
         // TODO: Stick to the wall if there's any space

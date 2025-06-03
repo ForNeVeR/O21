@@ -245,15 +245,17 @@ type GameEngine = {
                 | left when left.TopLeft.X <= 0 -> Vector(-1, 0)
                 | _ -> Vector(0, 0)
             { engine with Player = player }, [| SwitchLevel levelDelta |]
-        | PlayerEffect.Die ->
-            let effects = [| PlaySound SoundType.LifeLost; PlayAnimation (AnimationType.Die, EntityType.Player) |]
+        | PlayerEffect.Die count ->
+            let effects =
+                Array.init (count * 2) (fun i ->
+                    if i % 2 = 0 then PlaySound SoundType.LifeLost else PlayAnimation (AnimationType.Die, EntityType.Player))
             { engine with
                 Player = { engine.Player with
                             Velocity = Vector.Zero
                             FreezeTime = GameRules.PostDeathFreezeTicks 
-                            Lives = Math.Max(engine.Player.Lives - 1, 0)
+                            Lives = Math.Max(engine.Player.Lives - count, 0)
                             Oxygen = OxygenStorage.Default }
-            }, if engine.Player.Lives = 1 then effects |> Array.append [|PlaySound SoundType.GameOver|] else effects
+            }, if engine.Player.Lives - count = 0 then effects |> Array.append [|PlaySound SoundType.GameOver|] else effects
             // TODO[#27]: Investigate if enemy collision should stop the player from moving
     
     static member private UpdateEnemiesHandler : UpdateHandler =
