@@ -22,15 +22,6 @@ module BombAnimations =
                 Idle = Animation.Init(idleSprites, LoopTime.Infinity, 1UL, AnimationDirection.Forward)
             }
 
-        member private this.OnDyingAnimation(tick: uint64): Animation Lazy =
-            lazy {
-                Frames = this.Sprites.OnDying
-                LoopTime = LoopTime.Count 1
-                Direction = AnimationDirection.Forward
-                TicksPerFrame = 2UL
-                CurrentFrame = (0, tick)
-            }
-
         member this.Update(engine: TickEngine) =
             let tick = engine.ProcessedTicks
             
