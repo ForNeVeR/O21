@@ -14,10 +14,15 @@ type FishSprites =
         Height: int
         LeftDirection: Texture2D[]
         RightDirection: Texture2D[]
-        OnDying: Texture2D[]
+        OnDyingLeftDirection: Texture2D[]
+        OnDyingRightDirection: Texture2D[]
     }
 
     member this.Direction(direction: HorizontalDirection): Texture2D[] =
         match direction with
         | Left -> this.LeftDirection
         | Right -> this.RightDirection
+    member this.OnDyingDirection(direction: HorizontalDirection): Texture2D[] =
+        match direction with
+        | Left -> this.OnDyingLeftDirection
+        | Right -> this.OnDyingRightDirection

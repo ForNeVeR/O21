@@ -88,10 +88,9 @@ module Sprites =
                 CreateTransparentSprite lt fishGraphics[shift + i + 135] fishGraphics[shift + i + 90]
             )
             
-            OnDying = [|
-                  CreateTransparentSprite lt fishGraphics[shift + 53] fishGraphics[shift + 8];
-                  CreateTransparentSprite lt fishGraphics[shift + 143] fishGraphics[shift + 98]
-                  |]
+            OnDyingLeftDirection = Array.create 2 <| CreateTransparentSprite lt fishGraphics[shift + 143] fishGraphics[shift + 98]
+            
+            OnDyingRightDirection = Array.create 2 <| CreateTransparentSprite lt fishGraphics[shift + 53] fishGraphics[shift + 8]
         }
         
     let private createBomb lt index (bombsGraphics: Dib[]) =
@@ -114,7 +113,13 @@ module Sprites =
             LeftDirection = textures
             RightDirection = textures
             
-            OnDying = [|
+            OnDyingLeftDirection = [|
+                CreateTransparentSprite lt bombsGraphics[shift + 10 + colorsOffset] bombsGraphics[shift + 10]
+                CreateTransparentSprite lt bombsGraphics[shift + 2 + colorsOffset] bombsGraphics[shift + 2]
+                CreateTransparentSprite lt bombsGraphics[shift + 1 + colorsOffset] bombsGraphics[shift + 1]
+            |]
+            
+            OnDyingRightDirection = [|
                 CreateTransparentSprite lt bombsGraphics[shift + 10 + colorsOffset] bombsGraphics[shift + 10]
                 CreateTransparentSprite lt bombsGraphics[shift + 2 + colorsOffset] bombsGraphics[shift + 2]
                 CreateTransparentSprite lt bombsGraphics[shift + 1 + colorsOffset] bombsGraphics[shift + 1]

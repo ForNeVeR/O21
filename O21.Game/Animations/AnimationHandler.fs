@@ -89,8 +89,8 @@ type AnimationHandler = {
             |> Array.map (fun info ->
                 let sprites =
                     match info.Kind with
-                    | EntityKind.Bomb -> this.Sprites.Bombs[info.Type].OnDying
-                    | EntityKind.Fish -> this.Sprites.Fishes[info.Type].OnDying
+                    | EntityKind.Bomb -> this.Sprites.Bombs[info.Type].OnDyingDirection(info.Direction)
+                    | EntityKind.Fish -> this.Sprites.Fishes[info.Type].OnDyingDirection(info.Direction)
                     | _ -> failwith "Unexpected entity kind for dying animation"
                 OnDyingAnimation.Init(sprites, info, engine))
         Array.append updated newAnimations
