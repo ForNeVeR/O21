@@ -255,7 +255,7 @@ type GameEngine = {
                             FreezeTime = GameRules.PostDeathFreezeTicks 
                             Lives = Math.Max(engine.Player.Lives - count, 0)
                             Oxygen = OxygenStorage.Default }
-            }, if engine.Player.Lives - count = 0 then effects |> Array.append [|PlaySound SoundType.GameOver|] else effects
+            }, if engine.Player.Lives - count <= 0 then effects |> Array.append [|PlaySound SoundType.GameOver|] else effects
             // TODO[#27]: Investigate if enemy collision should stop the player from moving
     
     static member private UpdateEnemiesHandler : UpdateHandler =
