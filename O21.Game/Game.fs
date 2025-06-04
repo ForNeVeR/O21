@@ -95,21 +95,22 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         state.MusicPlayer |> Option.iter _.SetVolume(state.Settings.SoundVolume)
         state <- { state with SoundsToStartPlaying = Set.empty }
         
-    member _.SetScissorMode() =
+    member private _.WithScissorMode(action: unit -> unit) =
         let cam = state.Scene.Camera
         let W = float32 GameRules.GameScreenWidth * cam.Zoom |> int
         let H = float32 GameRules.GameScreenHeight * cam.Zoom |> int
         let offsetX = cam.Target.X * cam.Zoom |> int |> Math.Abs
         let offsetY = cam.Target.Y * cam.Zoom |> int |> Math.Abs
         BeginScissorMode(offsetX, offsetY, W, H)
-            
+        action()
+        EndScissorMode()
+        
     member this.Draw() =       
         BeginDrawing()
         ClearBackground(Color.White)
         BeginMode2D(state.Scene.Camera)
-        this.SetScissorMode()
-        state.Scene.Draw(state)
-        EndScissorMode()
+        this.WithScissorMode(fun () ->
+            state.Scene.Draw state)
         EndMode2D()
         EndDrawing()
 
