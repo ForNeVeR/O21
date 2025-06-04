@@ -62,19 +62,52 @@ type Fish = {
             }
             checkState newState
 
-        let moveVertically keepDirection =
-            let newDirection = if keepDirection then this.VerticalDirection else this.VerticalDirection.Invert()
-            let newState = {
-                this with
-                    TopLeft = this.TopLeft.Move(newDirection, this.AbsoluteVelocity)
-                    VerticalDirection = newDirection
-            }
-            checkState newState
+        let moveVertically (dir: VerticalDirection) =
+            { this with
+                TopLeft = this.TopLeft.Move(dir, this.AbsoluteVelocity)
+                VerticalDirection = dir } |> checkState
+
+        // Returns length of the wall ahead and whether there's an open path
+        let wallAheadInfo (fish: Fish) (level: Level) (dir: VerticalDirection) =
+            let rec count n (point: Point) =
+                let nextPoint =
+                    point.Move(dir, GameRules.BrickSize.Y)
+                match CheckCollision level { fish.Box with TopLeft = nextPoint } Array.empty with
+                | Collision.CollidesBrick ->
+                    let beforeBrick =
+                        nextPoint.Move(fish.HorizontalDirection.Invert(), fish.AbsoluteVelocity)
+                    match CheckCollision level { fish.Box with TopLeft = beforeBrick } Array.empty with
+                    | Collision.None -> count (n + 1) nextPoint
+                    | _ -> struct (n, false)
+                | Collision.None ->
+                    struct (n, true)
+                | _ -> struct (n, false)
+            count 0 (fish.TopLeft.Move(fish.HorizontalDirection, fish.AbsoluteVelocity))
+
+        let chooseDirectionOnWallCollision() =
+            let struct (lengthUp, isOpenPathUp) = wallAheadInfo this level VerticalDirection.Up
+            let struct (lengthDown, isOpenPathDown) = wallAheadInfo this level VerticalDirection.Down
+            let b = 2 // A wall with a width of > 2 bricks is considered a long wall for sticking purposes.
+            match isOpenPathUp, isOpenPathDown with
+            | false, false -> // No open path
+                match lengthUp, lengthDown with
+                | 0, d when d > b -> moveHorizontally false // Turning when fish reach the top of the long wall
+                | u, d when u <= b && d <= b -> moveHorizontally false // Turning when fish reach the dead end
+                | _ -> moveVertically VerticalDirection.Up
+            | _, _ when lengthUp > b || lengthDown > b -> // Long wall (barrier), fish can swim around it, taking the shortcut (swim above or below)
+                if lengthUp < lengthDown && isOpenPathUp then
+                    moveVertically VerticalDirection.Up
+                else
+                    moveVertically VerticalDirection.Down
+            | _ -> None // Short wall (barrier), the next functions handle it
 
         moveHorizontally true
-        |> Option.orElseWith(fun () -> moveVertically true)
-        |> Option.orElseWith(fun () -> moveVertically false)
-        |> Option.orElseWith(fun () -> moveHorizontally false)
+        |> Option.orElseWith(fun () ->
+            chooseDirectionOnWallCollision())
+        |> Option.orElseWith(fun () ->
+            moveVertically this.VerticalDirection)
+        |> Option.orElseWith(fun () ->
+            moveVertically (this.VerticalDirection.Invert()))
         |> Option.defaultValue this
 
 
