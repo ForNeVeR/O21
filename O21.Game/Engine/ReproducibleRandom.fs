@@ -37,7 +37,7 @@ type ReproducibleRandom private (backend: Random) = // TODO: Not really reproduc
         let index = backend.Next choices.Count
         choices[index]
 
-    member _.GetRandomEmptyPosition (level: Level) eps =
+    member this.GetRandomEmptyPosition (level: Level) eps =
         let height = level.LevelMap.Length
         let width = level.LevelMap[0].Length
 
@@ -64,4 +64,4 @@ type ReproducibleRandom private (backend: Random) = // TODO: Not really reproduc
                 ))
 
         if validEmptyPositions.Count = 0
-            then None else Some (Seq.randomChoice validEmptyPositions)
+            then None else Some (this.RandomChoice validEmptyPositions)
