@@ -49,7 +49,25 @@ Fish Enemy Behavior
 -------------------
 When hitting a vertical wall and unable to proceed further, a fish will try to move upwards if possible, or downwards if upwards is impossible.
 
-If no vertical movement is possible, the fish will turn back. 
+### Fish wall collision algorithm
+
+When a fish cannot move forward due to a wall or obstacle:
+- The fish checks both upward and downward directions (whether there is an open path and the wall length in those directions).
+- If both directions are blocked:
+    - If the wall above is of length 0 and the wall below is long (more than 2 blocks), the fish turns around.
+    - If both the upper and lower walls are short (≤2 blocks), the fish turns around.
+    - Otherwise, the fish tries to move upward.
+- If at least one direction is open and at least one wall is long (more than 2 blocks):
+    - If the upward path is shorter and open, the fish moves upward.
+    - Otherwise, the fish moves downward.
+- In all other cases, the direction is Up or Down (short wall, take an open path).
+
+#### Wall length calculation (wallAheadInfo)
+- For the chosen direction (up or down), the fish counts the number of consecutive wall blocks.
+- If there is an open path after the wall, the function returns the wall length and a flag indicating the path is open.
+- If the path is blocked, the function returns the wall length and a flag indicating the path is closed.
+
+This algorithm allows the fish to bypass long walls, turn around in dead ends, and choose the optimal path when encountering obstacles.
 
 The fish has varying speed: some are fast, and some are slow, about 50/50 (hard to measure precisely). Sometimes, the fish change their movement speed after hitting a wall.
 
