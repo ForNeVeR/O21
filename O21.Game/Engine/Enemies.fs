@@ -39,15 +39,13 @@ type Fish = {
         | Collision.OutOfBounds ->
             EnemyEffect.Despawn
         | Collision.CollidesBrick ->
-            // TODO[#27]: Fish behavior: up/down
-            // TODO[#27]: Fish behavior: turn
-            // TODO[#27]: Fish behavior: randomize speed
-            EnemyEffect.Update this
+            // Should not happen.
+            EnemyEffect.Despawn
         | Collision.CollidesObject _ ->
             EnemyEffect.PlayerHit this.Id
 
     member private this.WithNextPosition level: Fish =
-        // TODO: Stick to the wall if there's any space
+        // TODO[#27]: Stick to the wall if there's any space (so that we should move as close to it as possible).
         let checkState(state: Fish) =
             match CheckCollision level state.Box Array.empty with
             | Collision.CollidesBrick -> None
@@ -157,7 +155,7 @@ type Fish = {
 
         [|
             // TODO: Pick the actual level size instead of hardcoding here. In the future, we might wish to have levels
-            // of different sizes in the same game. This will require the level to be aware of its contents, though.
+            // of different sizes in the same game. This will require the level to be aware of its size, though.
             for x in 0 .. GameRules.BrickSize.X .. GameRules.LevelWidth - 1 do
                 for y in 0 .. GameRules.BrickSize.Y .. GameRules.LevelHeight - 1 do
                     let fish = Fish.Random(Point(x, y), random)

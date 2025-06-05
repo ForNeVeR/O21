@@ -286,8 +286,7 @@ type GameEngine = {
                                                PlayAnimation (AnimationType.Die,
                                                               EnemyDie(game.GetEntityInfoById id
                                                                        |> _.Value)) |]
-        | EnemyEffect.Die -> None, Array.empty // TODO: death animation
-        | EnemyEffect.Despawn -> None, Array.empty
+        | EnemyEffect.Die | EnemyEffect.Despawn -> None, Array.empty
 
     static member private UpdateBonusesHandler : UpdateHandler =
         fun (engine: GameEngine) ->
