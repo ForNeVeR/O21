@@ -19,7 +19,7 @@ type EnemyEffect<'e> =
     | Despawn
 
 type Fish = {
-    Id: Guid // TODO: Think about some better identifier mechanism.
+    Id: Guid // TODO[#274]: Think about some better identifier mechanism.
     TopLeft: Point
     Type: int
     /// The current velocity the fish will be moving in the designated direction.
@@ -154,7 +154,7 @@ type Fish = {
             CheckCollision level fish.Box [| playerExclusiveZones |] = Collision.None
 
         [|
-            // TODO: Pick the actual level size instead of hardcoding here. In the future, we might wish to have levels
+            // TODO[#275]: Pick the actual level size instead of hardcoding here. In the future, we might wish to have levels
             // of different sizes in the same game. This will require the level to be aware of its size, though.
             for x in 0 .. GameRules.BrickSize.X .. GameRules.LevelWidth - 1 do
                 for y in 0 .. GameRules.BrickSize.Y .. GameRules.LevelHeight - 1 do
@@ -164,7 +164,7 @@ type Fish = {
         |]
 
 type Bomb = {
-    Id: Guid // TODO: Think about some better identifier mechanism.
+    Id: Guid // TODO[#274]: Think about some better identifier mechanism.
     Type: int
     TopLeft: Point
     State: BombState
