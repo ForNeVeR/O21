@@ -35,15 +35,14 @@ type Animation = {
         loop: LoopTime,
         ticksPerFrame: uint64,
         direction: AnimationDirection,
-        [<OptionalArgument>]
-        engine: TickEngine option
+        ?engine: TickEngine
     ) =
         {
             Frames = frames
             LoopTime = loop
             Direction = direction
             TicksPerFrame = ticksPerFrame
-            CurrentFrame = (0, (engine |> Option.map _.ProcessedTicks) |> Option.defaultValue 0UL)
+            CurrentFrame = (0, engine |> Option.map _.ProcessedTicks |> Option.defaultValue 0UL)
         }
         
     member this.GetState() =
