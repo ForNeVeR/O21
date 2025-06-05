@@ -9,7 +9,6 @@ open O21.Game
 open O21.Game.Engine
 open O21.Game.U95
 
-// TODO[#123]: Generalize player and enemies animations
 type PlayerAnimation = {
     Sprites: PlayerSprites
     AnimationQueue: Animation list
