@@ -95,7 +95,7 @@ type Fish = {
                 | u, d when u <= b && d <= b -> moveHorizontally false // Turning when fish reach the dead end
                 | _ -> moveVertically VerticalDirection.Up
             | _, _ when lengthUp > b || lengthDown > b -> // Long wall (barrier), fish can swim around it, taking the shortcut (swim above or below)
-                if lengthUp < lengthDown && isOpenPathUp then
+                if lengthUp < lengthDown && isOpenPathUp || not isOpenPathDown then
                     moveVertically VerticalDirection.Up
                 else
                     moveVertically VerticalDirection.Down
