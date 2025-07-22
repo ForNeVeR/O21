@@ -1,12 +1,10 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
 namespace O21.Game
 
 open System.Threading.Tasks
-open Raylib_CSharp.Camera.Cam2D
-
 open JetBrains.Lifetimes
 
 type ProgressReport = string * float
@@ -33,4 +31,3 @@ type ILoadingScene<'TInput, 'Output> =
     abstract Load: Lifetime * LoadController -> Task<'Output> // TODO[#103]: Support cancellation
     abstract Update: O21.Game.Input * LoadController -> unit
     abstract Draw: unit -> unit
-    abstract Camera: Camera2D with get

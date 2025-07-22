@@ -26,7 +26,7 @@ type SceneEvent = NavigateTo of Scene
 type IScene =
     abstract member Update: Input * Instant * State -> State * SceneEvent option
     abstract member Draw: State -> unit
-    abstract member Camera: Camera2D with get
+    abstract member RenderTargetSize: struct(int * int) with get
 
 and State = {
     Scene: IScene
@@ -36,4 +36,5 @@ and State = {
     Language: Language
     Engine: TickEngine
     MusicPlayer: MusicPlayer option
+    Camera: Camera2D
 }

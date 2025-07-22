@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
@@ -7,12 +7,9 @@ namespace O21.Game.Scenes
 open System.Numerics
 open System.Linq
 
-open Raylib_CSharp
-
 open O21.Game
 open O21.Game.Localization.Translations
 open O21.Game.U95
-open Raylib_CSharp.Camera.Cam2D
 open Raylib_CSharp.Colors
 open type Raylib_CSharp.Rendering.Graphics
 open Raylib_CSharp.Transformations
@@ -48,7 +45,6 @@ type MainMenuScene = {
     GameOverButton: Button
     LanguageButton: Button
     Window: WindowParameters
-    mutable Camera: Camera2D
 }
     with
         static member Init(window: WindowParameters, content: LocalContent, data: U95Data): MainMenuScene =
@@ -67,7 +63,6 @@ type MainMenuScene = {
                 GameOverButton = gameOver 
                 LanguageButton = changeLanguage
                 Window = window
-                Camera = Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
             }
             
         member this.DrawBackground() =
@@ -75,8 +70,6 @@ type MainMenuScene = {
             
             let struct (renderTargetWidth, renderTargetHeight) = this.Window.RenderTargetSize
             
-            DrawSceneHelper.configureCamera this.Window &this.Camera
-
             DrawTexturePro(
                 texture,
                 Rectangle(0f, 0f, float32 texture.Width, float32 texture.Height),
@@ -87,8 +80,7 @@ type MainMenuScene = {
             )
 
         interface IScene with
-            member this.Camera = this.Camera
-
+            member this.RenderTargetSize = this.Window.RenderTargetSize
             member this.Update(input, _, state) =
                 let scene = { 
                     this with

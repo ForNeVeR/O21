@@ -4,10 +4,8 @@
 
 namespace O21.Game.Scenes
 
-open System.Numerics
 open Microsoft.FSharp.Core
 open O21.Game.Animations
-open Raylib_CSharp.Camera.Cam2D
 open Raylib_CSharp.Colors
 open type Raylib_CSharp.Raylib
 open type Raylib_CSharp.Collision.ShapeHelper
@@ -75,7 +73,6 @@ type PlayScene = {
     Content: LocalContent
     Window: WindowParameters
     AnimationHandler: AnimationHandler
-    mutable Camera: Camera2D
 } with
 
     static member Init(window: WindowParameters, content: LocalContent, data:U95Data): PlayScene = {
@@ -83,7 +80,6 @@ type PlayScene = {
         Content = content
         Window = window
         AnimationHandler = AnimationHandler.Init data.Sprites
-        Camera = Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
     }
 
     static member private DrawSprite sprite (Point(x, y)) =
@@ -113,7 +109,8 @@ type PlayScene = {
         |> Option.defaultValue engine
     
     interface IScene with
-        member this.Camera = this.Camera
+        member this.RenderTargetSize = GameRules.GameScreenWidth, GameRules.GameScreenHeight
+
         member this.Update(input, time, state) =
             let engine, effects = PlayScene.UpdateEngine (input, time) (state.Engine, this.HUD)
             let engine = PlayScene.UpdateLevelOnRequest engine effects state.U95Data.Levels
@@ -142,11 +139,7 @@ type PlayScene = {
             let engine = state.Engine
             let game = engine.Game
             let sprites = state.U95Data.Sprites
-            
-            DrawSceneHelper.configureCamera
-                { this.Window with RenderTargetSize = (GameRules.GameScreenWidth, GameRules.GameScreenHeight) }
-                &this.Camera
-            
+
             DrawTexture(sprites.Background[game.CurrentLevel.Position], 0, 0, Color.White)
             let map = game.CurrentLevel.LevelMap
             for i = 0 to map.Length-1 do

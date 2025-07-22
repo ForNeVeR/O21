@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2023-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
@@ -11,6 +11,7 @@ open System.Threading
 open System.Threading.Tasks
 open JetBrains.Lifetimes
 open O21.Game.Engine
+open Raylib_CSharp.Camera.Cam2D
 open Raylib_CSharp.Colors
 open type Raylib_CSharp.Raylib
 open type Raylib_CSharp.Rendering.Graphics
@@ -37,6 +38,7 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         Language = DefaultLanguage
         Engine = TickEngine.Create(Instant.Now(), newRandom(), data.Levels[GameRules.StartingLevel])
         MusicPlayer = None
+        Camera = Unchecked.defaultof<_>
     }
 
     let mutable state = initialState
@@ -64,15 +66,18 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
                     Language = state.Language }
 
     member this.Update() =
-        let input = Input.Handle(state.Scene.Camera)
+        let input = Input.Handle(state.Camera)
         let time = Instant.Now()
 
         pumpQueue()
 
         let updatedState, event = state.Scene.Update(input, time, state)
-        
+
         state <- updatedState
-        
+
+        let camera = DrawSceneHelper.ConfigureCamera { window with RenderTargetSize = state.Scene.RenderTargetSize }
+        state <- { state with Camera = camera }
+
         let scene: IScene =
             match event with
             | Some (NavigateTo Scene.MainMenu) -> MainMenuScene.Init(window, content, data)
@@ -98,19 +103,20 @@ type Game(window: WindowParameters, content: LocalContent, data: U95Data) =
         state <- { state with SoundsToStartPlaying = Set.empty }
         
     member private _.WithScissorMode(action: unit -> unit) =
-        let cam = state.Scene.Camera
-        let W = float32 GameRules.GameScreenWidth * cam.Zoom |> int
-        let H = float32 GameRules.GameScreenHeight * cam.Zoom |> int
+        let cam = state.Camera
+        let struct(x, y) = state.Scene.RenderTargetSize
+        let W = float32 x * cam.Zoom |> int
+        let H = float32 y * cam.Zoom |> int
         let offsetX = cam.Target.X * cam.Zoom |> int |> Math.Abs
         let offsetY = cam.Target.Y * cam.Zoom |> int |> Math.Abs
         BeginScissorMode(offsetX, offsetY, W, H)
         action()
         EndScissorMode()
-        
+
     member this.Draw() =       
         BeginDrawing()
         ClearBackground(Color.White)
-        BeginMode2D(state.Scene.Camera)
+        BeginMode2D state.Camera
         this.WithScissorMode(fun () ->
             state.Scene.Draw state)
         EndMode2D()

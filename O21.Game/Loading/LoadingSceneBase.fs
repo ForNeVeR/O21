@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
@@ -10,7 +10,6 @@ open System.Threading.Tasks
 
 open JetBrains.Lifetimes
 open O21.Game.RaylibUtils
-open Raylib_CSharp.Camera.Cam2D
 open Raylib_CSharp.Colors
 open type Raylib_CSharp.Raylib
 open type Raylib_CSharp.Fonts.TextManager
@@ -25,7 +24,6 @@ type LoadingSceneBase<'Output>(window: WindowParameters) =
     
     let mutable loadingProgress = 0.0
     let mutable loadingStatus = ""
-    let mutable camera = Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
 
     let renderImage content =
         let texture = content.LoadingTexture 
@@ -66,14 +64,10 @@ type LoadingSceneBase<'Output>(window: WindowParameters) =
     abstract Load: Lifetime * LoadController -> Task<'Output>
 
     interface ILoadingScene<LocalContent, 'Output> with
-        member this.Camera: Camera2D = camera
-
         member _.Init loadedContent = content <- loadedContent
         member this.Load(lt, controller) = this.Load(lt, controller)
 
         member _.Draw() =
-            DrawSceneHelper.configureCamera window &camera
-
             ClearBackground(Color.Black)
             renderImage content
             renderText content

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
@@ -8,7 +8,6 @@ open System.Numerics
 open System.Threading.Tasks
 
 open Microsoft.FSharp.Core
-open Raylib_CSharp.Camera.Cam2D
 open Raylib_CSharp.Colors
 open type Raylib_CSharp.Fonts.TextManager
 open type Raylib_CSharp.Raylib
@@ -17,7 +16,6 @@ open type Raylib_CSharp.Rendering.Graphics
 open O21.Game
 open O21.Game.Localization
 open O21.Game.Scenes
-open Raylib_CSharp
 
 type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
     let onDiskChecker = task {
@@ -48,8 +46,6 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
             0f,
             Color.White
         )
-    let mutable camera : Camera2D = Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
-
     let doLayout() =
         let struct (windowWidth, windowHeight) = window.RenderTargetSize
         let screenWidth = float32 windowWidth
@@ -106,18 +102,13 @@ type DisclaimerScene(window: WindowParameters, u95DataDirectory: string) =
 
     interface ILoadingScene<LocalContent, unit> with
         
-        member this.Camera: Camera2D = camera
-            
         member _.Init newContent =
             content <- newContent
-            camera <- Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
 
             // TODO[#98]: Update this layout on language change
             doLayout()
 
         member this.Draw() =
-            DrawSceneHelper.configureCamera window &camera
-
             ClearBackground(Color.Black)
 
             match areFilesOnDisk with

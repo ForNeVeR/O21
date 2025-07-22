@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
@@ -58,10 +58,11 @@ let private processWithPumping(lt, window: WindowParameters, scene: ILoadingScen
                 | true, action -> action()
                 | false, _ -> ()
 
-                scene.Update(Input.Handle(scene.Camera), controller)
+                let camera = DrawSceneHelper.ConfigureCamera window
+                scene.Update(Input.Handle(camera), controller)
 
                 BeginDrawing()
-                BeginMode2D(scene.Camera)
+                BeginMode2D camera
                 try
                     window.Update()
                     scene.Draw()

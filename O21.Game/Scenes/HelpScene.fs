@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 O21 contributors <https://github.com/ForNeVeR/O21>
+// SPDX-FileCopyrightText: 2024-2025 O21 contributors <https://github.com/ForNeVeR/O21>
 //
 // SPDX-License-Identifier: MIT
 
@@ -6,7 +6,6 @@ namespace O21.Game.Scenes
 
 open System.Numerics
 
-open Raylib_CSharp.Camera.Cam2D
 open Raylib_CSharp.Colors
 open Raylib_CSharp.Interact
 open type Raylib_CSharp.Raylib
@@ -27,9 +26,7 @@ type HelpScene = {
     TotalHeight: float32
     HelpDocument: DocumentFragment[]
     Window: WindowParameters
-    mutable Camera: Camera2D
-
-} with        
+} with
 
     static member Init(
         window: WindowParameters,
@@ -43,7 +40,6 @@ type HelpScene = {
             TotalHeight = HelpScene.GetFragmentsHeight content helpDocument
             HelpDocument = helpDocument
             Window = window
-            Camera = Camera2D(Vector2(0f, 0f), Vector2(0f, 0f), 0f, zoom = 1f)
         }
 
     static member private GetScrollMomentum(input: Input) =
@@ -87,9 +83,8 @@ type HelpScene = {
 
         fragmentsHeight
 
-    interface IScene with               
-        member this.Camera= this.Camera
-
+    interface IScene with
+        member this.RenderTargetSize = this.Window.RenderTargetSize
         member this.Update(input, _, state) =
             let mutable fragmentsHeight = this.TotalHeight
             let renderHeight = GetRenderHeight() / 2 |> float32
@@ -116,8 +111,6 @@ type HelpScene = {
             let mutable x = 0f
             let mutable currentLineHeight = 0f
             
-            DrawSceneHelper.configureCamera this.Window &this.Camera
-
             for fragment in this.HelpDocument do
                 match fragment with
                     | DocumentFragment.Text(style, text) ->
