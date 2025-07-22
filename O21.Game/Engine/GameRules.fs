@@ -120,7 +120,8 @@ let BonusSize = Vector(30, 30)
 // ------------------------------ Enemy Constants ------------------------------
 let FishKinds: int = FishSizes.Length
 let LevelEntryFishSpawnProbability: float = 0.00363 // 0.363%
-let FishBaseVelocity = 4
+let FishHorizontalVelocity = [| 3; 4; 5 |]
+let FishVerticalVelocity = 5
 let BombKinds: int = 5
 
 // ----------------------- Functions -----------------------

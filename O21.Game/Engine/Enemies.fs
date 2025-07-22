@@ -23,7 +23,7 @@ type Fish = {
     TopLeft: Point
     Type: int
     /// The current velocity the fish will be moving in the designated direction.
-    AbsoluteVelocity: int
+    HorizontalVelocity: int
     HorizontalDirection: HorizontalDirection
     VerticalDirection: VerticalDirection
 } with
@@ -34,7 +34,7 @@ type Fish = {
             Array.append [|fishEnv.PlayerCollider|] fishEnv.BulletColliders
         match CheckCollision fishEnv.Level this.Box entities with
         | Collision.None ->
-            let newFish = this.WithNextPosition fishEnv.Level
+            let newFish = this.WithNextPosition fishEnv.Level fishEnv.Random
             EnemyEffect.Update newFish
         | Collision.OutOfBounds ->
             EnemyEffect.Despawn
@@ -44,7 +44,7 @@ type Fish = {
         | Collision.CollidesObject _ ->
             EnemyEffect.PlayerHit this.Id
 
-    member private this.WithNextPosition level: Fish =
+    member private this.WithNextPosition level random: Fish =
         // TODO[#27]: Stick to the wall if there's any space (so that we should move as close to it as possible).
         let checkState(state: Fish) =
             match CheckCollision level state.Box Array.empty with
@@ -55,14 +55,14 @@ type Fish = {
             let newDirection = if keepDirection then this.HorizontalDirection else this.HorizontalDirection.Invert()
             let newState = {
                 this with
-                    TopLeft = this.TopLeft.Move(newDirection, this.AbsoluteVelocity)
+                    TopLeft = this.TopLeft.Move(newDirection, this.HorizontalVelocity)
                     HorizontalDirection = newDirection
             }
             checkState newState
 
         let moveVertically (dir: VerticalDirection) =
             { this with
-                TopLeft = this.TopLeft.Move(dir, this.AbsoluteVelocity)
+                TopLeft = this.TopLeft.Move(dir, GameRules.FishVerticalVelocity)
                 VerticalDirection = dir } |> checkState
 
         // Returns length of the wall ahead and whether there's an open path
@@ -73,14 +73,14 @@ type Fish = {
                 match CheckCollision level { fish.Box with TopLeft = nextPoint } Array.empty with
                 | Collision.CollidesBrick ->
                     let beforeBrick =
-                        nextPoint.Move(fish.HorizontalDirection.Invert(), fish.AbsoluteVelocity)
+                        nextPoint.Move(fish.HorizontalDirection.Invert(), fish.HorizontalVelocity)
                     match CheckCollision level { fish.Box with TopLeft = beforeBrick } Array.empty with
                     | Collision.None -> count (n + 1) nextPoint
                     | _ -> struct (n, false)
                 | Collision.None ->
                     struct (n, true)
                 | _ -> struct (n, false)
-            count 0 (fish.TopLeft.Move(fish.HorizontalDirection, fish.AbsoluteVelocity))
+            count 0 (fish.TopLeft.Move(fish.HorizontalDirection, fish.HorizontalVelocity))
 
         let chooseDirectionOnWallCollision() =
             let struct (lengthUp, isOpenPathUp) = wallAheadInfo this level VerticalDirection.Up
@@ -99,6 +99,10 @@ type Fish = {
                     moveVertically VerticalDirection.Down
             | _ -> None // Short wall (barrier), the next functions handle it
 
+        let updateVelocityOnDirectionChange(fish: Fish) =
+            if fish.HorizontalDirection = this.HorizontalDirection then fish
+            else { fish with HorizontalVelocity = random.RandomChoice GameRules.FishHorizontalVelocity }
+        
         moveHorizontally true
         |> Option.orElseWith(fun () ->
             chooseDirectionOnWallCollision())
@@ -107,13 +111,14 @@ type Fish = {
         |> Option.orElseWith(fun () ->
             moveVertically (this.VerticalDirection.Invert()))
         |> Option.defaultValue this
+        |> updateVelocityOnDirectionChange
 
 
     static member Default = {
         Id = Guid.Empty
         TopLeft = Point(0, 0)
         Type = 0
-        AbsoluteVelocity = GameRules.FishBaseVelocity
+        HorizontalVelocity = Array.head GameRules.FishHorizontalVelocity
         HorizontalDirection = HorizontalDirection.Right
         VerticalDirection = VerticalDirection.Up
     }
@@ -125,7 +130,7 @@ type Fish = {
                 Id = Guid.NewGuid()
                 TopLeft = position
                 Type = random.NextExcluding GameRules.FishKinds
-                AbsoluteVelocity = GameRules.FishBaseVelocity
+                HorizontalVelocity = random.RandomChoice GameRules.FishHorizontalVelocity
                 HorizontalDirection = direction
         }
 
@@ -134,7 +139,7 @@ type Fish = {
             Id = Guid.NewGuid()
             TopLeft = topLeft
             Type = ``type``
-            AbsoluteVelocity = velocity
+            HorizontalVelocity = velocity
             HorizontalDirection = direction
     }
 

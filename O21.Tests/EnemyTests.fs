@@ -18,38 +18,40 @@ let ``Basic fish get spawned on level``(): unit =
     let fish =
         Fish.SpawnOnLevelEntry(random, level, player)
         |> Array.map (fun f -> { f with Id = Guid.Empty }) // Ignore IDs for comparison
-    Assert.Equal<Fish>(
+    Assert.Equivalent(
         [| { Id = Guid.Empty
-             TopLeft = Point (60, 240)
-             Type = 0
-             AbsoluteVelocity = 4
+             TopLeft = Point (60, 12)
+             Type = 3
+             HorizontalVelocity = 4
              HorizontalDirection = HorizontalDirection.Right
              VerticalDirection = VerticalDirection.Up }
            { Id = Guid.Empty
-             TopLeft = Point (72, 252)
-             Type = 2
-             AbsoluteVelocity = 4
+             TopLeft = Point (204, 84)
+             Type = 4
+             HorizontalVelocity = 3
              HorizontalDirection = HorizontalDirection.Left
              VerticalDirection = VerticalDirection.Up }
            { Id = Guid.Empty
-             TopLeft = Point (240, 204)
+             TopLeft = Point (228, 24)
              Type = 2
-             AbsoluteVelocity = 4
-             HorizontalDirection = HorizontalDirection.Left
+             HorizontalVelocity = 4
+             HorizontalDirection = HorizontalDirection.Right
              VerticalDirection = VerticalDirection.Up }
            { Id = Guid.Empty
-             TopLeft = Point (528, 192)
+             TopLeft = Point (528, 108)
              Type = 3
-             AbsoluteVelocity = 4
-             HorizontalDirection = HorizontalDirection.Left
-             VerticalDirection = VerticalDirection.Up } |],
-        fish
+             HorizontalVelocity = 3
+             HorizontalDirection = HorizontalDirection.Right
+             VerticalDirection = VerticalDirection.Up }|],
+        fish,
+        strict = true
     )
 
 let private DefaultEnemyEnv = {
     Level = Helpers.EmptyLevel
     PlayerCollider = Player.Default.Box
     BulletColliders = Array.empty
+    Random = ReproducibleRandom.FromSeed 123
 }
 
 [<Fact>]
@@ -57,10 +59,10 @@ let ``Fish should move forward``(): unit =
     let fish1 = Fish.SpawnNew(
         Point(60, 240),
         1,
-        GameRules.FishBaseVelocity,
+        Helpers.DefaultRandom().RandomChoice GameRules.FishHorizontalVelocity,
         HorizontalDirection.Right
     )
     match fish1.Tick DefaultEnemyEnv with
     | EnemyEffect.Update fish2 ->
-        Assert.Equal(fish1.TopLeft.Move(fish1.HorizontalDirection, fish1.AbsoluteVelocity), fish2.TopLeft)
+        Assert.Equal(fish1.TopLeft.Move(fish1.HorizontalDirection, fish1.HorizontalVelocity), fish2.TopLeft)
     | effect -> Assert.Fail $"Incorrect effect: {effect}."

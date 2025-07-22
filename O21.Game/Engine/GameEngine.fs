@@ -93,6 +93,7 @@ type GameEngine = {
             Level = this.CurrentLevel
             PlayerCollider = this.Player.Box
             BulletColliders = Array.map (fun (x: Bullet) -> x.Box) this.Bullets
+            Random = this.Random
         }
         
     member this.GetBonusEnv(): BonusEnv = this.GetEnemyEnv()

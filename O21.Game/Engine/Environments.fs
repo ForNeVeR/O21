@@ -29,6 +29,7 @@ type EnemyEnv = {
     Level: Level
     PlayerCollider: Box
     BulletColliders: Box[]
+    Random: ReproducibleRandom
 }
 
 type BonusEnv = EnemyEnv
