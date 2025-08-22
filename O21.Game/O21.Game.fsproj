@@ -117,7 +117,7 @@ SPDX-License-Identifier: MIT
         <PackageReference Include="FVNever.Oddities.MRB" Version="1.0.0" />
         <PackageReference Include="FVNever.Oddities.NE" Version="1.0.0" />
         <PackageReference Include="FVNever.Oddities.WinHelp" Version="1.0.0" />
-        <PackageReference Include="JetBrains.Lifetimes" Version="2025.2.2" />
+        <PackageReference Include="JetBrains.Lifetimes" Version="2025.2.3" />
         <PackageReference Include="MeltySynth" Version="2.4.1" />
         <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
         <PackageReference Include="Raylib-CSharp" Version="5.0.0" />
