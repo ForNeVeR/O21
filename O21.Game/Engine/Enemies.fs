@@ -4,22 +4,22 @@
 
 namespace O21.Game.Engine
 
-open System
 open O21.Game
+open O21.Game.Engine.EntityId
 open O21.Game.Engine.Environments
 open O21.Game.Engine.Geometry
 open O21.Game.U95
 
 [<RequireQualifiedAccess>]
-type EnemyEffect<'e> =
+type EnemyEffect<'e, 'id when 'id : comparison> =
     | Update of 'e
-    | PlayerHit of id: Guid
+    | PlayerHit of 'id
     | Die
     /// For enemies that leave the screen without being destroyed.
     | Despawn
 
 type Fish = {
-    Id: Guid // TODO[#274]: Think about some better identifier mechanism.
+    Id: FishId
     TopLeft: Point
     Type: int
     /// The current velocity the fish will be moving in the designated direction.
@@ -29,7 +29,7 @@ type Fish = {
 } with
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.FishSizes[this.Type] }
 
-    member this.Tick(fishEnv: EnemyEnv): Fish EnemyEffect =
+    member this.Tick(fishEnv: EnemyEnv): FishEffect =
         let entities =
             Array.append [|fishEnv.PlayerCollider|] fishEnv.BulletColliders
         match CheckCollision fishEnv.Level this.Box entities with
@@ -115,7 +115,7 @@ type Fish = {
 
 
     static member Default = {
-        Id = Guid.Empty
+        Id = FishId.empty
         TopLeft = Point(0, 0)
         Type = 0
         HorizontalVelocity = Array.head GameRules.FishHorizontalVelocity
@@ -127,16 +127,16 @@ type Fish = {
         let direction = if random.NextBool() then HorizontalDirection.Left else HorizontalDirection.Right
         {
             Fish.Default with
-                Id = Guid.NewGuid()
+                Id = random.NextFishId()
                 TopLeft = position
                 Type = random.NextExcluding GameRules.FishKinds
                 HorizontalVelocity = random.RandomChoice GameRules.FishHorizontalVelocity
                 HorizontalDirection = direction
         }
 
-    static member SpawnNew(topLeft: Point, ``type``: int, velocity: int, direction: HorizontalDirection): Fish = {
+    static member SpawnNew(topLeft: Point, ``type``: int, velocity: int, direction: HorizontalDirection, ?customId: FishId): Fish = {
         Fish.Default with
-            Id = Guid.NewGuid()
+            Id = defaultArg customId FishId.empty
             TopLeft = topLeft
             Type = ``type``
             HorizontalVelocity = velocity
@@ -167,16 +167,17 @@ type Fish = {
                     if allowedToSpawn fish && random.Chance GameRules.LevelEntryFishSpawnProbability then
                         yield fish
         |]
+and FishEffect = EnemyEffect<Fish, FishId>
 
 type Bomb = {
-    Id: Guid // TODO[#274]: Think about some better identifier mechanism.
+    Id: BombId
     Type: int
     TopLeft: Point
     State: BombState
 } with
     static member Create (random: ReproducibleRandom) (position: Point)=
         {
-            Id = Guid.NewGuid()
+            Id = random.NextBombId()
             Type = random.NextExcluding GameRules.BombKinds
             TopLeft = position
             State = BombState.Sleep(VerticalTrigger(position.X + GameRules.BombTriggerOffset))
@@ -184,7 +185,7 @@ type Bomb = {
 
     member this.Box = { TopLeft = this.TopLeft; Size = GameRules.BombSize }
 
-    member this.Tick(bombEnv: EnemyEnv): Bomb EnemyEffect =
+    member this.Tick(bombEnv: EnemyEnv): BombEffect =
         let level = bombEnv.Level
         let player = bombEnv.PlayerCollider
         let bullets = bombEnv.BulletColliders
@@ -214,3 +215,5 @@ type Bomb = {
 and [<RequireQualifiedAccess>] BombState =
     | Sleep of trigger: Trigger
     | Active of velocity: Vector
+    
+and BombEffect = EnemyEffect<Bomb, BombId>

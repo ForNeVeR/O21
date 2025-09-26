@@ -58,11 +58,11 @@ let spawnEntity entityKind levelCoords engine =
         }
     | EntityKindEnum.Lifebuoy ->
         { engine with
-            Bonuses = Array.append engine.Bonuses [| Bonus.Create(position, BonusType.Lifebuoy) |]
+            Bonuses = Array.append engine.Bonuses [| Bonus.Create(position, BonusType.Lifebuoy, DefaultRandom()) |]
         }
     | EntityKindEnum.LifeBonus ->
         { engine with
-            Bonuses = Array.append engine.Bonuses [| Bonus.Create(position, BonusType.Life) |]
+            Bonuses = Array.append engine.Bonuses [| Bonus.Create(position, BonusType.Life, DefaultRandom()) |]
         }
     | _ -> ArgumentOutOfRangeException("Cannot spawn this entity exist") |> raise
     

@@ -4,17 +4,17 @@
 
 namespace O21.Game.Animations
 
-open System
 open O21.Game
 open O21.Game.Animations.BombAnimations
 open O21.Game.Animations.FishAnimations
 open O21.Game.Engine
+open O21.Game.Engine.EntityId
 open O21.Game.U95
 
 type AnimationHandler = {
     SubmarineAnimation: PlayerAnimation
-    FishAnimations: Map<Guid, FishAnimation>
-    BombAnimations: Map<Guid, BombAnimation>
+    FishAnimations: Map<FishId, FishAnimation>
+    BombAnimations: Map<BombId, BombAnimation>
     LifebuoyAnimations: LifebuoyAnimation Option
     OnDyingEnemyAnimations: OnDyingAnimation[]
     Sprites: Sprites

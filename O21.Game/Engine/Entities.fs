@@ -8,6 +8,7 @@ open System
 open System.Linq
 open Microsoft.FSharp.Core
 open O21.Game
+open O21.Game.Engine.EntityId
 open O21.Game.Engine.Environments
 open O21.Game.U95
 open O21.Game.Engine.Geometry
@@ -242,18 +243,18 @@ type Particle = {
         | _ -> Some newParticle
 
 type Bonus = {
-    Id: Guid
+    Id: BonusId
     TopLeft: Point
     Type: BonusType
 } with
-    static member Create (position: Point, bonusType: BonusType)= {
-        Id = Guid.NewGuid()
+    static member Create (position: Point, bonusType: BonusType, random: ReproducibleRandom)= {
+        Id = random.NextBonusId()
         TopLeft = position
         Type = bonusType
     }
     
     static member CreateRandomStaticBonus (random: ReproducibleRandom) (position: Point) = {
-        Id = Guid.NewGuid()
+        Id = random.NextBonusId()
         TopLeft = position
         Type = BonusType.Static <| random.NextExcluding GameRules.StaticBonusKinds
     }
@@ -286,7 +287,7 @@ type Bonus = {
             
         random.GetRandomEmptyPosition level 2 |> Option.map (GameRules.GetLevelPosition level)
         |> Option.bind (fun position ->
-            let bonus = Bonus.Create(position, bonusType)
+            let bonus = Bonus.Create(position, bonusType, random)
             if allowedToSpawn bonus then Some bonus else None)
             
 and [<RequireQualifiedAccess>] BonusType =

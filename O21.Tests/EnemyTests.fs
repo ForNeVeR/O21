@@ -7,6 +7,7 @@ module O21.Tests.EnemyTests
 open System
 open O21.Game
 open O21.Game.Engine
+open O21.Game.Engine.EntityId
 open O21.Game.Engine.Environments
 open Xunit
 
@@ -17,27 +18,27 @@ let ``Basic fish get spawned on level``(): unit =
     let random = ReproducibleRandom.FromSeed 412
     let fish =
         Fish.SpawnOnLevelEntry(random, level, player)
-        |> Array.map (fun f -> { f with Id = Guid.Empty }) // Ignore IDs for comparison
+        |> Array.map (fun f -> { f with Id = FishId.empty }) // Ignore IDs for comparison
     Assert.Equivalent(
-        [| { Id = Guid.Empty
+        [| { Id = FishId.empty
              TopLeft = Point (60, 12)
              Type = 3
              HorizontalVelocity = 4
              HorizontalDirection = HorizontalDirection.Right
              VerticalDirection = VerticalDirection.Up }
-           { Id = Guid.Empty
+           { Id = FishId.empty
              TopLeft = Point (204, 84)
              Type = 4
              HorizontalVelocity = 3
              HorizontalDirection = HorizontalDirection.Left
              VerticalDirection = VerticalDirection.Up }
-           { Id = Guid.Empty
+           { Id = FishId.empty
              TopLeft = Point (228, 24)
              Type = 2
              HorizontalVelocity = 4
              HorizontalDirection = HorizontalDirection.Right
              VerticalDirection = VerticalDirection.Up }
-           { Id = Guid.Empty
+           { Id = FishId.empty
              TopLeft = Point (528, 108)
              Type = 3
              HorizontalVelocity = 3

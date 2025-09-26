@@ -8,11 +8,11 @@ open System
 open System.Collections.Generic
 open O21.Game.U95
 
-type ReproducibleRandom private (backend: Random) = // TODO[#276]: Not really reproducible for now. Make it so.
+type ReproducibleRandom private (backend: Random, idGenerator: SequentialIdGenerator) = // TODO[#276]: Not really reproducible for now. Make it so.
     /// Creates a reproducible instance that's guaranteed
     /// (TODO[#276]: in the future, that is)
     /// to have reproducible number sequence generated across all of the supported platforms.
-    static member FromSeed(seed: int): ReproducibleRandom = ReproducibleRandom(Random(seed))
+    static member FromSeed(seed: int): ReproducibleRandom = ReproducibleRandom(Random(seed), SequentialIdGenerator())
 
     /// <summary>
     /// <para>Will choose a random seed to instantiate a new instance.</para>
@@ -27,6 +27,15 @@ type ReproducibleRandom private (backend: Random) = // TODO[#276]: Not really re
 
     member _.NextBool(): bool =
         backend.Next 100 >= 50
+        
+    member _.NextFishId() =
+        idGenerator.GetFishId()
+        
+    member _.NextBombId() =
+        idGenerator.GetBombId()
+        
+    member _.NextBonusId() =
+        idGenerator.GetBonusId()
 
     member _.Chance(probability: float): bool =
         backend.NextDouble() < probability
