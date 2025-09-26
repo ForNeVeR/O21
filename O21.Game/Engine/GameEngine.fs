@@ -9,6 +9,7 @@ open Microsoft.FSharp.Collections
 open O21.Game
 open O21.Game.U95
 open O21.Game.Animations
+open O21.Game.Engine.EntityId
 open O21.Game.Engine.Environments
 open Raylib_CSharp
 
@@ -200,19 +201,18 @@ type GameEngine = {
                 }, [| PlaySound SoundType.Shot |]
             else this, Array.empty
             
-    member this.GetEntityInfoById(id: Guid): EntityInfo option =
-        let bomb = this.Bombs |> Array.tryFind (fun b -> b.Id = id)
-        match bomb with
-        | Some b -> Some (EntityInfo.OfBomb b)
-        | None ->
+    member this.GetEntityInfoById<'id when 'id : comparison>(id: 'id): EntityInfo option =
+        match id with
+        | IsFishId id ->
             let fish = this.Fishes |> Array.tryFind (fun f -> f.Id = id)
-            match fish with
-            | Some f -> Some (EntityInfo.OfFish f)
-            | None ->
-                let bonus = this.Bonuses |> Array.tryFind (fun b -> b.Id = id)
-                match bonus with
-                | Some b -> Some (EntityInfo.OfBonus b)
-                | None -> None
+            fish |> Option.map EntityInfo.OfFish
+        | IsBombId id ->
+            let bomb = this.Bombs |> Array.tryFind (fun b -> b.Id = id)
+            bomb |> Option.map EntityInfo.OfBomb
+        | IsBonusId id ->
+            let bonus = this.Bonuses |> Array.tryFind (fun b -> b.Id = id)
+            bonus |> Option.map EntityInfo.OfBonus
+        | _ -> None
 
     static member private compose (upd1: UpdateHandler) (upd2: UpdateHandler) : UpdateHandler =
         fun (engine: GameEngine) ->
@@ -276,7 +276,11 @@ type GameEngine = {
             { engine with Bombs = Array.choose id bombs
                           Fishes = Array.choose id fish }, externalEffects
             
-    static member private ProcessEnemyEffect<'a>(isStationary: bool, effect: EnemyEffect<'a>, game: GameEngine): 'a option * ExternalEffect[] =
+    static member private ProcessEnemyEffect<'e, 'id when 'id : comparison>(
+            isStationary: bool,
+            effect: EnemyEffect<'e, 'id>,
+            game: GameEngine): 'e option * ExternalEffect[] =
+        
         let soundTypeDestroyed =
             if isStationary
                 then SoundType.StationaryEnemyDestroyed
