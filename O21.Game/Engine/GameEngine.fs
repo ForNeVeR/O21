@@ -212,7 +212,8 @@ type GameEngine = {
         | IsBonusId id ->
             let bonus = this.Bonuses |> Array.tryFind (fun b -> b.Id = id)
             bonus |> Option.map EntityInfo.OfBonus
-        | _ -> None
+        | _ ->
+            failwith $"Unknown entity id type: {id}"
 
     static member private compose (upd1: UpdateHandler) (upd2: UpdateHandler) : UpdateHandler =
         fun (engine: GameEngine) ->
