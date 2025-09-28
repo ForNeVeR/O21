@@ -42,6 +42,9 @@ let workflows = [
             ]
         )
     ]
+    
+    let checkoutAction = Auto "actions/checkout"
+    let dotnetSetupAction = Auto "actions/setup-dotnet"
 
     workflow "main" [
         name "Main"
@@ -73,12 +76,12 @@ let workflows = [
 
             step(
                 name = "Checkout",
-                uses = "actions/checkout@v4"
+                usesSpec = checkoutAction
             )
             yield! nuGetCache()
             step(
                 name = "Set up .NET SDK",
-                uses = "actions/setup-dotnet@v4",
+                usesSpec = dotnetSetupAction,
                 options = Map.ofList [
                     "dotnet-version", "9.0.x"
                 ]
@@ -101,7 +104,7 @@ let workflows = [
             runsOn "ubuntu-24.04"
             step(
                 name = "Check out the sources",
-                uses = "actions/checkout@v4"
+                usesSpec = checkoutAction
             )
             step(
                 name = "REUSE license check",
@@ -111,7 +114,7 @@ let workflows = [
         job "encoding" [
             runsOn "ubuntu-24.04"
             step(
-                uses = "actions/checkout@v4"
+                usesSpec = checkoutAction
             )
             step(
                 name = "Verify encoding",
@@ -127,11 +130,11 @@ let workflows = [
 
             step(
                 name = "Check out the sources",
-                uses = "actions/checkout@v4"
+                usesSpec = checkoutAction
             )
             step(
                 name = "Set up .NET SDK",
-                uses = "actions/setup-dotnet@v4"
+                usesSpec = dotnetSetupAction
             )
             yield! nuGetCache()
             step(
@@ -153,7 +156,7 @@ let workflows = [
             setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
             step(
                 name = "Checkout",
-                uses = "actions/checkout@v4"
+                usesSpec = checkoutAction
             )
             step(
                 name = "Read version from ref",
@@ -163,7 +166,7 @@ let workflows = [
             )
             step(
                 name = "Set up .NET SDK",
-                uses = "actions/setup-dotnet@v4",
+                usesSpec = dotnetSetupAction,
                 options = Map.ofList [
                     "dotnet-version", "9.0.x"
                 ]
