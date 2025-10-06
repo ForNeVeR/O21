@@ -35,7 +35,7 @@ let workflows = [
         setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
         step(
             name = "NuGet cache",
-            uses = "actions/cache@v4",
+            usesSpec = Auto "actions/cache",
             options = Map.ofList [
                 "path", "${{ env.NUGET_PACKAGES }}"
                 "key", "${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}"
@@ -108,7 +108,7 @@ let workflows = [
             )
             step(
                 name = "REUSE license check",
-                uses = "fsfe/reuse-action@v5"
+                usesSpec = Auto "fsfe/reuse-action"
             )
         ]
         job "encoding" [
