@@ -65,7 +65,7 @@ type GameEngine = {
         let finalHandler =
             (fun (engine: GameEngine) ->
                 { engine with
-                    ParticlesSource = this.ParticlesSource.Tick(this.CurrentLevel, this.Player)
+                    ParticlesSource = this.ParticlesSource.Tick(this.CurrentLevel, this.Player, this.Random)
                 }, [||])
 
         (mainHandler >-> finalHandler) this
@@ -330,15 +330,13 @@ type GameEngine = {
             let fromExplosiveBullets =
                 engine.Bullets
                 |> Array.fold (fun acc b ->
-                    if b.Explosive
+                    if b.Explosive && b.Tick(level).IsNone
                         then
-                            if b.Tick(level).IsNone then
-                                Array.append acc
-                                    (Bullet.SpawnBulletsInPattern (BulletsPattern.Circle 8)
-                                        { b with
-                                            Explosive = false
-                                            Lifetime = 0 - GameRules.BulletFromExplosiveLifetime - GameRules.BulletLifetime })
-                            else acc
+                            Array.append acc
+                                (Bullet.SpawnBulletsInPattern (BulletsPattern.Circle 16)
+                                    { b with
+                                        Explosive = false
+                                        Lifetime = 0 - GameRules.BulletFromExplosiveLifetime - GameRules.BulletLifetime })
                         else
                             acc) [||]
             { engine with
