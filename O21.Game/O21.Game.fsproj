@@ -26,6 +26,7 @@ SPDX-License-Identifier: MIT
         
         <Svg Include="Artwork\submarine.svg" />
         <None Include="Svg.props" />
+        <Compile Include="MemoryHelpers.fs" />
         <Compile Include="Paths.fs" />
     </ItemGroup>
 
@@ -56,6 +57,7 @@ SPDX-License-Identifier: MIT
         <Compile Include="U95\Level.fs" />
         <Compile Include="U95\U95Data.fs" />
         <Compile Include="AnimationType.fs" />
+        <Compile Include="Engine\RandomGenerator.fs" />
         <Compile Include="Engine\EntityId.fs" />
         <Compile Include="Engine\SequentialIdGenerator.fs" />
         <Compile Include="Engine\ReproducibleRandom.fs" />

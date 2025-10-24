@@ -6,19 +6,22 @@ namespace O21.Game.Engine
 
 open System
 open System.Collections.Generic
-open O21.Game.U95
+open O21.Game.Engine.EntityId
+open O21.Game.U95    
 
-type ReproducibleRandom private (backend: Random, idGenerator: SequentialIdGenerator) = // TODO[#276]: Not really reproducible for now. Make it so.
+type ReproducibleRandom private (backend: RandomGenerator, idGenerator: SequentialIdGenerator) =
+    
     /// Creates a reproducible instance that's guaranteed
-    /// (TODO[#276]: in the future, that is)
     /// to have reproducible number sequence generated across all of the supported platforms.
-    static member FromSeed(seed: int): ReproducibleRandom = ReproducibleRandom(Random(seed), SequentialIdGenerator())
+    static member FromSeed(seed: int64): ReproducibleRandom =
+        let baseGenerator = RandomGenerator(seed)
+        ReproducibleRandom(baseGenerator, SequentialIdGenerator(baseGenerator.Jump()))
 
     /// <summary>
     /// <para>Will choose a random seed to instantiate a new instance.</para>
     /// <para>This is meant to be persisted together with the game data, to save replays.</para>
     /// </summary>
-    static member ChooseRandomSeed(): int = Random.Shared.Next()
+    static member ChooseRandomSeed() = int64 <| Random.Shared.NextInt64()
 
     /// <summary>Generates a random number in range from zero to <paramref name="boundary"/>.</summary>
     /// <param name="boundary">A range boundary that's <b>excluded</b> from the range.</param>
@@ -29,16 +32,16 @@ type ReproducibleRandom private (backend: Random, idGenerator: SequentialIdGener
         backend.Next 100 >= 50
         
     member _.NextFishId() =
-        idGenerator.GetFishId()
+        idGenerator.NextIdWithPrefix(FishId.prefix) |> FishId
         
     member _.NextBombId() =
-        idGenerator.GetBombId()
+        idGenerator.NextIdWithPrefix(BombId.prefix) |> BombId
         
     member _.NextBonusId() =
-        idGenerator.GetBonusId()
+        idGenerator.NextIdWithPrefix(BonusId.prefix) |> BonusId
 
     member _.Chance(probability: float): bool =
-        backend.NextDouble() < probability
+        backend.NextBool(probability)
         
     member _.RandomChoice<'a> (choices: IList<'a>): 'a =
         if choices.Count = 0 then
