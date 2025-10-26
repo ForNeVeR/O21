@@ -156,6 +156,7 @@ let LevelSizeInTiles = Vector(50, 25)
 let BombTriggerOffset = -15
 let LifebuoySpawnProbability = 0.2 // TODO[#237]: Compare with the original
 let LifeBonusSpawnProbability = seq {
+    yield 0.
     yield! [|0.25; 0.125;|]
     yield! Array.create 7 0.0625
     while true do yield 0.

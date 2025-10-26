@@ -6,14 +6,20 @@ namespace O21.Game.Engine
 
 module EntityId =
     [<Struct>]
-    type FishId = FishId of int
-        with static member empty = FishId 0
+    type FishId = FishId of uint64
+    with
+        static member empty = FishId 0UL
+        static member prefix = 1us
     [<Struct>]
-    type BombId = BombId of int
-        with static member empty = BombId 0
+    type BombId = BombId of uint64
+    with
+        static member empty = BombId 0UL
+        static member prefix = 2us
     [<Struct>]
-    type BonusId = BonusId of int
-        with static member empty = BonusId 0
+    type BonusId = BonusId of uint64
+    with
+        static member empty = BonusId 0UL
+        static member prefix = 3us
         
     let (|IsFishId|_|) (id: objnull) =
         match id with
