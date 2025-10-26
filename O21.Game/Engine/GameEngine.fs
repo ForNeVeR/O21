@@ -333,7 +333,7 @@ type GameEngine = {
                     if b.Explosive && b.Tick(level).IsNone
                         then
                             Array.append acc
-                                (Bullet.SpawnBulletsInPattern (BulletsPattern.Circle 16)
+                                (Bullet.SpawnBulletsInPattern (BulletsPattern.Circle 8)
                                     { b with
                                         Explosive = false
                                         Lifetime = 0 - GameRules.BulletFromExplosiveLifetime - GameRules.BulletLifetime })
