@@ -42,8 +42,6 @@ jobs:
         path: ${{ env.NUGET_PACKAGES }}
     - name: Set up .NET SDK
       uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: 9.0.x
     - name: Build
       run: dotnet build
     - name: Test
