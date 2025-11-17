@@ -81,10 +81,7 @@ let workflows = [
             yield! nuGetCache()
             step(
                 name = "Set up .NET SDK",
-                usesSpec = dotnetSetupAction,
-                options = Map.ofList [
-                    "dotnet-version", "9.0.x"
-                ]
+                usesSpec = dotnetSetupAction
             )
             step(
                 name = "Build",
@@ -166,10 +163,7 @@ let workflows = [
             )
             step(
                 name = "Set up .NET SDK",
-                usesSpec = dotnetSetupAction,
-                options = Map.ofList [
-                    "dotnet-version", "9.0.x"
-                ]
+                usesSpec = dotnetSetupAction
             )
             yield! nuGetCache()
 
