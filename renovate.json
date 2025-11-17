@@ -9,7 +9,8 @@
             "description": "Update the GitHub Actions runners.",
             "customType": "regex",
             "managerFilePatterns": [
-                ".github/workflows/*.yml"
+                ".github/workflows/*.yml",
+                "Scripts/github-actions.fsx"
             ],
             "matchStrings": [
                 "(?<depName>macos|ubuntu|windows)-(?<currentValue>[-\\w.\\d]+)"
