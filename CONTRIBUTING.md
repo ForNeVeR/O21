@@ -10,7 +10,7 @@ O21 Contributor Guide
 Development Prerequisites
 -------------------------
 
-To develop O21, you'll need [.NET 9 SDK][dotnet] (or a later version).
+To develop O21, you'll need [.NET 10 SDK][dotnet] (or a later version).
 
 Build the Project
 -----------------
