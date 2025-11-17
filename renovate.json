@@ -15,6 +15,6 @@
                 "(?<depName>macos|ubuntu|windows)-(?<currentValue>[-\\w.\\d]+)"
             ],
             "datasourceTemplate": "github-runners"
-        },
+        }
     ]
 }
