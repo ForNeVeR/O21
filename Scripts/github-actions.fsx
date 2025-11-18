@@ -57,7 +57,7 @@ let workflows = [
                 "config", [
                     Map.ofList [
                         "name", "macos"
-                        "image", "macos-14"
+                        "image", "macos-15"
                     ]
                     Map.ofList [
                         "name", "linux"
