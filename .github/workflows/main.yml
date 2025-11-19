@@ -24,7 +24,7 @@ jobs:
           name: macos
         - image: ubuntu-24.04
           name: linux
-        - image: windows-2022
+        - image: windows-2025
           name: windows
       fail-fast: false
     runs-on: ${{ matrix.config.image }}

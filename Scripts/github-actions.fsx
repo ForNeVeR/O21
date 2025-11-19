@@ -65,7 +65,7 @@ let workflows = [
                     ]
                     Map.ofList [
                         "name", "windows"
-                        "image", "windows-2022"
+                        "image", "windows-2025"
                     ]
                 ]
             ])
