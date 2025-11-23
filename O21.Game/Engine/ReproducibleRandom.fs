@@ -6,7 +6,6 @@ namespace O21.Game.Engine
 
 open System
 open System.Collections.Generic
-open O21.Game.Engine.EntityId
 open O21.Game.U95    
 
 type ReproducibleRandom private (backend: RandomGenerator, idGenerator: SequentialIdGenerator) =
@@ -15,7 +14,7 @@ type ReproducibleRandom private (backend: RandomGenerator, idGenerator: Sequenti
     /// to have reproducible number sequence generated across all of the supported platforms.
     static member FromSeed(seed: int64): ReproducibleRandom =
         let baseGenerator = RandomGenerator(seed)
-        ReproducibleRandom(baseGenerator, SequentialIdGenerator(baseGenerator.Jump()))
+        ReproducibleRandom(baseGenerator, SequentialIdGenerator())
 
     /// <summary>
     /// <para>Will choose a random seed to instantiate a new instance.</para>
@@ -32,13 +31,13 @@ type ReproducibleRandom private (backend: RandomGenerator, idGenerator: Sequenti
         backend.Next 100 >= 50
         
     member _.NextFishId() =
-        idGenerator.NextIdWithPrefix(FishId.prefix) |> FishId
+        idGenerator.GetFishId()
         
     member _.NextBombId() =
-        idGenerator.NextIdWithPrefix(BombId.prefix) |> BombId
+        idGenerator.GetBombId()
         
     member _.NextBonusId() =
-        idGenerator.NextIdWithPrefix(BonusId.prefix) |> BonusId
+        idGenerator.GetBonusId()
 
     member _.Chance(probability: float): bool =
         backend.NextBool(probability)
