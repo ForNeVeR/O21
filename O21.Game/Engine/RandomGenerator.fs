@@ -44,7 +44,8 @@ type RandomGenerator(seed: int64) =
     
     do initializeState(seed)
     
-    member this.Seed = seed
+    member private _.State = randState
+    member _.Seed = seed
     
     member this.Next() : uint64 =
         let result = rotl (randState[0] + randState[3]) 23 + randState[0]
@@ -108,18 +109,22 @@ type RandomGenerator(seed: int64) =
             invalidArg (nameof(state)) "State must have exactly 4 elements"
         state.CopyTo randState
         
+    static member FromState(state: Span<uint64>) =
+        let generator = RandomGenerator(0)
+        generator.LoadState(state)
+        generator
+        
     member private this.JumpBase(jumps: uint64[]) =
+        let rand = RandomGenerator.FromState(randState)
         let newState = stackalloc<uint64> 4
         for i in 0 .. 3 do
             for b in 0 .. 63 do
                 if (jumps[i] &&& (1UL <<< b)) <> 0UL then
                     for j in 0 .. 3 do
-                        newState[j] <- newState[j] ^^^ randState[j]
-                this.Next() |> ignore
+                        newState[j] <- newState[j] ^^^ rand.State[j]
+                rand.Next() |> ignore
         
-        let generator = RandomGenerator(0)
-        generator.LoadState(newState)
-        generator
+        RandomGenerator.FromState(newState)
     
     member this.Jump() =
         this.JumpBase(jump)

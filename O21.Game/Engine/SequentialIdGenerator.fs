@@ -4,18 +4,24 @@
 
 namespace O21.Game.Engine
 
-type SequentialIdGenerator(generator: RandomGenerator) =
-    let mutable counter = 0UL
-    
-    member this.NextId() : uint64 =
-        counter <- counter + 1UL
-        
-        let randomPart = generator.Next()
-        let combined = counter ^^^ randomPart
-        
-        if combined = 0UL then 1UL else combined
+open O21.Game.Engine.EntityId
 
-    member this.NextIdWithPrefix (prefix: uint16) : uint64 =
-        let id = this.NextId()
-        let prefix = uint64 prefix <<< 48
-        (id &&& 0x0000FFFFFFFFFFFFUL) ||| prefix
+type SequentialIdGenerator() =
+    let mutable nextFishId = 0UL
+    let mutable nextBombId = 0UL
+    let mutable nextBonusId = 0UL
+    
+    member _.GetFishId() =
+        let newId = nextFishId + 1UL
+        nextFishId <- newId
+        FishId <| newId
+    
+    member _.GetBombId() =
+        let newId = nextBombId + 1UL
+        nextBombId <- newId
+        BombId <| newId
+        
+    member _.GetBonusId() =
+        let newId = nextBonusId + 1UL
+        nextBonusId <- newId
+        BonusId <| newId
