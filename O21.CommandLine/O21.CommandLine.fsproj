@@ -20,7 +20,7 @@ SPDX-License-Identifier: MIT
 
     <ItemGroup>
       <PackageReference Include="CommandLineParser" Version="2.9.1" />
-      <PackageReference Include="TruePath" Version="1.10.0" />
+      <PackageReference Include="TruePath" Version="1.11.0" />
     </ItemGroup>
 
 </Project>
