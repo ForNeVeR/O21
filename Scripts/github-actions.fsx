@@ -1,5 +1,5 @@
 let licenseHeader = """
-# SPDX-FileCopyrightText: 2021-2025 O21 contributors <https://github.com/ForNeVeR/O21>
+# SPDX-FileCopyrightText: 2021-2026 O21 contributors <https://github.com/ForNeVeR/O21>
 #
 # SPDX-License-Identifier: MIT
 
@@ -49,6 +49,7 @@ let workflows = [
     workflow "main" [
         name "Main"
         onPushTo "main"
+        onPushTo "renovate/**"
         onPullRequestTo "main"
         onSchedule "0 0 * * 6"
         onWorkflowDispatch
@@ -143,6 +144,7 @@ let workflows = [
     workflow "release" [
         name "Release"
         onPushTo "main"
+        onPushTo "renovate/**"
         onPushTags "v*"
         onPullRequestTo "main"
         onSchedule "0 0 * * 6"
