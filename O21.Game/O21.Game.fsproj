@@ -115,7 +115,7 @@ SPDX-License-Identifier: MIT
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="FSharp.Data" Version="6.7.0" />
+        <PackageReference Include="FSharp.Data" Version="7.0.0" />
         <PackageReference Include="FSharp.Formatting" Version="21.0.0" />
         <PackageReference Include="FVNever.Oddities.DIB" Version="1.0.0" />
         <PackageReference Include="FVNever.Oddities.MRB" Version="1.0.0" />
