@@ -62,7 +62,7 @@ let workflows = [
                     ]
                     Map.ofList [
                         "name", "linux"
-                        "image", "ubuntu-24.04"
+                        "image", "ubuntu-26.04"
                     ]
                     Map.ofList [
                         "name", "windows"
@@ -99,7 +99,7 @@ let workflows = [
             )
         ]
         job "licenses" [
-            runsOn "ubuntu-24.04"
+            runsOn "ubuntu-26.04"
             step(
                 name = "Check out the sources",
                 usesSpec = checkoutAction
@@ -110,7 +110,7 @@ let workflows = [
             )
         ]
         job "encoding" [
-            runsOn "ubuntu-24.04"
+            runsOn "ubuntu-26.04"
             step(
                 usesSpec = checkoutAction
             )
@@ -121,7 +121,7 @@ let workflows = [
             )
         ]
         job "verify-workflows" [
-            runsOn "ubuntu-24.04"
+            runsOn "ubuntu-26.04"
 
             setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
             setEnv "DOTNET_NOLOGO" "1"
@@ -150,7 +150,7 @@ let workflows = [
         onSchedule "0 0 * * 6"
         job "release" [
             writeContentPermissions
-            runsOn "ubuntu-24.04"
+            runsOn "ubuntu-26.04"
             setEnv "DOTNET_NOLOGO" "1"
             setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
             step(

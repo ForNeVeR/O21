@@ -23,7 +23,7 @@ jobs:
         config:
         - image: macos-26
           name: macos
-        - image: ubuntu-24.04
+        - image: ubuntu-26.04
           name: linux
         - image: windows-2025
           name: windows
@@ -51,21 +51,21 @@ jobs:
       shell: pwsh
       run: ./Scripts/Verify-Translations.ps1
   licenses:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - name: Check out the sources
       uses: actions/checkout@v7
     - name: REUSE license check
       uses: fsfe/reuse-action@v6
   encoding:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@v7
     - name: Verify encoding
       shell: pwsh
       run: Scripts/Test-Encoding.ps1
   verify-workflows:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       DOTNET_NOLOGO: 1
