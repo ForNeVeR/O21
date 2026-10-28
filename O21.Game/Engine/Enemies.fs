@@ -189,6 +189,7 @@ type Bomb = {
         let level = bombEnv.Level
         let player = bombEnv.PlayerCollider
         let bullets = bombEnv.BulletColliders
+        let rnd = bombEnv.Random
 
         let allEntities = Array.append [|player|] bullets
 
@@ -196,7 +197,7 @@ type Bomb = {
         | BombState.Sleep trigger ->
             let updated =
                 if IsTriggered trigger player then
-                    { this with State = BombState.Active(Vector(0, GameRules.BombVelocity)) }
+                    { this with State = BombState.Active(Vector(0, rnd.RandomChoice GameRules.BombVelocityRange)) }
                 else
                     this
             match CheckCollision level updated.Box allEntities with
@@ -206,7 +207,7 @@ type Bomb = {
         | BombState.Active velocity ->
             let newBomb =
                 { this with
-                    TopLeft = this.TopLeft + velocity }
+                    TopLeft = this.TopLeft - velocity }
             match CheckCollision level this.Box allEntities with
             | Collision.CollidesObject _ -> EnemyEffect.PlayerHit this.Id
             | Collision.None -> EnemyEffect.Update newBomb

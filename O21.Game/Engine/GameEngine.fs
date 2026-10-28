@@ -122,7 +122,8 @@ type GameEngine = {
                 else None
                 
         let lifebuoy =
-            trySpawnSpecialBonus BonusType.Lifebuoy |> Option.toArray
+            if this.CurrentLevel.Column >= level.Column then [||] // moving backwards
+            else trySpawnSpecialBonus BonusType.Lifebuoy |> Option.toArray
                 
         let lifeBonus =
             trySpawnSpecialBonus BonusType.Life |> Option.toArray
@@ -164,7 +165,7 @@ type GameEngine = {
                 let newBullet = {
                     TopLeft = GameRules.NewBulletPosition(player.TopForward, player.Direction)
                     Direction = player.Direction
-                    Lifetime = if player.Can AbilityType.BulletInfinityLifetime then Int32.MinValue else 0
+                    Lifetime = if player.Can AbilityType.BulletInfinityLifetime then Int32.MaxValue else GameRules.BulletLifetime
                     Velocity = player.Velocity + Vector(player.Direction * GameRules.BulletVelocity, 0)
                     Explosive = false
                 }
@@ -176,11 +177,17 @@ type GameEngine = {
                 let newBullets = seq {
                     yield newBullet
                     if player.Can AbilityType.BulletTriple then
-                        yield { newBullet with Velocity = newBullet.Velocity + GameRules.BulletVerticalSpread }
-                        yield { newBullet with Velocity = newBullet.Velocity + GameRules.BulletVerticalSpread * -1 }
+                        yield { newBullet with
+                                    Velocity =
+                                       newBullet.Velocity + GameRules.BulletVerticalSpread
+                                    Lifetime = GameRules.TripleShotUpBulletLifetime }
+                        yield { newBullet with
+                                    Velocity =
+                                       newBullet.Velocity + GameRules.BulletVerticalSpread * -1
+                                    Lifetime = GameRules.TripleShotDownBulletLifetime }
                     if player.Can AbilityType.ExplosiveBullet then
                         yield { newBullet with
-                                    Lifetime = 0
+                                    Lifetime = GameRules.ExplosiveBulletLifetime
                                     Velocity = player.Velocity
                                                + Vector(player.Direction * GameRules.ExplosiveBulletVelocity, 0)
                                     Explosive = true }
@@ -248,6 +255,7 @@ type GameEngine = {
                 | _ -> Vector(0, 0)
             { engine with Player = player }, [| SwitchLevel levelDelta |]
         | PlayerEffect.Die count ->
+            let rnd = engine.Random
             let effects =
                 Array.init (count * 2) (fun i ->
                     if i % 2 = 0 then PlaySound SoundType.LifeLost else PlayAnimation (AnimationType.Die, EntityType.Player))
@@ -256,7 +264,8 @@ type GameEngine = {
                             Velocity = Vector.Zero
                             FreezeTime = GameRules.PostDeathFreezeTicks 
                             Lives = Math.Max(engine.Player.Lives - count, 0)
-                            Oxygen = OxygenStorage.Default }
+                            Oxygen = OxygenStorage.Default
+                            Abilities = (snd >> Array.ofSeq) <| rnd.TryDoRandomElimination engine.Player.Abilities }
             }, if engine.Player.Lives - count <= 0 then effects |> Array.append [|PlaySound SoundType.GameOver|] else effects
             // TODO[#27]: Investigate if enemy collision should stop the player from moving
     
@@ -305,9 +314,15 @@ type GameEngine = {
             let bonuses = Array.choose id bonuses
             let engine =
                 if engine.Bonuses |> Array.exists (fun b -> b.Type.IsLifebuoy && b.Update(bonusEnv).IsPickup)
-                    then { engine with
-                            GameEngine.Player.Abilities =
-                                engine.Player.Abilities |> Array.append [| Ability.CreateRandomAbility() |] }
+                    then
+                        match Ability.CreateRandomAbility(engine.Random) with
+                        | { Type = AbilityType.Oxygen } ->
+                            { engine with
+                                GameEngine.Player.Oxygen = OxygenStorage.Default }
+                        | ability ->
+                            { engine with
+                                GameEngine.Player.Abilities =
+                                    engine.Player.Abilities |> Array.append [| ability |] }
                     else engine
             let externalEffects = externalEffects |> Array.collect id
             { engine with Bonuses = bonuses }, externalEffects
@@ -336,7 +351,7 @@ type GameEngine = {
                                 (Bullet.SpawnBulletsInPattern (BulletsPattern.Circle 8)
                                     { b with
                                         Explosive = false
-                                        Lifetime = 0 - GameRules.BulletFromExplosiveLifetime - GameRules.BulletLifetime })
+                                        Lifetime = GameRules.BulletFromExplosiveLifetime })
                         else
                             acc) [||]
             { engine with

@@ -14,7 +14,7 @@ type LevelCoordinates =
     | LevelCoordinates of x: int * y: int
     member this.X = let (LevelCoordinates(x, _)) = this in x
     member this.Y = let (LevelCoordinates(_, y)) = this in y
-    
+
 type LevelEntitiesCoordinates = {
     Bombs: (int * int)[]
     Bonuses: (int * int)[]
@@ -31,7 +31,10 @@ type Level = {
             Position = 0
             Coordinates = LevelCoordinates(0, 0)
         }
-        
+
+        member this.Row = this.Coordinates.Y
+        member this.Column = this.Coordinates.X
+
         static member private Load(directory: string) (level: int) (part: int): Task<Level> = task{
             let parser = Parser(directory)
             let coordinates = LevelCoordinates(part, level)
@@ -64,7 +67,7 @@ type Level = {
                 |> Task.WhenAll
             return Map.ofArray levelPairs
         }
-        
+
         member private this.EntitiesCoordinatesLazy = lazy (
                 let bombCoords = ResizeArray()
                 let bonusCoords = ResizeArray()
@@ -84,5 +87,5 @@ type Level = {
             )
 
         member this.BombsCoordinates() = this.EntitiesCoordinatesLazy.Value.Bombs
-        
+
         member this.StaticBonusesCoordinates() = this.EntitiesCoordinatesLazy.Value.Bonuses
