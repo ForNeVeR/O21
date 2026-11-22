@@ -242,7 +242,7 @@ module Bullets =
     let private defaultBullet = {
             TopLeft = Point(0, 0)
             Direction = HorizontalDirection.Right
-            Lifetime = 0
+            Lifetime = GameRules.BulletLifetime
             Velocity = Vector(GameRules.BulletVelocity, 0)
             Explosive = false
         }
@@ -279,9 +279,9 @@ module Bullets =
     let ``Bullet is destroyed after the expiration of its lifetime``(): unit =
         let level = createEmptyLevel 1 1
         let bullet = defaultBullet
-        let ticksToMove = GameRules.BulletLifetime
-        Assert.True((tickN ticksToMove bullet level).IsSome)
-        Assert.Equal(None, tickN (ticksToMove + 1) bullet level)
+        let timer = GameRules.BulletLifetime
+        Assert.True((tickN (timer - 1) bullet level).IsSome)
+        Assert.Equal(None, tickN timer bullet level)
         
     [<Theory>]
     [<InlineData("Left")>]
@@ -438,7 +438,7 @@ module ScoreSystem =
         Assert.Equal(initialLives + 1, actualLives)
     
     [<Fact>]  
-    let ``Picking up a life bonus adds ability to the player``(): unit =
+    let ``Picking up a lifebuoy adds ability to the player``(): unit =
         let level = createEmptyLevel 1 1
         
         let engine = newEngine.ChangeLevel(level)

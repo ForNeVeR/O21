@@ -48,6 +48,17 @@ type ReproducibleRandom private (backend: RandomGenerator, idGenerator: Sequenti
         let index = backend.Next choices.Count
         choices[index]
 
+    member _.TryDoRandomElimination<'a> (choices: IList<'a>): 'a option * IList<'a> =
+        if choices.Count = 0 then
+            None, choices
+        else
+
+        let index = backend.Next choices.Count
+        let chosen = choices[index]
+        let remaining = ResizeArray(choices)
+        remaining.RemoveAt(index)
+        (Some chosen, remaining :> IList<'a>)
+
     member this.GetRandomEmptyPosition (level: Level) eps =
         let height = level.LevelMap.Length
         let width = level.LevelMap[0].Length

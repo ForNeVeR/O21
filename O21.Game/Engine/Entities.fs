@@ -27,7 +27,7 @@ type Player = {
 
     member this.TopRight = this.TopLeft + Vector(GameRules.PlayerSize.X, 0)
 
-    member this.IsAllowedToShoot = this.ShotCooldown = 0
+    member this.IsAllowedToShoot = this.ShotCooldown = 0 && this.FreezeTime = 0
     member this.IsAllowedToMove = this.FreezeTime = 0
     
     member this.OxygenAmount = this.Oxygen.Amount
@@ -50,7 +50,7 @@ type Player = {
                 ShotCooldown = max (this.ShotCooldown - 1) 0
                 FreezeTime =  max (this.FreezeTime - 1) 0
                 Oxygen = this.Oxygen.Tick()
-                Abilities = this.Abilities |> Array.choose _.Tick()
+                Abilities = this.Abilities
             }
         newPlayer.CheckState(playerEnv)
         
@@ -157,33 +157,28 @@ and [<RequireQualifiedAccess>] PlayerEffect =
     
 and Ability = {
     Type: AbilityType
-    Lifetime: int
 } with
     static member private Abilities =
         let values = Enum.GetValues(typeof<AbilityType>)
         values.Cast<AbilityType>().ToArray()
     
-    static member CreateRandomAbility() = {
-        Type = Ability.Abilities |> Array.randomChoice
-        Lifetime = 0
+    static member CreateRandomAbility(rnd: ReproducibleRandom) = {
+        Type = Ability.Abilities |> rnd.RandomChoice
     }
     
     static member CreateAbility(abilityType: AbilityType) = {
         Type = abilityType
-        Lifetime = 0
     }
-    
-    member this.Tick(): Ability Option =
-        let newLifetime = this.Lifetime + 1
-        if newLifetime > GameRules.AbilityLifetime
-            then None else Some { this with Lifetime = newLifetime }
 
 and AbilityType =
+    // Matches the types on the HUD (values matters)
     | BulletTriple = 0
     | BulletZeroCooldown = 1
     | BulletInfinityLifetime = 2
     | ExplosiveBullet = 3
-    | AllowTurn = 4        
+    | AllowTurn = 4
+    // Isn't presented on the HUD
+    | Oxygen = 5
 
 type Bullet = {
     TopLeft: Point
@@ -210,14 +205,14 @@ type Bullet = {
 
     
     member this.Tick(level: Level): Bullet option =
-        let newLifetime = this.Lifetime + 1
+        let newLifetime = this.Lifetime - 1
 
         let newTopLeft =
             this.TopLeft +
             Vector(this.Velocity.X, this.Velocity.Y)
         let newBullet = { this with TopLeft = newTopLeft; Lifetime = newLifetime }
 
-        if newLifetime > GameRules.BulletLifetime then None
+        if newLifetime <= 0 then None
         else
             match CheckCollision level newBullet.Box [||] with
             | Collision.None -> Some newBullet
@@ -259,7 +254,7 @@ type Bonus = {
         Type = BonusType.Static <| random.NextExcluding GameRules.StaticBonusKinds
     }
     
-    member this.Box = { TopLeft = this.TopLeft; Size = GameRules.BonusSize }
+    member this.Box = { TopLeft = this.TopLeft; Size = GameRules.StaticBonusSize }
     
     member this.Update(bonusEnv: BonusEnv): BonusEffect =
         let level = bonusEnv.Level
