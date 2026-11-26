@@ -85,3 +85,22 @@ let ``Fish should move forward``(): unit =
     | EnemyEffect.Update fish2 ->
         Assert.Equal(fish1.TopLeft.Move(fish1.HorizontalDirection, fish1.HorizontalVelocity), fish2.TopLeft)
     | effect -> Assert.Fail $"Incorrect effect: {effect}."
+
+[<Fact>]
+let ``Entity IDs are sequential and reproducible for the same seed``(): unit =
+    let generateIds () =
+        let random = ReproducibleRandom.FromSeed 0xDEADFA11
+        let fish = [| random.NextFishId(); random.NextFishId() |]
+        let bombs = [| random.NextBombId(); random.NextBombId() |]
+        let bonus = random.NextBonusId()
+        fish, bombs, bonus
+
+    let fish, bombs, bonus = generateIds ()
+    Assert.Equal<FishId[]>([| FishId 1UL; FishId 2UL |], fish)
+    Assert.Equal<BombId[]>([| BombId 1UL; BombId 2UL |], bombs)
+    Assert.Equal(BonusId 1UL, bonus)
+
+    let fish2, bombs2, bonus2 = generateIds ()
+    Assert.Equal<FishId[]>(fish, fish2)
+    Assert.Equal<BombId[]>(bombs, bombs2)
+    Assert.Equal(bonus, bonus2)
