@@ -11,7 +11,6 @@ open O21.Game.U95
 
 type EntityType =
     | Player
-    | Enemy of id: Guid
     | EnemyDie of EntityInfo
     
 type ExternalEffect =
